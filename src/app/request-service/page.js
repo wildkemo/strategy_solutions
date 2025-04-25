@@ -11,7 +11,7 @@ const RequestService = () => {
         <p className={styles.subtitle}>Fill out the form below and we'll get back to you within 24 hours</p>
 
         <form 
-          action="" 
+          action="http://localhost:8000/api/request_service.php" 
           method="POST"
           className={styles.form}
         >
