@@ -167,16 +167,16 @@
 .footerCta {
   width: 100%;
   padding: 60px 20px;
-  margin-top: 300px;
+  margin-top: 100px;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  opacity: 0;
-  transform: translateY(50px);
-  animation: footerAppear 1s ease forwards;
-  animation-delay: 4.5s;
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+  z-index: 10;
 }
 
 @keyframes footerAppear {
@@ -203,20 +203,45 @@
   margin-bottom: 40px;
 }
 
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  position: relative;
+  z-index: 11;
+}
+
+.requestButton,
 .contactButton {
-  display: inline-block;
-  padding: 15px 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 30px;
-  color: #ffffff;
-  font-size: 1.1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 500;
   text-decoration: none;
   transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
+  text-align: center;
+  min-width: 150px;
+}
+
+.requestButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  display: inline-block;
+}
+
+.requestButton:hover {
+  background-color: #0056b3;
+}
+
+.contactButton {
+  background-color: transparent;
+  color: #007bff;
+  border: 2px solid #007bff;
+  display: inline-block;
 }
 
 .contactButton:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+  background-color: #007bff;
+  color: white;
 }

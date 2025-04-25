@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./Services.module.css";
+import Link from "next/link";
 
 const Services = () => {
   return (
@@ -83,9 +84,14 @@ const Services = () => {
           <p className={styles.footerSubtitle}>
             Let's discuss how we can help you achieve your goals
           </p>
-          <a href="/contact" className={styles.contactButton}>
-            Contact Us
-          </a>
+          <div className={styles.buttonGroup}>
+            <Link href="/request-service" className={styles.requestButton}>
+              Request a Service
+            </Link>
+            <Link href="/contact" className={styles.contactButton}>
+              Contact Us
+            </Link>
+          </div>
         </div>
       </div>
     </div>
