@@ -18,8 +18,6 @@ export default function RootLayout({ children }) {
   );
 }
 
-
-
 // import { Geist, Geist_Mono } from "next/font/google";
 // import "./globals.css";
 

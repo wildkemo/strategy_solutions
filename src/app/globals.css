@@ -23,9 +23,9 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+
   /* Background image properties */
-  background-image: url('/images/pexels-eberhardgross-2098428.jpg');
+  background-image: url("/images/pexels-eberhardgross-2098428.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -35,7 +35,7 @@ body {
 
 /* Add overlay for better text readability */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
@@ -43,6 +43,12 @@ body::before {
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 0;
+}
+
+.main-content {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 60px); /* Adjust based on your navbar height */
 }
 
 * {

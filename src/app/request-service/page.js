@@ -1,189 +1,192 @@
 "use client";
 
-import React from 'react';
-import styles from './RequestService.module.css';
+import { useState } from "react";
+import styles from "./RequestService.module.css";
 
-const RequestService = () => {
+export default function RequestService() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    serviceType: "",
+    description: "",
+  });
+
+  const [errors, setErrors] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    }
+
+    if (!formData.serviceType) {
+      newErrors.serviceType = "Please select a service type";
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = "Please provide a description";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      // Here you would typically send the data to your backend
+      console.log("Form submitted:", formData);
+      setIsSubmitted(true);
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        serviceType: "",
+        description: "",
+      });
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.content}>
         <h1 className={styles.title}>Request a Service</h1>
-        <p className={styles.subtitle}>Fill out the form below and we'll get back to you within 24 hours</p>
+        <p className={styles.subtitle}>
+          Fill out the form below and we'll get back to you within 24 hours
+        </p>
 
-        <form 
-          action="http://karim/oop_project/php_backend/handle_form.php" 
-          method="POST"
-          className={styles.form}
-        >
-          <div className={styles.formSection}>
-            <h2>Personal Information</h2>
-            <div className={styles.inputGroup}>
-              <label htmlFor="firstName">First Name</label>
+        {isSubmitted ? (
+          <div className={styles.success}>
+            <h2>Thank you for your request!</h2>
+            <p>We will get back to you shortly.</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label htmlFor="name" className={styles.label}>
+                Full Name
+              </label>
               <input
                 type="text"
-                id="firstName"
-                name="firstName"
-                required
-                placeholder="John"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className={`${styles.input} ${errors.name ? styles.error : ""}`}
               />
+              {errors.name && (
+                <span className={styles.error}>{errors.name}</span>
+              )}
             </div>
 
-            <div className={styles.inputGroup}>
-              <label htmlFor="lastName">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                required
-                placeholder="Doe"
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label htmlFor="age">Age</label>
-              <input
-                type="number"
-                id="age"
-                name="age"
-                required
-                min="18"
-                max="120"
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label htmlFor="email">Email Address</label>
+            <div className={styles.formGroup}>
+              <label htmlFor="email" className={styles.label}>
+                Email
+              </label>
               <input
                 type="email"
                 id="email"
                 name="email"
-                required
-                placeholder="john@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                className={`${styles.input} ${
+                  errors.email ? styles.error : ""
+                }`}
               />
+              {errors.email && (
+                <span className={styles.error}>{errors.email}</span>
+              )}
             </div>
 
-            <div className={styles.inputGroup}>
-              <label htmlFor="phone">Phone Number</label>
+            <div className={styles.formGroup}>
+              <label htmlFor="phone" className={styles.label}>
+                Phone Number
+              </label>
               <input
                 type="tel"
                 id="phone"
                 name="phone"
-                required
-                placeholder="+1 (555) 123-4567"
+                value={formData.phone}
+                onChange={handleChange}
+                className={`${styles.input} ${
+                  errors.phone ? styles.error : ""
+                }`}
               />
+              {errors.phone && (
+                <span className={styles.error}>{errors.phone}</span>
+              )}
             </div>
 
-            <div className={styles.inputGroup}>
-              <label htmlFor="gender">Gender</label>
-              <select id="gender" name="gender" required>
-                <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+            <div className={styles.formGroup}>
+              <label htmlFor="serviceType" className={styles.label}>
+                Service Type
+              </label>
+              <select
+                id="serviceType"
+                name="serviceType"
+                value={formData.serviceType}
+                onChange={handleChange}
+                className={`${styles.input} ${
+                  errors.serviceType ? styles.error : ""
+                }`}
+              >
+                <option value="">Select a service</option>
+                <option value="consulting">Business Consulting</option>
+                <option value="strategy">Strategic Planning</option>
+                <option value="marketing">Marketing Services</option>
                 <option value="other">Other</option>
               </select>
+              {errors.serviceType && (
+                <span className={styles.error}>{errors.serviceType}</span>
+              )}
             </div>
 
-            <div className={styles.inputGroup}>
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                required
-                minLength="8"
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label htmlFor="preferredCurrency">Preferred Currency</label>
-              <select id="preferredCurrency" name="preferredCurrency" required>
-                <option value="">Select currency</option>
-                <option value="USD">USD</option>
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-              </select>
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label htmlFor="billingAddress">Billing Address</label>
-              <textarea
-                id="billingAddress"
-                name="billingAddress"
-                required
-                rows="3"
-                placeholder="Enter your billing address..."
-              ></textarea>
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label>
-                <input
-                  type="checkbox"
-                  name="isSubscribedToNewsletter"
-                  defaultChecked
-                />
-                Subscribe to Newsletter
+            <div className={styles.formGroup}>
+              <label htmlFor="description" className={styles.label}>
+                Service Description
               </label>
-            </div>
-          </div>
-
-          <div className={styles.formSection}>
-            <h2>Service Details</h2>
-            <div className={styles.inputGroup}>
-              <label htmlFor="service">Service Type</label>
-              <select 
-                id="service" 
-                name="service" 
-                required
-              >
-                <option value="">Select a service type</option>
-                <option value="hardware">Hardware Services</option>
-                <option value="software">Software Services</option>
-                <option value="consulting">Consulting Services</option>
-                <option value="support">Support Services</option>
-              </select>
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label htmlFor="price">Price (in selected currency)</label>
-              <input
-                type="number"
-                id="price"
-                name="price"
-                required
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label htmlFor="orderDescription">Service Requirements</label>
               <textarea
-                id="orderDescription"
-                name="orderDescription"
-                required
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className={`${styles.textarea} ${
+                  errors.description ? styles.error : ""
+                }`}
                 rows="5"
-                placeholder="Please describe your service requirements in detail..."
-              ></textarea>
+              />
+              {errors.description && (
+                <span className={styles.error}>{errors.description}</span>
+              )}
             </div>
-          </div>
 
-          <div className={styles.formActions}>
-            <button 
-              type="submit" 
-              className={styles.submitButton}
-            >
+            <button type="submit" className={styles.button}>
               Submit Request
             </button>
-            <p className={styles.privacyText}>
-              By submitting this form, you agree to our <a href="/privacy">Privacy Policy</a>
-            </p>
-          </div>
-        </form>
+          </form>
+        )}
       </div>
     </div>
   );
-};
-
-export default RequestService; 
+}

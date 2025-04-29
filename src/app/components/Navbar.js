@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useState } from 'react';
-import styles from './Navbar.module.css';
+import Link from "next/link";
+import { useState } from "react";
+import styles from "./Navbar.module.css";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,7 +19,7 @@ export default function Navbar() {
         </Link>
 
         {/* Mobile menu button */}
-        <button 
+        <button
           className={styles.menuButton}
           onClick={toggleMenu}
           aria-label="Toggle menu"
@@ -28,12 +28,17 @@ export default function Navbar() {
         </button>
 
         {/* Navigation links */}
-        <div className={`${styles.navLinks} ${isMenuOpen ? styles.active : ''}`}>
+        <div
+          className={`${styles.navLinks} ${isMenuOpen ? styles.active : ""}`}
+        >
           <Link href="/" className={styles.navLink}>
             Home
           </Link>
           <Link href="/services" className={styles.navLink}>
             Services
+          </Link>
+          <Link href="/request-service" className={styles.navLink}>
+            Request Service
           </Link>
           <Link href="/about" className={styles.navLink}>
             About
@@ -45,4 +50,4 @@ export default function Navbar() {
       </div>
     </nav>
   );
-} 
+}
