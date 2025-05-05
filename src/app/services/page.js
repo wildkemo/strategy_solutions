@@ -8,72 +8,171 @@ const Services = () => {
       <div className={styles.servicesContent}>
         <h1 className={styles.servicesTitle}>Our Services</h1>
         <div className={styles.servicesGrid}>
-          <div className={styles.boxWrapper}>
-            <div className={`${styles.serviceBox} ${styles.box1}`}>
-              <h2>Hardware Services</h2>
-              <ul>
-                <li>IT Infrastructure Setup</li>
-                <li>Hardware Maintenance</li>
-                <li>Hardware Upgrades</li>
-                <li>System Optimization</li>
-              </ul>
+          {/* First Row - 5 Services */}
+          <div className={styles.firstRow}>
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box1}`}>
+                <h2>Data Management Solutions</h2>
+                <ul>
+                  <li>Data Analytics</li>
+                  <li>Data Warehousing</li>
+                  <li>Data Integration</li>
+                  <li>Data Governance</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Comprehensive data management solutions to help you organize,
+                analyze, and leverage your data effectively for better business
+                decisions.
+              </p>
             </div>
-            <p className={styles.explanation}>
-              Comprehensive hardware solutions to keep your systems running at
-              peak performance. From initial setup to ongoing maintenance, we've
-              got you covered.
-            </p>
+
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box2}`}>
+                <h2>Cloud & Virtualization</h2>
+                <ul>
+                  <li>Cloud Migration</li>
+                  <li>Virtual Infrastructure</li>
+                  <li>Cloud Security</li>
+                  <li>Hybrid Cloud Solutions</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Advanced cloud and virtualization services to optimize your IT
+                infrastructure and enhance business scalability.
+              </p>
+            </div>
+
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box3}`}>
+                <h2>Oracle Database Technologies</h2>
+                <ul>
+                  <li>Database Administration</li>
+                  <li>Performance Tuning</li>
+                  <li>Database Migration</li>
+                  <li>Oracle Cloud Solutions</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Expert Oracle database solutions to ensure optimal performance,
+                security, and reliability of your database systems.
+              </p>
+            </div>
+
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box4}`}>
+                <h2>Hardware Infrastructure</h2>
+                <ul>
+                  <li>Network Setup</li>
+                  <li>Server Management</li>
+                  <li>Storage Solutions</li>
+                  <li>Infrastructure Optimization</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Robust hardware infrastructure solutions to support your
+                business operations with maximum efficiency and reliability.
+              </p>
+            </div>
+
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box1}`}>
+                <h2>Cyber Security Services</h2>
+                <ul>
+                  <li>Security Assessment</li>
+                  <li>Threat Protection</li>
+                  <li>Compliance Management</li>
+                  <li>Security Monitoring</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Comprehensive cybersecurity solutions to protect your business
+                from evolving threats and ensure data security.
+              </p>
+            </div>
           </div>
 
-          <div className={styles.boxWrapper}>
-            <div className={`${styles.serviceBox} ${styles.box2}`}>
-              <h2>Software Services</h2>
-              <ul>
-                <li>Custom Software Development</li>
-                <li>Software Integration</li>
-                <li>Software Maintenance</li>
-                <li>Cloud Solutions</li>
-              </ul>
+          {/* Second Row - 5 Services */}
+          <div className={styles.secondRow}>
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box2}`}>
+                <h2>Business Continuity</h2>
+                <ul>
+                  <li>Disaster Recovery</li>
+                  <li>Business Impact Analysis</li>
+                  <li>Continuity Planning</li>
+                  <li>Risk Management</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Strategic business continuity solutions to ensure your
+                operations remain resilient in the face of disruptions.
+              </p>
             </div>
-            <p className={styles.explanation}>
-              Tailored software solutions designed to meet your specific
-              business needs. We create, integrate, and maintain software that
-              drives your success.
-            </p>
-          </div>
 
-          <div className={styles.boxWrapper}>
-            <div className={`${styles.serviceBox} ${styles.box3}`}>
-              <h2>Consulting Services</h2>
-              <ul>
-                <li>IT Strategy</li>
-                <li>Digital Transformation</li>
-                <li>Security Assessment</li>
-                <li>Process Optimization</li>
-              </ul>
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box3}`}>
+                <h2>ERP Solutions</h2>
+                <ul>
+                  <li>ERP Implementation</li>
+                  <li>System Integration</li>
+                  <li>Process Automation</li>
+                  <li>ERP Customization</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Tailored ERP solutions to streamline your business processes and
+                improve operational efficiency.
+              </p>
             </div>
-            <p className={styles.explanation}>
-              Expert guidance to help you navigate the complex world of
-              technology. We provide strategic insights to drive your business
-              forward.
-            </p>
-          </div>
 
-          <div className={styles.boxWrapper}>
-            <div className={`${styles.serviceBox} ${styles.box4}`}>
-              <h2>Support Services</h2>
-              <ul>
-                <li>24/7 Technical Support</li>
-                <li>Remote Assistance</li>
-                <li>On-site Support</li>
-                <li>Training Programs</li>
-              </ul>
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box4}`}>
+                <h2>Project Management</h2>
+                <ul>
+                  <li>Project Planning</li>
+                  <li>Resource Management</li>
+                  <li>Risk Assessment</li>
+                  <li>Quality Assurance</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Professional project management services to ensure successful
+                delivery of your IT initiatives.
+              </p>
             </div>
-            <p className={styles.explanation}>
-              Reliable support when you need it most. Our team is always ready
-              to help, ensuring your systems run smoothly and your team stays
-              productive.
-            </p>
+
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box1}`}>
+                <h2>Fusion Middleware Technologies</h2>
+                <ul>
+                  <li>Integration Solutions</li>
+                  <li>Application Development</li>
+                  <li>API Management</li>
+                  <li>Service-Oriented Architecture</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Advanced Fusion Middleware solutions to enhance your application
+                integration and development capabilities.
+              </p>
+            </div>
+
+            <div className={styles.boxWrapper}>
+              <div className={`${styles.serviceBox} ${styles.box2}`}>
+                <h2>Outsourcing & Support</h2>
+                <ul>
+                  <li>Managed Services</li>
+                  <li>Technical Support</li>
+                  <li>Help Desk Services</li>
+                  <li>IT Staff Augmentation</li>
+                </ul>
+              </div>
+              <p className={styles.explanation}>
+                Comprehensive outsourcing and support services to help you focus
+                on your core business while we handle your IT needs.
+              </p>
+            </div>
           </div>
         </div>
 
