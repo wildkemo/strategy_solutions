@@ -8,27 +8,27 @@ const DataManagement = () => {
     <div className={styles.serviceDetailContainer}>
       <div className={styles.serviceDetailContent}>
         <div className={styles.textContent}>
-          <h1 className={styles.serviceTitle}>Data Management Solutions</h1>
+          <h1 className={styles.serviceTitle}>Oracle Database Technologies</h1>
           <h2 className={styles.serviceSubtitle}>WHAT WE DO</h2>
           <ul className={styles.whatWeDoList}>
             <li>
-              Provide a pool of experts to guide you in the best adoption of
-              Data Management technologies primarily focused on
+              Our services enable the best possible outcomes for Oracle Database
+              Technologies. Whether we advise, lead, or jointly deliver the best
+              practices cultivated from our most successful customer experiences
               <ul className={styles.subList}>
-                <li>Efficiency and Transformation</li>
-                <li>Insight and Innovation</li>
-                <li>Security and Business Continuity</li>
+                  <li>Multitenant</li>
+                  <li>In-Memory DB</li>
+                  <li>Real Application Clusters</li>
+                  <li>Data Guard and Golden Gate</li>
+                  <li>Partitioning</li>
+                  <li>Advanced Compression</li>
+                  <li>Advanced Analytics, Spatial and Graph</li>
+                  <li>Advanced Security, Label Security, DB Vault</li>
+                  <li>Real Application Testing</li>
+                  <li>Performance Tuning and diagnostic</li>
               </ul>
             </li>
-            <li>Guidance to implement solutions with new technologies</li>
-            <li>
-              Identify and apply actionable recommendations to improve with Data
-              Management Technologies
-            </li>
-            <li>
-              Mentor and lead your team to applying safe, consistent, and
-              repeatable set of leading practices
-            </li>
+            
           </ul>
           <div className={styles.buttonWrapper}>
             <Link href="/request-service" className={styles.requestButton}>
@@ -38,8 +38,8 @@ const DataManagement = () => {
         </div>
         <div className={styles.imageWrapper}>
           <Image
-            src="/images/Data2.png"
-            alt="Data Management Illustration"
+            src="/images/oracle1.png"
+            alt="Oracle Database Illustration"
             width={900}
             height={320}
             className={styles.headerImage}
