@@ -147,14 +147,33 @@ export default function RequestService() {
                 name="serviceType"
                 value={formData.serviceType}
                 onChange={handleChange}
-                className={`${styles.input} ${
+                className={`${styles.input} ${styles.select} ${
                   errors.serviceType ? styles.error : ""
                 }`}
               >
                 <option value="">Select a service</option>
-                <option value="consulting">Business Consulting</option>
-                <option value="strategy">Strategic Planning</option>
-                <option value="marketing">Marketing Services</option>
+                <option value="data-management">
+                  Data Management Solutions
+                </option>
+                <option value="cloud-virtualization">
+                  Cloud & Virtualization
+                </option>
+                <option value="oracle-database">
+                  Oracle Database Technologies
+                </option>
+                <option value="hardware-infrastructure">
+                  Hardware Infrastructure
+                </option>
+                <option value="cyber-security">Cyber Security Services</option>
+                <option value="business-continuity">Business Continuity</option>
+                <option value="erp-solutions">ERP Solutions</option>
+                <option value="project-management">Project Management</option>
+                <option value="fusion-middleware">
+                  Fusion Middleware Technologies
+                </option>
+                <option value="outsourcing-support">
+                  Outsourcing & Support
+                </option>
                 <option value="other">Other</option>
               </select>
               {errors.serviceType && (
