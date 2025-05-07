@@ -44,19 +44,45 @@ export default function RequestService() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // Here you would typically send the data to your backend
-      console.log("Form submitted:", formData);
-      setIsSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        serviceType: "",
-        description: "",
-      });
+      try {
+        const formDataToSend = new FormData();
+        formDataToSend.append('firstName', formData.name.split(' ')[0]);
+        formDataToSend.append('lastName', formData.name.split(' ').slice(1).join(' '));
+        formDataToSend.append('email', formData.email);
+        formDataToSend.append('phone', formData.phone);
+        formDataToSend.append('service', formData.serviceType);
+        formDataToSend.append('orderDescription', formData.description);
+        formDataToSend.append('price', '0'); // You might want to add price calculation based on service
+        formDataToSend.append('preferredCurrency', 'USD');
+        formDataToSend.append('billingAddress', '');
+        formDataToSend.append('isSubscribedToNewsletter', '0');
+
+        const response = await fetch('http://karim/oop_project/php_backend/handle_form.php', {
+          method: 'POST',
+          body: formDataToSend
+        });
+
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+          setIsSubmitted(true);
+          setFormData({
+            name: "",
+            email: "",
+            phone: "",
+            serviceType: "",
+            description: "",
+          });
+        } else {
+          alert('Error submitting form: ' + result.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error submitting form. Please try again.');
+      }
     }
   };
 
