@@ -44,22 +44,51 @@ export default function RequestService() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+  
     if (validateForm()) {
-      // Here you would typically send the data to your backend
-      console.log("Form submitted:", formData);
-      setIsSubmitted(true);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        serviceType: "",
-        description: "",
-      });
+      try {
+        console.log("Sending form data:", formData);
+  
+        const response = await fetch("http://karim/oop_project/php_backend/public/handle_form.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            service_type: formData.serviceType,
+            service_description: formData.description,
+          }),
+        });
+  
+        console.log("Response status:", response.status);
+  
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+        }
+  
+        const result = await response.text();
+        console.log("Success:", result);
+  
+        setIsSubmitted(true);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          serviceType: "",
+          description: "",
+        });
+      } catch (error) {
+        console.error("Error:", error.message);
+        alert("An error occurred while submitting the form.");
+      }
     }
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
