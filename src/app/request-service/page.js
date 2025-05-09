@@ -46,35 +46,40 @@ export default function RequestService() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (validateForm()) {
       try {
         console.log("Sending form data:", formData);
-  
-        const response = await fetch("http://karim/oop_project/php_backend/public/handle_form.php", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            service_type: formData.serviceType,
-            service_description: formData.description,
-          }),
-        });
-  
+
+        const response = await fetch(
+          "http://karim/oop_project/php_backend/app/Controllers/handle_form.php",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: formData.name,
+              email: formData.email,
+              phone: formData.phone,
+              service_type: formData.serviceType,
+              service_description: formData.description,
+            }),
+          }
+        );
+
         console.log("Response status:", response.status);
-  
+
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+          throw new Error(
+            `HTTP error! Status: ${response.status}, Message: ${errorText}`
+          );
         }
-  
+
         const result = await response.text();
         console.log("Success:", result);
-  
+
         setIsSubmitted(true);
         setFormData({
           name: "",
