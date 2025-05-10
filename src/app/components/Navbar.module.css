@@ -20,7 +20,7 @@
 }
 
 .logo {
-  color: #ffffff;
+  color: #ffb347;
   font-size: 1.5rem;
   font-weight: 700;
   text-decoration: none;
@@ -28,7 +28,7 @@
 }
 
 .logo:hover {
-  color: rgba(255, 255, 255, 0.8);
+  color: #e6a03c;
 }
 
 .navLinks {
@@ -67,7 +67,7 @@
 
 .menuIcon::before,
 .menuIcon::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 25px;
   height: 2px;
@@ -121,4 +121,4 @@
   .menuButton.active .menuIcon::after {
     transform: rotate(-45deg);
   }
-} 
+}

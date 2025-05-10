@@ -1,7 +1,46 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import styles from "./page.module.css";
 
 export default function Home() {
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [formError, setFormError] = useState("");
+  const [formSuccess, setFormSuccess] = useState(false);
+
+  const handleOpenModal = () => {
+    setShowModal(true);
+    setForm({ name: "", email: "", phone: "" });
+    setFormError("");
+    setFormSuccess(false);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleFormChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    // Simple validation
+    if (!form.name.trim() || !form.email.trim() || !form.phone.trim()) {
+      setFormError("All fields are required.");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(form.email)) {
+      setFormError("Invalid email address.");
+      return;
+    }
+    setFormError("");
+    setFormSuccess(true);
+    // You can add further logic here (e.g., send to backend)
+  };
+
   return (
     <main className={styles.main}>
       {/* Hero Section */}
@@ -12,10 +51,10 @@ export default function Home() {
             Empowering businesses with innovative strategies and solutions
           </p>
           <div className={styles.ctas}>
-            <a href="#contact" className={styles.primary}>
+            <button onClick={handleOpenModal} className={styles.primary}>
               Get Started
-            </a>
-            <a href="#learn-more" className={styles.secondary}>
+            </button>
+            <a href="/services" className={styles.secondary}>
               Learn More
             </a>
           </div>
@@ -24,7 +63,17 @@ export default function Home() {
 
       {/* Features Section */}
       <section className={styles.features}>
-        <h2>Our Solutions</h2>
+        <div className={styles.featuresHeader}>
+          <Image
+            src="/images/server1.png"
+            alt="Server Rack"
+            width={80}
+            height={80}
+            className={styles.solutionsImage}
+            priority
+          />
+          <h2>Our Solutions</h2>
+        </div>
         <div className={styles.featureGrid}>
           <div className={styles.featureCard}>
             <h3>Strategic Planning</h3>
@@ -53,6 +102,74 @@ export default function Home() {
           Contact Us
         </a>
       </section>
+
+      {/* Modal Validation Form */}
+      {showModal && (
+        <div className={styles.modalOverlay} onClick={handleCloseModal}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <button
+              className={styles.closeButton}
+              onClick={handleCloseModal}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <h2>Get Started</h2>
+            {formSuccess ? (
+              <div className={styles.successMessage}>
+                Thank you! We'll contact you soon.
+                <br />
+                <a href="/register" className={styles.registerLink}>
+                  Go to Register Form
+                </a>
+              </div>
+            ) : (
+              <form
+                onSubmit={handleFormSubmit}
+                className={styles.validationForm}
+              >
+                <div className={styles.formGroup}>
+                  <label>Name</label>
+                  <input
+                    name="name"
+                    value={form.name}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Email</label>
+                  <input
+                    name="email"
+                    value={form.email}
+                    onChange={handleFormChange}
+                    required
+                    type="email"
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Phone</label>
+                  <input
+                    name="phone"
+                    value={form.phone}
+                    onChange={handleFormChange}
+                    required
+                  />
+                </div>
+                {formError && (
+                  <div className={styles.formError}>{formError}</div>
+                )}
+                <button type="submit" className={styles.saveButton}>
+                  Submit
+                </button>
+                <a href="/register" className={styles.registerLink}>
+                  Go to Register Form
+                </a>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </main>
     // <div className={styles.page}>
     //   <main className={styles.main}>
