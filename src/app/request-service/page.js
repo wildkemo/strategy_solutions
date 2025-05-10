@@ -77,7 +77,30 @@ export default function RequestService() {
           );
         }
 
-        const result = await response.text();
+        const result = await response.json();
+
+        if(result.databaseSucess == 'true' && result.emailSucess == 'true'){
+
+            if(result.usertype == 'admin'){
+
+              window.location.href = "/blank_admin";
+              return;
+
+            }
+            else if(result.usertype == 'customer'){
+
+              window.location.href = "/blank_customer";
+              return;
+
+            }
+
+        }
+        else{
+
+          window.location.href = "/error_test_page";
+          return;
+        }
+
         console.log("Success:", result);
 
         setIsSubmitted(true);
