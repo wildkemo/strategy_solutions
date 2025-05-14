@@ -39,44 +39,104 @@ export default function Home() {
 
     // You can add further logic here (e.g., send to backend)
 
-    const loginRequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/login.php", {
-      method: "POST",
-       headers:{"Content-Type": "application/json"},
-        body: JSON.stringify({
-          action: "login",
-          email: form.email,
-          password: form.password,
-        })
-    })
+    if(form.email != "admin@gmail.com"){
 
-    if (!loginRequest.ok) {
-      let errorText = await loginRequest.text();
-      throw new Error(
-        `HTTP error! Status: ${loginRequest.status}, Message: ${errorText}`
-      );
+      const loginRequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/login.php", {
+        method: "POST",
+         headers:{"Content-Type": "application/json"},
+          body: JSON.stringify({
+            action: "login",
+            email: form.email,
+            password: form.password,
+          })
+      })
+
+      if (!loginRequest.ok) {
+        let errorText = await loginRequest.text();
+        throw new Error(
+          `HTTP error! Status: ${loginRequest.status}, Message: ${errorText}`
+        );
+      }
+      else{
+  
+        const loginResponse = await loginRequest.json();
+  
+        if(loginResponse.status == "sucess-user"){
+  
+          // alert(loginResponse.message);
+          setFormError("");
+          setFormSuccess(true);
+          window.location.href = "/services"
+  
+        }
+        else if(loginResponse.status == "sucess-admin"){
+          setFormError("");
+          setFormSuccess(true);
+          window.location.href = "/blank_admin"
+        }
+        else if(loginResponse.status == "fail"){
+          //alert(loginResponse.message);
+          setFormError(loginResponse.message);
+          setFormSuccess(false);
+        }
+        else{
+          setFormError("An Unknown error occured");
+          setFormSuccess(false);
+        }
+  
+      }
+
     }
     else{
 
-      const loginResponse = await loginRequest.json();
+      const loginRequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/login.php", {
+        method: "POST",
+         headers:{"Content-Type": "application/json"},
+          body: JSON.stringify({
+            action: "login-as-admin",
+            email: form.email,
+            password: form.password,
+          })
+      })
 
-      if(loginResponse.status == "sucess"){
-
-        alert(loginResponse.message);
-        setFormError(loginResponse.message);
-        //setFormSuccess(true);
-
-      }
-      else if(loginResponse.status == "fail"){
-        //alert(loginResponse.message);
-        setFormError(loginResponse.message);
-        setFormSuccess(false);
+      if (!loginRequest.ok) {
+        let errorText = await loginRequest.text();
+        throw new Error(
+          `HTTP error! Status: ${loginRequest.status}, Message: ${errorText}`
+        );
       }
       else{
-        setFormError("An Unknown error occured");
-        setFormSuccess(false);
+  
+        const loginResponse = await loginRequest.json();
+  
+        if(loginResponse.status == "sucess-user"){
+  
+          // alert(loginResponse.message);
+          setFormError("");
+          setFormSuccess(true);
+          window.location.href = "/services"
+  
+        }
+        else if(loginResponse.status == "sucess-admin"){
+          setFormError("");
+          setFormSuccess(true);
+          window.location.href = "/blank_admin"
+        }
+        else if(loginResponse.status == "fail"){
+          //alert(loginResponse.message);
+          setFormError(loginResponse.message);
+          setFormSuccess(false);
+        }
+        else{
+          setFormError("An Unknown error occured");
+          setFormSuccess(false);
+        }
+  
       }
 
     }
+
+    
 
     
 
