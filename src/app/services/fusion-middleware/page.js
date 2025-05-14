@@ -31,12 +31,7 @@ export default function FusionMiddleware() {
           </div>
           <ul className={styles.technologyList}>
             <li>OEM</li>
-            <li>
-              
-                Weblogic
-              
-              Server
-            </li>
+            <li>Weblogic Server</li>
             <li>Oracle Data Integrator (ODI)</li>
             <li>Oracle Business Intelligent Enterprise Edition (OBIEE)</li>
             <li>Oracle Analytics Server (OAS)</li>
