@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "../request-service/RequestService.module.css";
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
@@ -12,10 +12,19 @@ export default function LoginPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const validateEmail = (email) => {
+    // Simple email regex
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.username.trim() || !form.password.trim()) {
+    if (!form.email.trim() || !form.password.trim()) {
       setError("All fields are required.");
+      return;
+    }
+    if (!validateEmail(form.email)) {
+      setError("Please enter a valid email address.");
       return;
     }
     setError("");
@@ -32,13 +41,14 @@ export default function LoginPage() {
         ) : (
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
-              <label className={styles.label}>Username</label>
+              <label className={styles.label}>Email</label>
               <input
                 className={styles.input}
-                name="username"
-                value={form.username}
+                name="email"
+                value={form.email}
                 onChange={handleChange}
                 required
+                type="email"
               />
             </div>
             <div className={styles.formGroup}>

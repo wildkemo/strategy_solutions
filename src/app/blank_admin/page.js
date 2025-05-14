@@ -65,6 +65,17 @@ export default function AdminDashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const storedServices = localStorage.getItem("services");
+    if (storedServices) {
+      setServices(JSON.parse(storedServices));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("services", JSON.stringify(services));
+  }, [services]);
+
   const handleRefresh = () => {
     setIsLoading(true);
     fetchData();

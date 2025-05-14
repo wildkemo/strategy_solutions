@@ -6,13 +6,13 @@ import styles from "./page.module.css";
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState(false);
 
   const handleOpenModal = () => {
     setShowModal(true);
-    setForm({ name: "", email: "", phone: "" });
+    setForm({ email: "", password: "" });
     setFormError("");
     setFormSuccess(false);
   };
@@ -28,7 +28,7 @@ export default function Home() {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     // Simple validation
-    if (!form.name.trim() || !form.email.trim() || !form.phone.trim()) {
+    if (!form.email.trim() || !form.password.trim()) {
       setFormError("All fields are required.");
       return;
     }
@@ -114,7 +114,7 @@ export default function Home() {
             >
               ×
             </button>
-            <h2>Get Started</h2>
+            <h2>Sign In</h2>
             {formSuccess ? (
               <div className={styles.successMessage}>
                 Thank you! We'll contact you soon.
@@ -129,15 +129,6 @@ export default function Home() {
                 className={styles.validationForm}
               >
                 <div className={styles.formGroup}>
-                  <label>Name</label>
-                  <input
-                    name="name"
-                    value={form.name}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </div>
-                <div className={styles.formGroup}>
                   <label>Email</label>
                   <input
                     name="email"
@@ -148,12 +139,13 @@ export default function Home() {
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label>Phone</label>
+                  <label>Password</label>
                   <input
-                    name="phone"
-                    value={form.phone}
+                    name="password"
+                    value={form.password}
                     onChange={handleFormChange}
                     required
+                    type="password"
                   />
                 </div>
                 {formError && (

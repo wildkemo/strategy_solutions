@@ -20,12 +20,17 @@ export default function Navbar() {
 
         {/* Mobile menu button */}
         <button
-          className={styles.menuButton}
+          className={`${styles.menuButton} ${isMenuOpen ? styles.active : ""}`}
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
           <span className={styles.menuIcon}></span>
         </button>
+
+        {/* Overlay for mobile sidebar */}
+        {isMenuOpen && (
+          <div className={styles.overlay} onClick={toggleMenu}></div>
+        )}
 
         {/* Navigation links */}
         <div
