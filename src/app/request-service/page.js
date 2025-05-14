@@ -52,7 +52,7 @@ export default function RequestService() {
         console.log("Sending form data:", formData);
 
         const response = await fetch(
-          "http://localhost/strategy_solutions_backend/app/Controllers/handle_form.php",
+          "http://karim/oop_project/php_backend/app/Controllers/handle_form.php",
           {
             method: "POST",
             headers: {
