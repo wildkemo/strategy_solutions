@@ -16,23 +16,25 @@ const DataManagement = () => {
               Technologies. Whether we advise, lead, or jointly deliver the best
               practices cultivated from our most successful customer experiences
               <ul className={styles.subList}>
-                  <li>Multitenant</li>
-                  <li>In-Memory DB</li>
-                  <li>Real Application Clusters</li>
-                  <li>Data Guard and Golden Gate</li>
-                  <li>Partitioning</li>
-                  <li>Advanced Compression</li>
-                  <li>Advanced Analytics, Spatial and Graph</li>
-                  <li>Advanced Security, Label Security, DB Vault</li>
-                  <li>Real Application Testing</li>
-                  <li>Performance Tuning and diagnostic</li>
+                <li>Multitenant</li>
+                <li>In-Memory DB</li>
+                <li>Real Application Clusters</li>
+                <li>Data Guard and Golden Gate</li>
+                <li>Partitioning</li>
+                <li>Advanced Compression</li>
+                <li>Advanced Analytics, Spatial and Graph</li>
+                <li>Advanced Security, Label Security, DB Vault</li>
+                <li>Real Application Testing</li>
+                <li>Performance Tuning and diagnostic</li>
               </ul>
             </li>
-            
           </ul>
           <div className={styles.buttonWrapper}>
             <Link href="/request-service" className={styles.requestButton}>
               Request a Service
+            </Link>
+            <Link href="/services" className={styles.contactButton}>
+              Back to Services
             </Link>
           </div>
         </div>

@@ -164,7 +164,7 @@ const staticSlugMap = {
   "ERP Solutions": "erp-solutions",
   "Project Management": "project-management",
   "Fusion Middleware Technologies": "fusion-middleware",
-  "Outsourcing & Support": "outsourcing-support",
+  "Outsourcing & Support": "outsourcing",
 };
 
 const Services = () => {

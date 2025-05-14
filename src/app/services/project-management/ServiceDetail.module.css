@@ -38,120 +38,79 @@
   opacity: 0.85;
 }
 
-.cloudIntroSection {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 2rem;
-  margin-bottom: 2.5rem;
+.sectionHeader {
+  color: #ffb347;
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
-.serviceDescription {
-  font-size: 1.25rem;
-  color: #fff;
-  line-height: 1.7;
-  max-width: 700px;
-  margin: 0;
-}
-
-.cloudImageWrapper {
-  min-width: 180px;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-  align-self: flex-start;
-  margin-top: -100px;
-}
-
-.cloudImage {
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  padding: 0.5rem;
-}
-
-.cloudColumnsSection {
-  display: flex;
-  flex-direction: row;
-  gap: 2.5rem;
-  margin-top: 3.5rem;
-  justify-content: space-between;
-}
-
-.cloudColumn {
-  background: rgba(255, 255, 255, 0.08);
+.projectPhasesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2.5rem 0 0 0;
+  background: #19202a;
   border-radius: 12px;
-  border: 1.5px solid #222;
+  overflow: hidden;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
-  flex: 1 1 0;
-  min-width: 260px;
-  max-width: 370px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  position: relative;
 }
 
-.cloudColumnHeader {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  font-size: 1.15rem;
-  font-weight: 700;
+.projectPhasesTable th,
+.projectPhasesTable td {
+  border: 1px solid #e0e0e0;
+  padding: 1.2rem 1rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.projectPhasesTable th {
+  background: #22304a;
   color: #fff;
-  margin-bottom: 1.2rem;
-  letter-spacing: 1px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-align: center;
 }
 
-.cloudColumnBar {
-  display: inline-block;
-  width: 60px;
-  height: 6px;
-  background: #e53935;
-  border-radius: 3px;
-  margin-right: 0.5rem;
+.projectPhasesTable thead tr th {
+  background: #ffb347;
+  color: #222f3e;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-align: center;
+  border-bottom: 3px solid #ffb347;
 }
 
-.cloudList {
-  color: #e0e0e0;
+.projectPhasesTable tbody tr td {
+  color: #fff;
   font-size: 1.08rem;
-  line-height: 1.7;
-  margin: 0;
-  padding-left: 1.2rem;
-}
-
-.cloudList > li {
-  margin-bottom: 0.8rem;
-}
-
-.cloudList ul {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  margin-left: 1.2rem;
-  list-style: circle inside;
-  color: #bdbdbd;
-  font-size: 1rem;
+  background: #22304a;
 }
 
 @media (max-width: 1100px) {
-  .cloudColumnsSection {
-    flex-direction: column;
-    gap: 2rem;
+  .serviceDetailContent {
+    padding: 32px 8px 32px 8px;
   }
-  .cloudColumn {
-    max-width: 100%;
+  .projectPhasesTable th,
+  .projectPhasesTable td {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.98rem;
   }
 }
 
 @media (max-width: 800px) {
-  .cloudIntroSection {
-    flex-direction: column;
-    gap: 1.5rem;
+  .serviceTitle {
+    font-size: 2rem;
   }
-  .cloudImageWrapper {
-    justify-content: flex-start;
+  .sectionHeader {
+    font-size: 1.3rem;
+  }
+  .projectPhasesTable th,
+  .projectPhasesTable td {
+    font-size: 0.92rem;
+    padding: 0.5rem 0.3rem;
   }
 }
 
@@ -164,13 +123,6 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.buttonWrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: 2.5rem;
-  gap: 1rem;
 }
 
 .requestButton {
