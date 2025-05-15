@@ -7,6 +7,7 @@ export default function Register() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+    gender: "",
     phone: "",
     password: "",
     confirmPassword: "",
@@ -18,7 +19,7 @@ export default function Register() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (
       !form.name.trim() ||
@@ -34,16 +35,70 @@ export default function Register() {
       setFormError("Invalid email address.");
       return;
     }
-    if (form.password.length < 6) {
-      setFormError("Password must be at least 6 characters.");
+    if (form.password.length < 8) {
+      setFormError("Password must be at least 8 characters.");
       return;
     }
     if (form.password !== form.confirmPassword) {
       setFormError("Passwords do not match.");
       return;
     }
-    setFormError("");
-    setFormSuccess(true);
+
+    const registerRequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/register.php", {
+       method: "POST",
+       headers:{"Content-Type": "application/json"},
+        body: JSON.stringify({
+          action: 'register',
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          password: form.password,
+          gender: form.gender
+        })
+    });
+
+
+      if (!registerRequest.ok) {
+      let errorText = await registerRequest.text();
+      throw new Error(
+        `HTTP error! Status: ${registerRequest.status}, Message: ${errorText}`
+      );
+      }
+      else{
+        const registerResponse = await registerRequest.json();
+
+        if (registerResponse.status == "success") {
+         
+          window.location.href = '/services'
+
+       } else if (registerResponse.status == "error") {
+          alert(registerResponse.message);
+        }
+      }
+
+    
+
+    // if (!registerRequest.ok) {
+    //   let errorText = await registerRequest.text();
+    //   throw new Error(
+    //     `HTTP error! Status: ${registerRequest.status}, Message: ${errorText}`
+    //   );
+    // }
+    // else{
+    //   const registerResponse = await registerRequest.json();
+
+    //   if (registerResponse.status == "sucess") {
+    //     alert(registerResponse.action);
+    //   } else if (registerResponse.status == "fail") {
+    //     alert(registerResponse.action);
+    //   }
+    // }
+
+    
+
+    // setFormError("");
+    // setFormSuccess(true);
+
     // You can add backend logic here
   };
 
@@ -77,6 +132,20 @@ export default function Register() {
                 required
                 type="email"
               />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Gender</label>
+              <select
+                className={styles.input}
+                name="gender"
+                value={form.gender}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
             </div>
             <div className={styles.formGroup}>
               <label className={styles.label}>Phone</label>
