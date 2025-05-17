@@ -1,9 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import styles from "./Services.module.css";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import styles from "../data-management/ServiceDetail.module.css";
 import Link from "next/link";
 
-// Define static services
+// Static services (same as in services/page.js)
 const staticServices = [
   {
     id: 1,
@@ -153,115 +154,66 @@ const getSlug = (title) =>
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
 
-// Map static service titles to their custom slugs
-const staticSlugMap = {
-  "Data Management Solutions": "data-management",
-  "Cloud & Virtualization": "cloud-virtualization",
-  "Oracle Database Technologies": "oracle-database",
-  "Hardware Infrastructure": "hardware-infrastructure",
-  "Cyber Security Services": "cyber-security",
-  "Business Continuity": "business-continuity",
-  "ERP Solutions": "erp-solutions",
-  "Project Management": "project-management",
-  "Fusion Middleware Technologies": "fusion-middleware",
-  "Outsourcing & Support": "outsourcing",
-};
-
-const Services = () => {
-  const [services, setServices] = useState([]);
+export default function ServiceDetailPage() {
+  const params = useParams();
+  const { slug } = params;
+  const [service, setService] = useState(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const storedServices = localStorage.getItem("services");
-    let dynamicServices = [];
-    if (storedServices) {
-      dynamicServices = JSON.parse(storedServices);
+    setMounted(true);
+    let found = staticServices.find((s) => getSlug(s.title) === slug);
+    if (!found && typeof window !== "undefined") {
+      const storedServices = localStorage.getItem("services");
+      if (storedServices) {
+        const dynamicServices = JSON.parse(storedServices);
+        found = dynamicServices.find((s) => getSlug(s.title) === slug);
+      }
     }
-    // Merge static and dynamic, avoiding duplicates by title
-    const allServices = [
-      ...staticServices,
-      ...dynamicServices.filter(
-        (ds) => !staticServices.some((ss) => ss.title === ds.title)
-      ),
-    ];
-    setServices(allServices);
-  }, []);
+    setService(found || null);
+  }, [slug]);
+
+  if (!mounted) {
+    return null;
+  }
+
+  if (!service) {
+    return (
+      <div className={styles.serviceDetailContainer}>
+        <div className={styles.serviceDetailContent}>
+          <h1 className={styles.serviceTitle}>Service Not Found</h1>
+          <Link href="/services" className={styles.requestButton}>
+            Back to Services
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={styles.servicesContainer}>
-      <div className={styles.servicesContent}>
-        <h1 className={styles.servicesTitle}>Our Services</h1>
-        <div className={styles.servicesGrid}>
-          {services.length === 0 ? (
-            <div className={styles.noServices}>
-              No services available. Please add some from the admin dashboard.
-            </div>
-          ) : (
-            // Group services into rows of 5
-            services
-              .reduce((rows, service, idx) => {
-                if (idx % 5 === 0) rows.push([]);
-                rows[rows.length - 1].push(service);
-                return rows;
-              }, [])
-              .map((row, rowIdx) => (
-                <div className={styles.firstRow} key={rowIdx}>
-                  {row.map((service) => {
-                    const isStatic = staticServices.some(
-                      (ss) => ss.title === service.title
-                    );
-                    const slug = getSlug(service.title);
-                    const linkHref = isStatic
-                      ? `/services/${staticSlugMap[service.title]}`
-                      : `/services/${slug}`;
-                    return (
-                      <div
-                        className={styles.boxWrapper}
-                        key={service.id + service.title}
-                      >
-                        <Link href={linkHref} className={styles.serviceLink}>
-                          <div
-                            className={`${styles.serviceBox} ${
-                              styles[service.icon]
-                            }`}
-                          >
-                            <h2>{service.title}</h2>
-                            <ul>
-                              {service.features.map((feature, idx) => (
-                                <li key={idx}>{feature}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </Link>
-                        <p className={styles.explanation}>
-                          {service.description}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))
-          )}
-        </div>
-
-        <div className={styles.footerCta}>
-          <h2 className={styles.footerTitle}>
-            Ready to Transform Your Business?
-          </h2>
-          <p className={styles.footerSubtitle}>
-            Let's discuss how we can help you achieve your goals
-          </p>
-          <div className={styles.buttonGroup}>
+    <div className={styles.serviceDetailContainer}>
+      <div className={styles.serviceDetailContent}>
+        <div className={styles.textContent}>
+          <h1 className={styles.serviceTitle}>{service.title}</h1>
+          <p className={styles.serviceDescription}>{service.description}</p>
+          <h2 className={styles.serviceSubtitle}>Features</h2>
+          <ul className={styles.featureList}>
+            {service.features.map((feature, idx) => (
+              <li className={styles.featureItem} key={idx}>
+                {feature}
+              </li>
+            ))}
+          </ul>
+          <div className={styles.buttonGroup} style={{ marginTop: "2.5rem" }}>
             <Link href="/request-service" className={styles.requestButton}>
               Request a Service
             </Link>
-            <Link href="/contact" className={styles.contactButton}>
-              Contact Us
+            <Link href="/services" className={styles.contactButton}>
+              Back to Services
             </Link>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default Services;
+}

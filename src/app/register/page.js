@@ -1,0 +1,191 @@
+"use client";
+
+import { useState } from "react";
+import styles from "../request-service/RequestService.module.css";
+
+export default function Register() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    gender: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [formError, setFormError] = useState("");
+  const [formSuccess, setFormSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      !form.name.trim() ||
+      !form.email.trim() ||
+      !form.phone.trim() ||
+      !form.password.trim() ||
+      !form.confirmPassword.trim()
+    ) {
+      setFormError("All fields are required.");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(form.email)) {
+      setFormError("Invalid email address.");
+      return;
+    }
+    if (form.password.length < 8) {
+      setFormError("Password must be at least 8 characters.");
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setFormError("Passwords do not match.");
+      return;
+    }
+
+    const registerRequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/register.php", {
+       method: "POST",
+       headers:{"Content-Type": "application/json"},
+        body: JSON.stringify({
+          action: 'register',
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          password: form.password,
+          gender: form.gender
+        })
+    });
+
+
+      if (!registerRequest.ok) {
+      let errorText = await registerRequest.text();
+      throw new Error(
+        `HTTP error! Status: ${registerRequest.status}, Message: ${errorText}`
+      );
+      }
+      else{
+        const registerResponse = await registerRequest.json();
+
+        if (registerResponse.status == "success") {
+         
+          window.location.href = '/services'
+
+       } else if (registerResponse.status == "error") {
+          alert(registerResponse.message);
+        }
+      }
+
+    
+
+    // if (!registerRequest.ok) {
+    //   let errorText = await registerRequest.text();
+    //   throw new Error(
+    //     `HTTP error! Status: ${registerRequest.status}, Message: ${errorText}`
+    //   );
+    // }
+    // else{
+    //   const registerResponse = await registerRequest.json();
+
+    //   if (registerResponse.status == "sucess") {
+    //     alert(registerResponse.action);
+    //   } else if (registerResponse.status == "fail") {
+    //     alert(registerResponse.action);
+    //   }
+    // }
+
+    
+
+    // setFormError("");
+    // setFormSuccess(true);
+
+    // You can add backend logic here
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <h2 className={styles.title}>Register</h2>
+        {formSuccess ? (
+          <div className={styles.success}>
+            Registration successful! You can now log in.
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Name</label>
+              <input
+                className={styles.input}
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Email</label>
+              <input
+                className={styles.input}
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+                type="email"
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Gender</label>
+              <select
+                className={styles.input}
+                name="gender"
+                value={form.gender}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Phone</label>
+              <input
+                className={styles.input}
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Password</label>
+              <input
+                className={styles.input}
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                required
+                type="password"
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Confirm Password</label>
+              <input
+                className={styles.input}
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                required
+                type="password"
+              />
+            </div>
+            {formError && <div className={styles.error}>{formError}</div>}
+            <button type="submit" className={styles.button}>
+              Register
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}

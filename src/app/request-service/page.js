@@ -46,46 +46,77 @@ export default function RequestService() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (validateForm()) {
       try {
-        const formDataToSend = new FormData();
-        formDataToSend.append('firstName', formData.name.split(' ')[0]);
-        formDataToSend.append('lastName', formData.name.split(' ').slice(1).join(' '));
-        formDataToSend.append('email', formData.email);
-        formDataToSend.append('phone', formData.phone);
-        formDataToSend.append('service', formData.serviceType);
-        formDataToSend.append('orderDescription', formData.description);
-        formDataToSend.append('price', '0'); // You might want to add price calculation based on service
-        formDataToSend.append('preferredCurrency', 'USD');
-        formDataToSend.append('billingAddress', '');
-        formDataToSend.append('isSubscribedToNewsletter', '0');
+        console.log("Sending form data:", formData);
 
-        const response = await fetch('http://karim/oop_project/php_backend/handle_form.php', {
-          method: 'POST',
-          body: formDataToSend
-        });
+        const response = await fetch(
+          "http://karim/oop_project/php_backend/app/Controllers/handle_form.php",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: formData.name,
+              email: formData.email,
+              phone: formData.phone,
+              service_type: formData.serviceType,
+              service_description: formData.description,
+            }),
+          }
+        );
+
+        console.log("Response status:", response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(
+            `HTTP error! Status: ${response.status}, Message: ${errorText}`
+          );
+        }
 
         const result = await response.json();
-        
-        if (result.status === 'success') {
-          setIsSubmitted(true);
-          setFormData({
-            name: "",
-            email: "",
-            phone: "",
-            serviceType: "",
-            description: "",
-          });
-        } else {
-          alert('Error submitting form: ' + result.message);
+
+        if(result.databaseSucess == 'true' && result.emailSucess == 'true'){
+
+            if(result.usertype == 'admin'){
+
+              window.location.href = "/blank_admin";
+              return;
+
+            }
+            else if(result.usertype == 'customer'){
+
+              window.location.href = "/blank_customer";
+              return;
+
+            }
+
         }
+        else{
+
+          window.location.href = "/error_test_page";
+          return;
+        }
+
+        console.log("Success:", result);
+
+        setIsSubmitted(true);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          serviceType: "",
+          description: "",
+        });
       } catch (error) {
-        console.error('Error:', error);
-        alert('Error submitting form. Please try again.');
+        console.error("Error:", error.message);
+        alert("An error occurred while submitting the form.");
       }
     }
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -173,14 +204,33 @@ export default function RequestService() {
                 name="serviceType"
                 value={formData.serviceType}
                 onChange={handleChange}
-                className={`${styles.input} ${
+                className={`${styles.input} ${styles.select} ${
                   errors.serviceType ? styles.error : ""
                 }`}
               >
                 <option value="">Select a service</option>
-                <option value="consulting">Business Consulting</option>
-                <option value="strategy">Strategic Planning</option>
-                <option value="marketing">Marketing Services</option>
+                <option value="data-management">
+                  Data Management Solutions
+                </option>
+                <option value="cloud-virtualization">
+                  Cloud & Virtualization
+                </option>
+                <option value="oracle-database">
+                  Oracle Database Technologies
+                </option>
+                <option value="hardware-infrastructure">
+                  Hardware Infrastructure
+                </option>
+                <option value="cyber-security">Cyber Security Services</option>
+                <option value="business-continuity">Business Continuity</option>
+                <option value="erp-solutions">ERP Solutions</option>
+                <option value="project-management">Project Management</option>
+                <option value="fusion-middleware">
+                  Fusion Middleware Technologies
+                </option>
+                <option value="outsourcing-support">
+                  Outsourcing & Support
+                </option>
                 <option value="other">Other</option>
               </select>
               {errors.serviceType && (

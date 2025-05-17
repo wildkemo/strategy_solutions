@@ -1,7 +1,150 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import styles from "./page.module.css";
 
 export default function Home() {
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [formError, setFormError] = useState("");
+  const [formSuccess, setFormSuccess] = useState(false);
+
+  const handleOpenModal = () => {
+    setShowModal(true);
+    setForm({ email: "", password: "" });
+    setFormError("");
+    setFormSuccess(false);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleFormChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    // Simple validation
+    if (!form.email.trim() || !form.password.trim()) {
+      setFormError("All fields are required.");
+      return;
+    }
+    if (!/\S+@\S+\.\S+/.test(form.email)) {
+      setFormError("Invalid email address.");
+      return;
+    }
+
+    // You can add further logic here (e.g., send to backend)
+
+    if(form.email != "admin@gmail.com"){
+
+      const loginRequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/login.php", {
+        method: "POST",
+         headers:{"Content-Type": "application/json"},
+          body: JSON.stringify({
+            action: "login",
+            email: form.email,
+            password: form.password,
+          })
+      })
+
+      if (!loginRequest.ok) {
+        let errorText = await loginRequest.text();
+        throw new Error(
+          `HTTP error! Status: ${loginRequest.status}, Message: ${errorText}`
+        );
+      }
+      else{
+  
+        const loginResponse = await loginRequest.json();
+  
+        if(loginResponse.status == "sucess-user"){
+  
+          // alert(loginResponse.message);
+          setFormError("");
+          setFormSuccess(true);
+          window.location.href = "/services"
+  
+        }
+        else if(loginResponse.status == "sucess-admin"){
+          setFormError("");
+          setFormSuccess(true);
+          window.location.href = "/blank_admin"
+        }
+        else if(loginResponse.status == "fail"){
+          //alert(loginResponse.message);
+          setFormError(loginResponse.message);
+          setFormSuccess(false);
+        }
+        else{
+          setFormError("An Unknown error occured");
+          setFormSuccess(false);
+        }
+  
+      }
+
+    }
+    else{
+
+      const loginRequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/login.php", {
+        method: "POST",
+         headers:{"Content-Type": "application/json"},
+          body: JSON.stringify({
+            action: "login-as-admin",
+            email: form.email,
+            password: form.password,
+          })
+      })
+
+      if (!loginRequest.ok) {
+        let errorText = await loginRequest.text();
+        throw new Error(
+          `HTTP error! Status: ${loginRequest.status}, Message: ${errorText}`
+        );
+      }
+      else{
+  
+        const loginResponse = await loginRequest.json();
+  
+        if(loginResponse.status == "sucess-user"){
+  
+          // alert(loginResponse.message);
+          setFormError("");
+          setFormSuccess(true);
+          window.location.href = "/services"
+  
+        }
+        else if(loginResponse.status == "sucess-admin"){
+          setFormError("");
+          setFormSuccess(true);
+          window.location.href = "/blank_admin"
+        }
+        else if(loginResponse.status == "fail"){
+          //alert(loginResponse.message);
+          setFormError(loginResponse.message);
+          setFormSuccess(false);
+        }
+        else{
+          setFormError("An Unknown error occured");
+          setFormSuccess(false);
+        }
+  
+      }
+
+    }
+
+    
+
+    
+
+    
+
+
+  };
+
   return (
     <main className={styles.main}>
       {/* Hero Section */}
@@ -12,10 +155,10 @@ export default function Home() {
             Empowering businesses with innovative strategies and solutions
           </p>
           <div className={styles.ctas}>
-            <a href="#contact" className={styles.primary}>
+            <button onClick={handleOpenModal} className={styles.primary}>
               Get Started
-            </a>
-            <a href="#learn-more" className={styles.secondary}>
+            </button>
+            <a href="/services" className={styles.secondary}>
               Learn More
             </a>
           </div>
@@ -24,7 +167,17 @@ export default function Home() {
 
       {/* Features Section */}
       <section className={styles.features}>
-        <h2>Our Solutions</h2>
+        <div className={styles.featuresHeader}>
+          <Image
+            src="/images/server1.png"
+            alt="Server Rack"
+            width={80}
+            height={80}
+            className={styles.solutionsImage}
+            priority
+          />
+          <h2>Our Solutions</h2>
+        </div>
         <div className={styles.featureGrid}>
           <div className={styles.featureCard}>
             <h3>Strategic Planning</h3>
@@ -53,6 +206,66 @@ export default function Home() {
           Contact Us
         </a>
       </section>
+
+      {/* Modal Validation Form */}
+      {showModal && (
+        <div className={styles.modalOverlay} onClick={handleCloseModal}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <button
+              className={styles.closeButton}
+              onClick={handleCloseModal}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <h2>Sign In</h2>
+            {formSuccess ? (
+              <div className={styles.successMessage}>
+                Thank you! We'll contact you soon.
+                <br />
+                <a href="/register" className={styles.registerLink}>
+                  Go to Register Form
+                </a>
+              </div>
+            ) : (
+              <form
+                onSubmit={handleFormSubmit}
+                className={styles.validationForm}
+              >
+                <div className={styles.formGroup}>
+                  <label>Email</label>
+                  <input
+                    name="email"
+                    value={form.email}
+                    onChange={handleFormChange}
+                    required
+                    type="email"
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Password</label>
+                  <input
+                    name="password"
+                    value={form.password}
+                    onChange={handleFormChange}
+                    required
+                    type="password"
+                  />
+                </div>
+                {formError && (
+                  <div className={styles.formError}>{formError}</div>
+                )}
+                <button type="submit" className={styles.saveButton}>
+                  Submit
+                </button>
+                <a href="/register" className={styles.registerLink}>
+                  Go to Register Form
+                </a>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </main>
     // <div className={styles.page}>
     //   <main className={styles.main}>

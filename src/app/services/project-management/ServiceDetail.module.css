@@ -1,0 +1,166 @@
+.serviceDetailContainer {
+  min-height: 100vh;
+  padding: 100px 20px;
+  background: #111;
+  color: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+.serviceDetailContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #111;
+  border-radius: 20px;
+  border: 1px solid #222;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+  padding: 48px 32px 40px 32px;
+  animation: fadeIn 1.2s ease;
+}
+
+.serviceTitle {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #ffb347;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+  text-shadow: none;
+  text-align: left;
+}
+
+.serviceSubtitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  margin-bottom: 2.2rem;
+  letter-spacing: 1.5px;
+  text-align: left;
+  opacity: 0.85;
+}
+
+.sectionHeader {
+  color: #ffb347;
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.projectPhasesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2.5rem 0 0 0;
+  background: #19202a;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.projectPhasesTable th,
+.projectPhasesTable td {
+  border: 1px solid #e0e0e0;
+  padding: 1.2rem 1rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.projectPhasesTable th {
+  background: #22304a;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-align: center;
+}
+
+.projectPhasesTable thead tr th {
+  background: #ffb347;
+  color: #222f3e;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-align: center;
+  border-bottom: 3px solid #ffb347;
+}
+
+.projectPhasesTable tbody tr td {
+  color: #fff;
+  font-size: 1.08rem;
+  background: #22304a;
+}
+
+@media (max-width: 1100px) {
+  .serviceDetailContent {
+    padding: 32px 8px 32px 8px;
+  }
+  .projectPhasesTable th,
+  .projectPhasesTable td {
+    padding: 0.7rem 0.5rem;
+    font-size: 0.98rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .serviceTitle {
+    font-size: 2rem;
+  }
+  .sectionHeader {
+    font-size: 1.3rem;
+  }
+  .projectPhasesTable th,
+  .projectPhasesTable td {
+    font-size: 0.92rem;
+    padding: 0.5rem 0.3rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.requestButton {
+  background-color: #4a90e2;
+  color: #fff;
+  padding: 0.9rem 2.2rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border: none;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.15);
+  transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.requestButton:hover {
+  background-color: #357abd;
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 0 16px 4px #4a90e2, 0 2px 8px rgba(74, 144, 226, 0.15);
+}
+
+.contactButton {
+  background-color: transparent;
+  color: #4a90e2;
+  border: 2px solid #4a90e2;
+  padding: 0.8rem 2rem;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-left: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.contactButton:hover {
+  background-color: rgba(74, 144, 226, 0.1);
+  transform: translateY(-2px);
+}
