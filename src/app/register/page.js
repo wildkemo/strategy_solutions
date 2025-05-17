@@ -44,7 +44,7 @@ export default function Register() {
       return;
     }
 
-    const registerRequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/register.php", {
+    const registerRequest = await fetch("http://backend/app/Controllers/register.php", {
        method: "POST",
        headers:{"Content-Type": "application/json"},
         body: JSON.stringify({

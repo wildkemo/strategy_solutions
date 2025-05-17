@@ -105,79 +105,6 @@
   border-top: 4px solid #d0021b;
 }
 
-.footerCta {
-  margin-top: 4rem;
-  text-align: center;
-  padding: 3rem;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-.footerTitle {
-  color: #ffffff;
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.footerSubtitle {
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.buttonGroup {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-.requestButton,
-.contactButton {
-  padding: 0.8rem 2rem;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.requestButton {
-  background-color: #4a90e2;
-  color: white;
-}
-
-.contactButton {
-  background-color: transparent;
-  color: #4a90e2;
-  border: 2px solid #4a90e2;
-}
-
-.requestButton:hover,
-.contactButton:hover {
-  transform: translateY(-2px);
-}
-
-.requestButton:hover {
-  background-color: #357abd;
-}
-
-.contactButton:hover {
-  background-color: rgba(74, 144, 226, 0.1);
-}
-
-.serviceLink {
-  text-decoration: none;
-  display: block;
-  transition: transform 0.3s ease;
-}
-
-.serviceLink:hover {
-  transform: translateY(-5px);
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -194,7 +121,6 @@
   .secondRow {
     flex-wrap: wrap;
   }
-
   .boxWrapper {
     flex: 1 1 calc(50% - 1.5rem);
     min-width: 300px;
@@ -204,15 +130,5 @@
 @media (max-width: 768px) {
   .boxWrapper {
     flex: 1 1 100%;
-  }
-
-  .buttonGroup {
-    flex-direction: column;
-  }
-
-  .requestButton,
-  .contactButton {
-    width: 100%;
-    text-align: center;
   }
 }
