@@ -106,29 +106,58 @@ export default function AdminDashboard() {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editingService) {
-        // Update existing service
-        setServices(
-          services.map((service) =>
-            service.id === editingService.id
-              ? { ...newService, id: service.id }
-              : service
-          )
-        );
-      } else {
-        // Add new service
-        const newId = Math.max(...services.map((s) => s.id), 0) + 1;
-        setServices([...services, { ...newService, id: newId }]);
+      // if (editingService) {
+      //   // Update existing service
+      //   setServices(
+      //     services.map((service) =>
+      //       service.id === editingService.id
+      //         ? { ...newService, id: service.id }
+      //         : service
+      //     )
+      //   );
+      // } else {
+      //   // Add new service
+      //   const newId = Math.max(...services.map((s) => s.id), 0) + 1;
+      //   setServices([...services, { ...newService, id: newId }]);
+      // }
+
+      const httprequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/add_service.php", 
+        {
+          method: 'POST',
+           headers:{'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              'title': newService.title,
+              'description': newService.description,
+              'category': newService.category,
+              'features': newService.features,
+              'icon': newService.icon
+            })
+        }
+      )
+
+      if(!httprequest.ok){
+        throw new Error("An error happened");
       }
-      setShowAddModal(false);
-      setEditingService(null);
-      setNewService({
-        title: "",
-        description: "",
-        features: [""],
-        category: "",
-        icon: "box1",
-      });
+
+      const httpresponse = await httprequest.json();
+
+      if(httpresponse.status == "success"){
+        setShowAddModal(false);
+        setEditingService(null);
+        setNewService({
+          title: "",
+          description: "",
+          features: [""],
+          category: "",
+          icon: "box1",
+        });
+      }
+      else{
+        alert('error in database');
+      }
+
+
+      
     } catch (error) {
       console.error("Error saving service:", error);
       setError("Failed to save service. Please try again.");
