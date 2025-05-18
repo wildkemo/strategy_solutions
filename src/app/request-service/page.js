@@ -77,6 +77,14 @@ export default function RequestService() {
 
         const result = await response.json();
 
+
+        if(result.status == 'success'){
+          alert("Service request submitted successfully");
+        }
+        else if(result.status == 'error'){
+          alert(result.message);
+        }
+        
         // if(result.databaseSucess == 'true' && result.emailSucess == 'true'){
 
         //     if(result.usertype == 'admin'){
