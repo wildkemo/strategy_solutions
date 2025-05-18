@@ -1,8 +1,8 @@
-// "use client";
-// import { useEffect, useState } from "react";
-// import { useParams } from "next/navigation";
-// import styles from "../data-management/ServiceDetail.module.css";
-// import Link from "next/link";
+"use client";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import styles from "../data-management/ServiceDetail.module.css";
+import Link from "next/link";
 
 // // Static services (same as in services/page.js)
 // const staticServices = [
@@ -218,29 +218,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import styles from "../data-management/ServiceDetail.module.css";
-import Link from "next/link";
-
 const getSlug = (title) =>
   title
     .toLowerCase()
@@ -256,21 +233,31 @@ export default function ServiceDetailPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    setMounted(true);
-    
     const fetchService = async () => {
       try {
-        // Fetch all services from your PHP backend
-        const response = await fetch('http://karim/oop_project/php_backend/app/Controllers/get_services.php'); // Adjust this endpoint to match your backend
+        setMounted(true);
+        setLoading(true);
+
+        // Fetch services from backend
+        const response = await fetch(
+          "http://backend/app/Controllers/get_services.php"
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch services');
+          throw new Error("Failed to fetch services");
         }
+
         const services = await response.json();
-        
-        // Find the service with matching slug
+
+        // Find the service that matches the slug
         const found = services.find((s) => getSlug(s.title) === slug);
-        setService(found || null);
+
+        if (found) {
+          setService(found);
+        } else {
+          setService(null);
+        }
       } catch (err) {
+        console.error("Error fetching service:", err);
         setError(err.message);
         setService(null);
       } finally {

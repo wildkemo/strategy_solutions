@@ -52,16 +52,14 @@ export default function RequestService() {
         console.log("Sending form data:", formData);
 
         const response = await fetch(
-          "http://backend/app/Controllers/handle_form.php",
+          "http://backend/app/Controllers/request_service.php",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              name: formData.name,
               email: formData.email,
-              phone: formData.phone,
               service_type: formData.serviceType,
               service_description: formData.description,
             }),
@@ -79,38 +77,38 @@ export default function RequestService() {
 
         const result = await response.json();
 
-        if(result.databaseSucess == 'true' && result.emailSucess == 'true'){
+        // if(result.databaseSucess == 'true' && result.emailSucess == 'true'){
 
-            if(result.usertype == 'admin'){
+        //     if(result.usertype == 'admin'){
 
-              window.location.href = "/blank_admin";
-              return;
+        //       window.location.href = "/blank_admin";
+        //       return;
 
-            }
-            else if(result.usertype == 'customer'){
+        //     }
+        //     else if(result.usertype == 'customer'){
 
-              window.location.href = "/blank_customer";
-              return;
+        //       window.location.href = "/blank_customer";
+        //       return;
 
-            }
+        //     }
 
-        }
-        else{
+        // }
+        // else{
 
-          window.location.href = "/error_test_page";
-          return;
-        }
+        //   window.location.href = "/error_test_page";
+        //   return;
+        // }
 
-        console.log("Success:", result);
+        // console.log("Success:", result);
 
-        setIsSubmitted(true);
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          serviceType: "",
-          description: "",
-        });
+        // setIsSubmitted(true);
+        // setFormData({
+        //   name: "",
+        //   email: "",
+        //   phone: "",
+        //   serviceType: "",
+        //   description: "",
+        // });
       } catch (error) {
         console.error("Error:", error.message);
         alert("An error occurred while submitting the form.");
@@ -140,22 +138,7 @@ export default function RequestService() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.formGroup}>
-              <label htmlFor="name" className={styles.label}>
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`${styles.input} ${errors.name ? styles.error : ""}`}
-              />
-              {errors.name && (
-                <span className={styles.error}>{errors.name}</span>
-              )}
-            </div>
+            
 
             <div className={styles.formGroup}>
               <label htmlFor="email" className={styles.label}>
@@ -176,24 +159,7 @@ export default function RequestService() {
               )}
             </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="phone" className={styles.label}>
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className={`${styles.input} ${
-                  errors.phone ? styles.error : ""
-                }`}
-              />
-              {errors.phone && (
-                <span className={styles.error}>{errors.phone}</span>
-              )}
-            </div>
+            
 
             <div className={styles.formGroup}>
               <label htmlFor="serviceType" className={styles.label}>
