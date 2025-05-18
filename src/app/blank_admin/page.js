@@ -121,7 +121,7 @@ export default function AdminDashboard() {
       //   setServices([...services, { ...newService, id: newId }]);
       // }
 
-      const httprequest = await fetch("http://backend/app/Controllers/add_service.php", 
+      const httprequest = await fetch("http://karim/oop_project/php_backend/app/Controllers/add_service.php", 
         {
           method: 'POST',
            headers:{'Content-Type': 'application/json'},
