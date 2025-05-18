@@ -1,8 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import styles from "./Services.module.css";
+import Link from "next/link";
 
 const colorClasses = [styles.box1, styles.box2, styles.box3, styles.box4];
+
+const getSlug = (title) =>
+  title
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
 
 const Services = () => {
   const [services, setServices] = useState([]);
@@ -67,20 +77,26 @@ const Services = () => {
             >
               {row.map((service, idx) => (
                 <div key={service.id} className={`${styles.boxWrapper}`}>
-                  <div
-                    className={`${styles.serviceBox} ${
-                      colorClasses[
-                        (rowIndex * servicesPerRow + idx) % colorClasses.length
-                      ]
-                    }`}
+                  <Link
+                    href={`/services/${getSlug(service.title)}`}
+                    style={{ textDecoration: "none" }}
                   >
-                    <h2>{service.title}</h2>
-                    <ul>
-                      {service.features.map((feature, i) => (
-                        <li key={i}>{feature}</li>
-                      ))}
-                    </ul>
-                  </div>
+                    <div
+                      className={`${styles.serviceBox} ${
+                        colorClasses[
+                          (rowIndex * servicesPerRow + idx) %
+                            colorClasses.length
+                        ]
+                      }`}
+                    >
+                      <h2>{service.title}</h2>
+                      <ul>
+                        {service.features.map((feature, i) => (
+                          <li key={i}>{feature}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </Link>
                   <div className={styles.explanation}>
                     {service.description}
                   </div>
