@@ -19,7 +19,8 @@ export default function Navbar() {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          "http://backend/app/Controllers/get_current_user.php",
+          // "http://backend/app/Controllers/get_current_user.php",
+          "http://karim/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             method: "GET",
             credentials: "include",
@@ -49,7 +50,8 @@ export default function Navbar() {
     setIsOrdersLoading(true);
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/get_user_orders.php",
+        // "http://backend/app/Controllers/get_user_orders.php",
+        "http://karim/oop_project/php_backend/app/Controllers/get_user_orders.php",
         {
           method: "GET",
           credentials: "include",
