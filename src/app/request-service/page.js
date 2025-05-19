@@ -16,36 +16,37 @@ export default function RequestService() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validateForm = () => {
-    const newErrors = {};
+    // const newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
+    // if (!formData.name.trim()) {
+    //   newErrors.name = "Name is required";
+    // }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
+    // if (!formData.email.trim()) {
+    //   newErrors.email = "Email is required";
+    // } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    //   newErrors.email = "Email is invalid";
+    // }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    }
+    // if (!formData.phone.trim()) {
+    //   newErrors.phone = "Phone number is required";
+    // }
 
-    if (!formData.serviceType) {
-      newErrors.serviceType = "Please select a service type";
-    }
+    // if (!formData.serviceType) {
+    //   newErrors.serviceType = "Please select a service type";
+    // }
 
-    if (!formData.description.trim()) {
-      newErrors.description = "Please provide a description";
-    }
+    // if (!formData.description.trim()) {
+    //   newErrors.description = "Please provide a description";
+    // }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    // setErrors(newErrors);
+    // return Object.keys(newErrors).length === 0;
+    return true;
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    //e.preventDefault();
 
     const response = await fetch(
       // "http://backend/app/Controllers/request_service.php",

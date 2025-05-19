@@ -1,112 +1,105 @@
-import React from "react";
-import styles from "./ServiceDetail.module.css";
+"use client";
+import { useEffect, useState } from "react";
+import styles from "../data-management/ServiceDetail.module.css";
 import Link from "next/link";
 
 export default function ProjectManagement() {
+  const [service, setService] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "http://backend/app/Controllers/get_services.php"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch services");
+        }
+
+        const services = await response.json();
+        const projectService = services.find(
+          (s) => s.title.toLowerCase() === "project management"
+        );
+
+        if (projectService) {
+          setService(projectService);
+        } else {
+          setService(null);
+        }
+      } catch (err) {
+        console.error("Error fetching service:", err);
+        setError(err.message);
+        setService(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchService();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className={styles.serviceDetailContainer}>
+        <div className={styles.serviceDetailContent}>
+          <h1 className={styles.serviceTitle}>Loading...</h1>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.serviceDetailContainer}>
+        <div className={styles.serviceDetailContent}>
+          <h1 className={styles.serviceTitle}>Error</h1>
+          <p>{error}</p>
+          <Link href="/services" className={styles.requestButton}>
+            Back to Services
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!service) {
+    return (
+      <div className={styles.serviceDetailContainer}>
+        <div className={styles.serviceDetailContent}>
+          <h1 className={styles.serviceTitle}>Service Not Found</h1>
+          <Link href="/services" className={styles.requestButton}>
+            Back to Services
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.serviceDetailContainer}>
       <div className={styles.serviceDetailContent}>
-        <h1
-          className={styles.serviceTitle}
-          style={{
-            color: "#ffb347",
-            fontWeight: 800,
-            textAlign: "left",
-            marginBottom: "1.5rem",
-          }}
-        >
-          Project Management
-        </h1>
-        <p
-          style={{
-            fontSize: "1.35rem",
-            color: "#fff",
-            marginBottom: "2.5rem",
-            maxWidth: 900,
-          }}
-        >
-          We provide <b>End-To-End project management service</b> through our
-          professional Project Manager that work close to the customer team to
-          meet the business requirements.
-        </p>
-        <div
-          className={styles.sectionHeader}
-          style={{ marginTop: "2rem", marginBottom: "0.5rem" }}
-        >
-          PROJECT PHASES
-        </div>
-        <div style={{ overflowX: "auto" }}>
-          <table className={styles.projectPhasesTable}>
-            <thead>
-              <tr>
-                <th>TECHNICAL ARCHITECTURE DESIGN</th>
-                <th>ARCHITECTURE IMPLEMENTATION / DEPLOYMENT</th>
-                <th>SOLUTION DESIGN</th>
-                <th>SOLUTION IMPLEMENTATION</th>
-                <th>VALIDATION / TESTING</th>
-                <th>CHANGE MGMT / PROCESS OPTIMIZATION / CLOUD ADOPTION</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  Assist the partner in designing a cohesive architectures
-                  across multiple technical domains and multiple projects to
-                  implement a consistent cloud strategy.
-                  <br />
-                  Secure the right architecture to map security standard, allow
-                  capacity scaling and maximize infrastructure performances.
-                </td>
-                <td>
-                  Assist in deploying / setup of the cloud environments
-                  consistent with the overall cloud strategy and architecture
-                  design.
-                </td>
-                <td>
-                  Assist the partner in the solution design leveraging Oracle
-                  Reference Architectures, OC assets, methods and best
-                  practices.
-                  <br />
-                  Contribute to design test strategies & plans optimized for
-                  Cloud environments.
-                </td>
-                <td>
-                  Work together with partner's team to mentor on how effectively
-                  exploit Oracle products & technologies to ensures that all
-                  technical efforts follow a safe, consistent and repeatable set
-                  of principles.
-                  <br />
-                  Contribute to implement test strategies & plans for the main
-                  test levels (system, integration, performance).
-                  <br />
-                  If required by the partner, the Competence Centre service
-                  could include (or detach as separated engagements) some
-                  Implementation Services.
-                </td>
-                <td>&nbsp;</td>
-                <td>
-                  Help the partner to identify and implement the right model to
-                  manage effectively the cloud solutions and adopt / optimized
-                  software lifecycle for the Cloud.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "1rem",
-            marginTop: "2.5rem",
-          }}
-        >
-          <Link href="/request-service" className={styles.requestButton}>
-            Request a Service
-          </Link>
-          <Link href="/services" className={styles.contactButton}>
-            Back to Services
-          </Link>
+        <div className={styles.textContent}>
+          <h1 className={styles.serviceTitle}>{service.title}</h1>
+          <p className={styles.serviceDescription}>{service.description}</p>
+          <h2 className={styles.serviceSubtitle}>Features</h2>
+          <ul className={styles.featureList}>
+            {service.features.map((feature, idx) => (
+              <li className={styles.featureItem} key={idx}>
+                {feature}
+              </li>
+            ))}
+          </ul>
+          <div className={styles.buttonWrapper}>
+            <Link href="/request-service" className={styles.requestButton}>
+              Request a Service
+            </Link>
+            <Link href="/services" className={styles.contactButton}>
+              Back to Services
+            </Link>
+          </div>
         </div>
       </div>
     </div>
