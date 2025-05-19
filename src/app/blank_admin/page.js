@@ -45,7 +45,8 @@ export default function AdminDashboard() {
   const fetchServiceRequests = async () => {
     try {
       const response = await fetch(
-        // "http://backend/app/Controllers/get_service_requests.php"
+        // "http://backend/app/Controllers/get_orders.php"
+        "http://karim/oop_project/php_backend/app/Controllers/get_orders.php"
       );
       if (!response.ok) throw new Error("Failed to fetch service requests");
       const data = await response.json();
@@ -88,6 +89,7 @@ export default function AdminDashboard() {
     try {
       const response = await fetch(
         // "http://backend/app/Controllers/delete_service.php",
+        "http://karim/oop_project/php_backend/app/Controllers/delete_service.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -95,6 +97,13 @@ export default function AdminDashboard() {
         }
       );
       if (!response.ok) throw new Error("Failed to delete service");
+      const result = await response.json();
+      if(result.status == 'success'){
+        alert(result.message);
+      }
+      else{
+        alert(result.message);
+      }
       await fetchServices();
     } catch (err) {
       setError(err.message);
@@ -105,7 +114,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     try {
       // let url = "http://backend/app/Controllers/add_service.php";
-      let url = "http://karim/oop_project/php_backend/app/Controllers/get_services.php";
+      let url = "http://karim/oop_project/php_backend/app/Controllers/add_service.php";
       let method = "POST";
       if (editingService) {
         // url = "http://backend/app/Controllers/update_service.php";
