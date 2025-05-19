@@ -28,17 +28,31 @@ export default function AdminDashboard() {
   const statusButtonRefs = useRef({});
   const statusDropdownRef = useRef(null);
 
+  // Helper to normalize features array
+  function normalizeFeatures(features) {
+    if (!Array.isArray(features)) return [];
+    return features.map((f) =>
+      typeof f === "string"
+        ? { name: f, description: "" }
+        : { name: f.name || "", description: f.description || "" }
+    );
+  }
+
   // Fetch all services from backend
   const fetchServices = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        // "http://backend/app/Controllers/get_services.php"
-        "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
+        "http://backend/app/Controllers/get_services.php"
       );
       if (!response.ok) throw new Error("Failed to fetch services");
-      const data = await response.json();
+      let data = await response.json();
+      // Normalize features for all services
+      data = data.map((service) => ({
+        ...service,
+        features: normalizeFeatures(service.features),
+      }));
       setServices(data);
       setLastUpdated(new Date());
     } catch (err) {
@@ -52,8 +66,7 @@ export default function AdminDashboard() {
   const fetchServiceRequests = async () => {
     try {
       const response = await fetch(
-        // "http://backend/app/Controllers/get_orders.php"
-        "http://karim/oop_project/php_backend/app/Controllers/get_orders.php"
+        "http://backend/app/Controllers/get_orders.php"
       );
       if (!response.ok) throw new Error("Failed to fetch service requests");
       const data = await response.json();
@@ -102,12 +115,8 @@ export default function AdminDashboard() {
 
   const handleEditService = (service) => {
     setEditingService(service);
-    // Ensure features are objects with name and description
-    const features = service.features.map((f) =>
-      typeof f === "string"
-        ? { name: f, description: "" }
-        : { name: f.name || "", description: f.description || "" }
-    );
+    // Normalize features
+    const features = normalizeFeatures(service.features);
     setNewService({ ...service, features });
     setShowAddModal(true);
   };
@@ -117,8 +126,7 @@ export default function AdminDashboard() {
       return;
     try {
       const response = await fetch(
-        // "http://backend/app/Controllers/delete_service.php",
-        "http://karim/oop_project/php_backend/app/Controllers/delete_service.php",
+        "http://backend/app/Controllers/delete_service.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -141,19 +149,20 @@ export default function AdminDashboard() {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      // let url = "http://backend/app/Controllers/add_service.php";
-      let url = "http://karim/oop_project/php_backend/app/Controllers/add_service.php";
+      let url = "http://backend/app/Controllers/add_service.php";
       let method = "POST";
       if (editingService) {
-        // url = "http://backend/app/Controllers/update_service.php";
-        url = "http://karim/oop_project/php_backend/app/Controllers/update_service.php";
+        url = "http://backend/app/Controllers/update_service.php";
         method = "POST";
       }
+      // Always send features as array of objects
+      const features = normalizeFeatures(newService.features);
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...newService,
+          features,
           id: editingService ? editingService.id : undefined,
         }),
       });
@@ -206,29 +215,23 @@ export default function AdminDashboard() {
   };
 
   const handleStatusChange = async (requestId, newStatus) => {
-    // try {
-      const response = await fetch(
-        // "http://backend/app/Controllers/update_order_status.php",
-        "http://karim/oop_project/php_backend/app/Controllers/update_order_status.php",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({id: requestId, status: newStatus })
-        }
-      );
-      if (!response.ok) throw new Error("Failed to update status");
-      const result = await response.json();
-      if(result.status === "success"){
-        alert(result.message);
+    const response = await fetch(
+      "http://backend/app/Controllers/update_order_status.php",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: requestId, status: newStatus }),
       }
-      else{
-        alert(result.message);
-      }
-      await fetchServiceRequests();
-      setStatusDropdown({ open: false, requestId: null });
-    // } catch (err) {
-      // alert("Error updating status: " + err.message);
-    // }
+    );
+    if (!response.ok) throw new Error("Failed to update status");
+    const result = await response.json();
+    if (result.status === "success") {
+      alert(result.message);
+    } else {
+      alert(result.message);
+    }
+    await fetchServiceRequests();
+    setStatusDropdown({ open: false, requestId: null });
   };
 
   if (error) {

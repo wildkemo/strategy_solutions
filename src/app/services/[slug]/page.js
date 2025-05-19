@@ -224,6 +224,16 @@ const getSlug = (title) =>
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
 
+// Helper to normalize features array
+function normalizeFeatures(features) {
+  if (!Array.isArray(features)) return [];
+  return features.map((f) =>
+    typeof f === "string"
+      ? { name: f, description: "" }
+      : { name: f.name || "", description: f.description || "" }
+  );
+}
+
 export default function ServiceDetailPage() {
   const params = useParams();
   const { slug } = params;
@@ -241,13 +251,17 @@ export default function ServiceDetailPage() {
         // Fetch services from backend
         const response = await fetch(
           "http://backend/app/Controllers/get_services.php"
-          // "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
         );
         if (!response.ok) {
           throw new Error("Failed to fetch services");
         }
 
-        const services = await response.json();
+        let services = await response.json();
+        // Normalize features for all services
+        services = services.map((service) => ({
+          ...service,
+          features: normalizeFeatures(service.features),
+        }));
 
         // Find the service that matches the slug
         const found = services.find((s) => getSlug(s.title) === slug);
@@ -320,7 +334,12 @@ export default function ServiceDetailPage() {
           <ul className={styles.featureList}>
             {service.features.map((feature, idx) => (
               <li className={styles.featureItem} key={idx}>
-                {feature}
+                <strong>{feature.name}</strong>
+                {feature.description && (
+                  <div className={styles.featureDescription}>
+                    {feature.description}
+                  </div>
+                )}
               </li>
             ))}
           </ul>
