@@ -41,9 +41,23 @@ export default function AdminDashboard() {
     }
   };
 
+  // Fetch all service requests from backend
+  const fetchServiceRequests = async () => {
+    try {
+      const response = await fetch(
+        "http://backend/app/Controllers/get_service_requests.php"
+      );
+      if (!response.ok) throw new Error("Failed to fetch service requests");
+      const data = await response.json();
+      setServiceRequests(data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   useEffect(() => {
     fetchServices();
-    // Optionally, fetch service requests here as well
+    fetchServiceRequests();
   }, []);
 
   const handleRefresh = () => {
@@ -227,7 +241,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Service Requests Card (optional, still using mock data) */}
+          {/* Service Requests Card (now dynamic from backend) */}
           <div className={styles.card}>
             <h2>Recent Service Requests</h2>
             <div className={styles.tableContainer}>
@@ -235,29 +249,22 @@ export default function AdminDashboard() {
                 <thead>
                   <tr>
                     <th>ID</th>
-                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Service Type</th>
+                    <th>Description</th>
                     <th>Status</th>
-                    <th>User</th>
-                    <th>Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {serviceRequests.map((request) => (
                     <tr key={request.id}>
                       <td>{request.id}</td>
-                      <td>{request.type}</td>
-                      <td>
-                        <span
-                          className={`${styles.status} ${
-                            styles[request.status]
-                          }`}
-                        >
-                          {request.status.charAt(0).toUpperCase() +
-                            request.status.slice(1)}
-                        </span>
-                      </td>
-                      <td>{request.user}</td>
-                      <td>{request.date}</td>
+                      <td>{request.name}</td>
+                      <td>{request.email}</td>
+                      <td>{request.service_type}</td>
+                      <td>{request.service_description}</td>
+                      <td>{request.status}</td>
                     </tr>
                   ))}
                 </tbody>
