@@ -34,8 +34,8 @@ export default function AdminDashboard() {
     setError(null);
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/get_services.php"
-        // "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
+        // "http://backend/app/Controllers/get_services.php"
+        "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
       );
       if (!response.ok) throw new Error("Failed to fetch services");
       const data = await response.json();
@@ -52,8 +52,8 @@ export default function AdminDashboard() {
   const fetchServiceRequests = async () => {
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/get_orders.php"
-        // "http://karim/oop_project/php_backend/app/Controllers/get_orders.php"
+        // "http://backend/app/Controllers/get_orders.php"
+        "http://karim/oop_project/php_backend/app/Controllers/get_orders.php"
       );
       if (!response.ok) throw new Error("Failed to fetch service requests");
       const data = await response.json();
@@ -117,8 +117,8 @@ export default function AdminDashboard() {
       return;
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/delete_service.php",
-        // "http://karim/oop_project/php_backend/app/Controllers/delete_service.php",
+        // "http://backend/app/Controllers/delete_service.php",
+        "http://karim/oop_project/php_backend/app/Controllers/delete_service.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -141,12 +141,12 @@ export default function AdminDashboard() {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      let url = "http://backend/app/Controllers/add_service.php";
-      //let url = "http://karim/oop_project/php_backend/app/Controllers/add_service.php";
+      // let url = "http://backend/app/Controllers/add_service.php";
+      let url = "http://karim/oop_project/php_backend/app/Controllers/add_service.php";
       let method = "POST";
       if (editingService) {
-        url = "http://backend/app/Controllers/update_service.php";
-        // url = "http://karim/oop_project/php_backend/app/Controllers/update_service.php";
+        // url = "http://backend/app/Controllers/update_service.php";
+        url = "http://karim/oop_project/php_backend/app/Controllers/update_service.php";
         method = "POST";
       }
       const response = await fetch(url, {
@@ -206,21 +206,29 @@ export default function AdminDashboard() {
   };
 
   const handleStatusChange = async (requestId, newStatus) => {
-    try {
+    // try {
       const response = await fetch(
-        "http://backend/app/Controllers/update_order_status.php",
+        // "http://backend/app/Controllers/update_order_status.php",
+        "http://karim/oop_project/php_backend/app/Controllers/update_order_status.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: requestId, status: newStatus }),
+          body: JSON.stringify({id: requestId, status: newStatus })
         }
       );
       if (!response.ok) throw new Error("Failed to update status");
+      const result = await response.json();
+      if(result.status === "success"){
+        alert(result.message);
+      }
+      else{
+        alert(result.message);
+      }
       await fetchServiceRequests();
       setStatusDropdown({ open: false, requestId: null });
-    } catch (err) {
-      alert("Error updating status: " + err.message);
-    }
+    // } catch (err) {
+      // alert("Error updating status: " + err.message);
+    // }
   };
 
   if (error) {
