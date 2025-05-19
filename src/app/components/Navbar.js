@@ -20,7 +20,7 @@ export default function Navbar() {
       try {
         const response = await fetch(
           // "http://backend/app/Controllers/get_current_user.php",
-          "http://karim/oop_project/php_backend/app/Controllers/get_current_user.php",
+          "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             method: "GET",
             credentials: "include",
@@ -32,7 +32,10 @@ export default function Navbar() {
         }
 
         const userData = await response.json();
-        setUser(userData);
+        if(userData.length !== 0){
+
+          setUser(userData);
+        }
       } catch (err) {
         console.error("Error fetching user data:", err);
         setError(err.message);
@@ -51,7 +54,7 @@ export default function Navbar() {
     try {
       const response = await fetch(
         // "http://backend/app/Controllers/get_user_orders.php",
-        "http://karim/oop_project/php_backend/app/Controllers/get_user_orders.php",
+        "http://localhost/oop_project/php_backend/app/Controllers/get_user_orders.php",
         {
           method: "GET",
           credentials: "include",
@@ -63,7 +66,10 @@ export default function Navbar() {
       }
 
       const ordersData = await response.json();
-      setOrders(ordersData);
+      if(ordersData.length !== 0){
+        setOrders(ordersData);
+
+      }
     } catch (err) {
       console.error("Error fetching orders:", err);
       setError(err.message);
@@ -77,7 +83,8 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/logout.php",
+        // "http://backend/app/Controllers/logout.php",
+        "http://localhost/oop_project/php_backend/app/Controllers/logout.php",
         {
           method: "POST",
           credentials: "include",
@@ -136,9 +143,11 @@ export default function Navbar() {
           <Link href="/services" className={styles.navLink}>
             Services
           </Link>
+          {!isLoading && user && (
           <Link href="/request-service" className={styles.navLink}>
-            Request Service
+          Request Service
           </Link>
+          )}
           <Link href="/about" className={styles.navLink}>
             About
           </Link>

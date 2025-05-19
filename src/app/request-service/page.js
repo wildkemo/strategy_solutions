@@ -16,32 +16,7 @@ export default function RequestService() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validateForm = () => {
-    // const newErrors = {};
-
-    // if (!formData.name.trim()) {
-    //   newErrors.name = "Name is required";
-    // }
-
-    // if (!formData.email.trim()) {
-    //   newErrors.email = "Email is required";
-    // } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-    //   newErrors.email = "Email is invalid";
-    // }
-
-    // if (!formData.phone.trim()) {
-    //   newErrors.phone = "Phone number is required";
-    // }
-
-    // if (!formData.serviceType) {
-    //   newErrors.serviceType = "Please select a service type";
-    // }
-
-    // if (!formData.description.trim()) {
-    //   newErrors.description = "Please provide a description";
-    // }
-
-    // setErrors(newErrors);
-    // return Object.keys(newErrors).length === 0;
+    
     return true;
   };
 
@@ -50,7 +25,7 @@ export default function RequestService() {
 
     const response = await fetch(
       //  "http://backend/app/Controllers/request_service.php",
-      "http://karim/oop_project/php_backend/app/Controllers/request_service.php",
+      "http://localhost/oop_project/php_backend/app/Controllers/request_service.php",
       {
         method: "POST",
         headers: {
