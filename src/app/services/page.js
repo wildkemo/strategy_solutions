@@ -93,14 +93,11 @@ const Services = () => {
                       <h2>{service.title}</h2>
                       <ul>
                         {service.features.map((feature, i) => (
-                          <li key={i}>{feature}</li>
+                          <li key={i}>{feature.name || feature}</li>
                         ))}
                       </ul>
                     </div>
                   </Link>
-                  <div className={styles.explanation}>
-                    {service.description}
-                  </div>
                 </div>
               ))}
             </div>

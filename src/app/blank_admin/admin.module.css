@@ -60,6 +60,10 @@
   border-radius: 10px;
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+  height: 100%;
 }
 
 .cardHeader {
@@ -124,6 +128,8 @@
 .tableContainer {
   overflow-x: auto;
   margin-top: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .table {
@@ -140,9 +146,16 @@
 }
 
 .table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   background-color: #f8f9fa;
   font-weight: 600;
   color: #2d3436;
+}
+
+.table td {
+  background-color: #fff;
 }
 
 .actionButtons {
@@ -380,4 +393,79 @@
 
 .closeButton:hover {
   color: #d63031;
+}
+
+.statusButton {
+  background: #f1c40f;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  min-width: 90px;
+  transition: background 0.2s, color 0.2s;
+  outline: none;
+  margin-right: 0.5rem;
+}
+
+.statusButton[data-status="Active"] {
+  background: #0984e3;
+}
+.statusButton[data-status="Declined"] {
+  background: #d63031;
+}
+.statusButton[data-status="Done"] {
+  background: #00b894;
+}
+
+.statusDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 1.5px 4px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  z-index: 100;
+  min-width: 140px;
+  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.25rem;
+  border: 1px solid #f1f2f6;
+  overflow: visible;
+}
+
+.statusDropdown::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 24px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-left: 1px solid #f1f2f6;
+  border-top: 1px solid #f1f2f6;
+  transform: rotate(45deg);
+  z-index: 101;
+  box-shadow: -2px -2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.statusDropdownOption {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: #222;
+  padding: 0.7rem 1.2rem;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background 0.18s, color 0.18s;
+  border-radius: 0;
+}
+.statusDropdownOption:hover {
+  background: #f8f9fa;
+  color: #0984e3;
 }

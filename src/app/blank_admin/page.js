@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import styles from "./admin.module.css";
 
 export default function AdminDashboard() {
@@ -16,10 +16,27 @@ export default function AdminDashboard() {
   const [newService, setNewService] = useState({
     title: "",
     description: "",
-    features: [""],
+    features: [{ name: "", description: "" }],
     category: "",
     icon: "box1",
   });
+
+  const [statusDropdown, setStatusDropdown] = useState({
+    open: false,
+    requestId: null,
+  });
+  const statusButtonRefs = useRef({});
+  const statusDropdownRef = useRef(null);
+
+  // Helper to normalize features array
+  function normalizeFeatures(features) {
+    if (!Array.isArray(features)) return [];
+    return features.map((f) =>
+      typeof f === "string"
+        ? { name: f, description: "" }
+        : { name: f.name || "", description: f.description || "" }
+    );
+  }
 
   // Fetch all services from backend
   const fetchServices = async () => {
@@ -27,11 +44,15 @@ export default function AdminDashboard() {
     setError(null);
     try {
       const response = await fetch(
-        // "http://backend/app/Controllers/get_services.php"
-        "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
+        "http://backend/app/Controllers/get_services.php"
       );
       if (!response.ok) throw new Error("Failed to fetch services");
-      const data = await response.json();
+      let data = await response.json();
+      // Normalize features for all services
+      data = data.map((service) => ({
+        ...service,
+        features: normalizeFeatures(service.features),
+      }));
       setServices(data);
       setLastUpdated(new Date());
     } catch (err) {
@@ -45,7 +66,7 @@ export default function AdminDashboard() {
   const fetchServiceRequests = async () => {
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/get_service_requests.php"
+        "http://backend/app/Controllers/get_orders.php"
       );
       if (!response.ok) throw new Error("Failed to fetch service requests");
       const data = await response.json();
@@ -60,6 +81,22 @@ export default function AdminDashboard() {
     fetchServiceRequests();
   }, []);
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        statusDropdown.open &&
+        statusDropdownRef.current &&
+        !statusDropdownRef.current.contains(event.target)
+      ) {
+        setStatusDropdown({ open: false, requestId: null });
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [statusDropdown]);
+
   const handleRefresh = () => {
     fetchServices();
   };
@@ -69,7 +106,7 @@ export default function AdminDashboard() {
     setNewService({
       title: "",
       description: "",
-      features: [""],
+      features: [{ name: "", description: "" }],
       category: "",
       icon: "box1",
     });
@@ -78,7 +115,9 @@ export default function AdminDashboard() {
 
   const handleEditService = (service) => {
     setEditingService(service);
-    setNewService(service);
+    // Normalize features
+    const features = normalizeFeatures(service.features);
+    setNewService({ ...service, features });
     setShowAddModal(true);
   };
 
@@ -95,6 +134,12 @@ export default function AdminDashboard() {
         }
       );
       if (!response.ok) throw new Error("Failed to delete service");
+      const result = await response.json();
+      if (result.status == "success") {
+        alert(result.message);
+      } else {
+        alert(result.message);
+      }
       await fetchServices();
     } catch (err) {
       setError(err.message);
@@ -104,35 +149,39 @@ export default function AdminDashboard() {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      // let url = "http://backend/app/Controllers/add_service.php";
-      let url = "http://karim/oop_project/php_backend/app/Controllers/get_services.php";
+      let url = "http://backend/app/Controllers/add_service.php";
       let method = "POST";
       if (editingService) {
         url = "http://backend/app/Controllers/update_service.php";
         method = "POST";
       }
+      // Always send features as array of objects
+      const features = normalizeFeatures(newService.features);
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...newService,
+          features,
           id: editingService ? editingService.id : undefined,
         }),
       });
       if (!response.ok) throw new Error("Failed to save service");
       const result = await response.json();
       if (result.status === "success") {
+        alert(result.message);
         setShowAddModal(false);
         setEditingService(null);
         setNewService({
           title: "",
           description: "",
-          features: [""],
+          features: [{ name: "", description: "" }],
           category: "",
           icon: "box1",
         });
         await fetchServices();
       } else {
+        alert(result.message);
         setError(result.message || "Error in database");
       }
     } catch (error) {
@@ -140,22 +189,49 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleFeatureChange = (index, value) => {
+  const handleFeatureChange = (index, field, value) => {
     const newFeatures = [...newService.features];
-    newFeatures[index] = value;
+    newFeatures[index] = { ...newFeatures[index], [field]: value };
     setNewService({ ...newService, features: newFeatures });
   };
 
   const addFeatureField = () => {
     setNewService({
       ...newService,
-      features: [...newService.features, ""],
+      features: [...newService.features, { name: "", description: "" }],
     });
   };
 
   const removeFeatureField = (index) => {
     const newFeatures = newService.features.filter((_, i) => i !== index);
     setNewService({ ...newService, features: newFeatures });
+  };
+
+  const handleStatusButtonClick = (requestId) => {
+    setStatusDropdown((prev) => ({
+      open: prev.requestId !== requestId || !prev.open,
+      requestId,
+    }));
+  };
+
+  const handleStatusChange = async (requestId, newStatus) => {
+    const response = await fetch(
+      "http://backend/app/Controllers/update_order_status.php",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: requestId, status: newStatus }),
+      }
+    );
+    if (!response.ok) throw new Error("Failed to update status");
+    const result = await response.json();
+    if (result.status === "success") {
+      alert(result.message);
+    } else {
+      alert(result.message);
+    }
+    await fetchServiceRequests();
+    setStatusDropdown({ open: false, requestId: null });
   };
 
   if (error) {
@@ -264,7 +340,56 @@ export default function AdminDashboard() {
                       <td>{request.email}</td>
                       <td>{request.service_type}</td>
                       <td>{request.service_description}</td>
-                      <td>{request.status}</td>
+                      <td style={{ position: "relative" }}>
+                        <button
+                          ref={(el) =>
+                            (statusButtonRefs.current[request.id] = el)
+                          }
+                          className={styles.statusButton}
+                          data-status={request.status}
+                          style={{
+                            background:
+                              request.status === "Pending"
+                                ? "#f1c40f"
+                                : request.status === "Active"
+                                ? "#0984e3"
+                                : request.status === "Declined"
+                                ? "#d63031"
+                                : request.status === "Done"
+                                ? "#00b894"
+                                : "#b2bec3",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "4px",
+                            padding: "0.5rem 1rem",
+                            cursor: "pointer",
+                            fontWeight: 600,
+                            minWidth: 90,
+                          }}
+                          onClick={() => handleStatusButtonClick(request.id)}
+                        >
+                          {request.status}
+                        </button>
+                        {statusDropdown.open &&
+                          statusDropdown.requestId === request.id && (
+                            <div
+                              className={styles.statusDropdown}
+                              ref={statusDropdownRef}
+                            >
+                              {["Active", "Declined", "Done"].map((option) => (
+                                <button
+                                  key={option}
+                                  className={styles.statusDropdownOption}
+                                  onClick={() =>
+                                    handleStatusChange(request.id, option)
+                                  }
+                                >
+                                  {option}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -284,7 +409,7 @@ export default function AdminDashboard() {
             setNewService({
               title: "",
               description: "",
-              features: [""],
+              features: [{ name: "", description: "" }],
               category: "",
               icon: "box1",
             });
@@ -300,7 +425,7 @@ export default function AdminDashboard() {
                 setNewService({
                   title: "",
                   description: "",
-                  features: [""],
+                  features: [{ name: "", description: "" }],
                   category: "",
                   icon: "box1",
                 });
@@ -363,19 +488,43 @@ export default function AdminDashboard() {
               <div className={styles.formGroup}>
                 <label>Features</label>
                 {newService.features.map((feature, index) => (
-                  <div key={index} className={styles.featureInput}>
+                  <div
+                    key={index}
+                    className={styles.featureInput}
+                    style={{
+                      flexDirection: "column",
+                      alignItems: "stretch",
+                      gap: "0.5rem",
+                      marginBottom: "1rem",
+                    }}
+                  >
                     <input
                       type="text"
-                      value={feature}
+                      placeholder="Feature Name"
+                      value={feature.name}
                       onChange={(e) =>
-                        handleFeatureChange(index, e.target.value)
+                        handleFeatureChange(index, "name", e.target.value)
                       }
                       required
+                    />
+                    <textarea
+                      placeholder="Feature Description"
+                      value={feature.description}
+                      onChange={(e) =>
+                        handleFeatureChange(
+                          index,
+                          "description",
+                          e.target.value
+                        )
+                      }
+                      required
+                      style={{ minHeight: "60px" }}
                     />
                     <button
                       type="button"
                       onClick={() => removeFeatureField(index)}
                       className={styles.removeButton}
+                      style={{ alignSelf: "flex-end" }}
                     >
                       Remove
                     </button>
@@ -401,7 +550,7 @@ export default function AdminDashboard() {
                     setNewService({
                       title: "",
                       description: "",
-                      features: [""],
+                      features: [{ name: "", description: "" }],
                       category: "",
                       icon: "box1",
                     });
