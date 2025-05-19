@@ -141,3 +141,212 @@
     pointer-events: none;
   }
 }
+
+.profileWrapper {
+  position: relative;
+}
+
+.profileIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #4a90e2;
+  color: #fff;
+  font-size: 1.5rem;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: -2px 0 16px rgba(0, 0, 0, 0.3);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  animation: slideIn 0.3s ease;
+  color: #fff;
+}
+
+@keyframes slideIn {
+  from {
+    right: -320px;
+  }
+  to {
+    right: 0;
+  }
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #ffb347;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+  color: #e6a03c;
+}
+
+.userInfo {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+.userInfo h2 {
+  color: #ffb347;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.userEmail {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.ordersSection {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.ordersSection h3 {
+  font-size: 1.1rem;
+  color: #ffb347;
+  margin-bottom: 1rem;
+}
+
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.orderService {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.orderStatus {
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.orderStatus:not([data-status="completed"]) {
+  background: rgba(255, 179, 71, 0.2);
+  color: #ffb347;
+}
+
+.orderStatus[data-status="completed"] {
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+}
+
+.noOrders {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebarBtn {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.9rem 0;
+  background: #ffb347;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sidebarBtn:hover {
+  background: #e6a03c;
+  transform: translateY(-1px);
+}
+
+.sidebarBtn + .sidebarBtn {
+  margin-top: 1rem;
+}
+
+.sidebarBtn[style*="background: #d63031"] {
+  background: #d63031 !important;
+  color: #fff;
+}
+
+.sidebarBtn[style*="background: #d63031"]:hover {
+  background: #c0392b !important;
+}
+
+.loadingSpinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.errorMessage {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  margin-left: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 4px;
+}
