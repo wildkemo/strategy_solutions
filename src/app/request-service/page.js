@@ -49,8 +49,8 @@ export default function RequestService() {
     //e.preventDefault();
 
     const response = await fetch(
-      // "http://backend/app/Controllers/request_service.php",
-      "http://karim/oop_project/php_backend/app/Controllers/request_service.php",
+      "http://backend/app/Controllers/request_service.php",
+      // "http://karim/oop_project/php_backend/app/Controllers/request_service.php",
       {
         method: "POST",
         headers: {
