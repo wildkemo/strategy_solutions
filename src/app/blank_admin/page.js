@@ -27,7 +27,8 @@ export default function AdminDashboard() {
     setError(null);
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/get_services.php"
+        // "http://backend/app/Controllers/get_services.php"
+        "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
       );
       if (!response.ok) throw new Error("Failed to fetch services");
       const data = await response.json();
@@ -89,7 +90,8 @@ export default function AdminDashboard() {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      let url = "http://backend/app/Controllers/add_service.php";
+      // let url = "http://backend/app/Controllers/add_service.php";
+      let url = "http://karim/oop_project/php_backend/app/Controllers/get_services.php";
       let method = "POST";
       if (editingService) {
         url = "http://backend/app/Controllers/update_service.php";
