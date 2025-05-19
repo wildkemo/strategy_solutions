@@ -45,7 +45,7 @@ export default function AdminDashboard() {
   const fetchServiceRequests = async () => {
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/get_service_requests.php"
+        // "http://backend/app/Controllers/get_service_requests.php"
       );
       if (!response.ok) throw new Error("Failed to fetch service requests");
       const data = await response.json();
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
       return;
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/delete_service.php",
+        // "http://backend/app/Controllers/delete_service.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -108,7 +108,8 @@ export default function AdminDashboard() {
       let url = "http://karim/oop_project/php_backend/app/Controllers/get_services.php";
       let method = "POST";
       if (editingService) {
-        url = "http://backend/app/Controllers/update_service.php";
+        // url = "http://backend/app/Controllers/update_service.php";
+        url = "http://karim/oop_project/php_backend/app/Controllers/update_service.php";
         method = "POST";
       }
       const response = await fetch(url, {
@@ -122,6 +123,7 @@ export default function AdminDashboard() {
       if (!response.ok) throw new Error("Failed to save service");
       const result = await response.json();
       if (result.status === "success") {
+        alert(result.message);
         setShowAddModal(false);
         setEditingService(null);
         setNewService({
@@ -133,6 +135,7 @@ export default function AdminDashboard() {
         });
         await fetchServices();
       } else {
+        alert(result.message);
         setError(result.message || "Error in database");
       }
     } catch (error) {
