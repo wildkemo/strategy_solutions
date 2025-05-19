@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import styles from "../data-management/ServiceDetail.module.css";
 import Link from "next/link";
-import Image from "next/image";
 
-export default function ERPSolutions() {
+export default function CloudVirtualization() {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,12 +22,12 @@ export default function ERPSolutions() {
         }
 
         const services = await response.json();
-        const erpService = services.find(
-          (s) => s.title.toLowerCase() === "erp solutions"
+        const cloudService = services.find(
+          (s) => s.title.toLowerCase() === "cloud & virtualization"
         );
 
-        if (erpService) {
-          setService(erpService);
+        if (cloudService) {
+          setService(cloudService);
         } else {
           setService(null);
         }
@@ -85,7 +85,20 @@ export default function ERPSolutions() {
       <div className={styles.serviceDetailContent}>
         <div className={styles.textContent}>
           <h1 className={styles.serviceTitle}>{service.title}</h1>
-          <p className={styles.serviceDescription}>{service.description}</p>
+          <h2 className={styles.serviceSubtitle}>WHAT WE DO</h2>
+          <div className={styles.cloudIntroSection}>
+            <p className={styles.serviceDescription}>{service.description}</p>
+            <div className={styles.cloudImageWrapper}>
+              <Image
+                src="/images/cloud and vertualization 3.png"
+                alt="Cloud and Virtualization"
+                width={340}
+                height={210}
+                className={styles.cloudImage}
+                priority
+              />
+            </div>
+          </div>
           <h2 className={styles.serviceSubtitle}>Features</h2>
           <ul className={styles.featureList}>
             {service.features.map((feature, idx) => (

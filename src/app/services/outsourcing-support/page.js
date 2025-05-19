@@ -2,9 +2,8 @@
 import { useEffect, useState } from "react";
 import styles from "../data-management/ServiceDetail.module.css";
 import Link from "next/link";
-import Image from "next/image";
 
-export default function ERPSolutions() {
+export default function OutsourcingSupport() {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,12 +21,15 @@ export default function ERPSolutions() {
         }
 
         const services = await response.json();
-        const erpService = services.find(
-          (s) => s.title.toLowerCase() === "erp solutions"
+        console.log(services);
+        const normalize = (str) =>
+          str.toLowerCase().replace(/&/g, "and").replace(/\s+/g, " ").trim();
+        const outsourcingService = services.find(
+          (s) => normalize(s.title) === "outsourcing and support"
         );
 
-        if (erpService) {
-          setService(erpService);
+        if (outsourcingService) {
+          setService(outsourcingService);
         } else {
           setService(null);
         }
@@ -85,15 +87,22 @@ export default function ERPSolutions() {
       <div className={styles.serviceDetailContent}>
         <div className={styles.textContent}>
           <h1 className={styles.serviceTitle}>{service.title}</h1>
-          <p className={styles.serviceDescription}>{service.description}</p>
-          <h2 className={styles.serviceSubtitle}>Features</h2>
-          <ul className={styles.featureList}>
-            {service.features.map((feature, idx) => (
-              <li className={styles.featureItem} key={idx}>
-                {feature}
-              </li>
-            ))}
-          </ul>
+          <p style={{ fontSize: "1.2rem", marginBottom: "2rem" }}>
+            {service.description}
+          </p>
+          <div className={styles.cloudColumnsSection}>
+            <div className={styles.cloudColumn}>
+              <div className={styles.cloudColumnHeader}>
+                <span className={styles.cloudColumnBar}></span>
+                <span>Features</span>
+              </div>
+              <ul className={styles.cloudList}>
+                {service.features.map((feature, idx) => (
+                  <li key={idx}>{feature}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
           <div className={styles.buttonWrapper}>
             <Link href="/request-service" className={styles.requestButton}>
               Request a Service

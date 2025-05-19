@@ -16,106 +16,87 @@ export default function RequestService() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validateForm = () => {
-    const newErrors = {};
+    // const newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
+    // if (!formData.name.trim()) {
+    //   newErrors.name = "Name is required";
+    // }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
+    // if (!formData.email.trim()) {
+    //   newErrors.email = "Email is required";
+    // } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    //   newErrors.email = "Email is invalid";
+    // }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required";
-    }
+    // if (!formData.phone.trim()) {
+    //   newErrors.phone = "Phone number is required";
+    // }
 
-    if (!formData.serviceType) {
-      newErrors.serviceType = "Please select a service type";
-    }
+    // if (!formData.serviceType) {
+    //   newErrors.serviceType = "Please select a service type";
+    // }
 
-    if (!formData.description.trim()) {
-      newErrors.description = "Please provide a description";
-    }
+    // if (!formData.description.trim()) {
+    //   newErrors.description = "Please provide a description";
+    // }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    // setErrors(newErrors);
+    // return Object.keys(newErrors).length === 0;
+    return true;
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    //e.preventDefault();
 
-    if (validateForm()) {
-      try {
-        console.log("Sending form data:", formData);
-
-        const response = await fetch(
-          "http://localhost/strategy_solutions_backend/app/Controllers/handle_form.php",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: formData.name,
-              email: formData.email,
-              phone: formData.phone,
-              service_type: formData.serviceType,
-              service_description: formData.description,
-            }),
-          }
-        );
-
-        console.log("Response status:", response.status);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(
-            `HTTP error! Status: ${response.status}, Message: ${errorText}`
-          );
-        }
-
-        const result = await response.json();
-
-        if(result.databaseSucess == 'true' && result.emailSucess == 'true'){
-
-            if(result.usertype == 'admin'){
-
-              window.location.href = "/blank_admin";
-              return;
-
-            }
-            else if(result.usertype == 'customer'){
-
-              window.location.href = "/blank_customer";
-              return;
-
-            }
-
-        }
-        else{
-
-          window.location.href = "/error_test_page";
-          return;
-        }
-
-        console.log("Success:", result);
-
-        setIsSubmitted(true);
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          serviceType: "",
-          description: "",
-        });
-      } catch (error) {
-        console.error("Error:", error.message);
-        alert("An error occurred while submitting the form.");
+    const response = await fetch(
+      // "http://backend/app/Controllers/request_service.php",
+      "http://karim/oop_project/php_backend/app/Controllers/request_service.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          service_type: formData.serviceType,
+          service_description: formData.description,
+        }),
       }
+    );
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `HTTP error! Status: ${response.status}, Message: ${errorText}`
+      );
     }
+
+    const result = await response.json();
+
+
+    if(result.status == 'success'){
+      alert("Service request submitted successfully");
+    }
+    else if(result.status == 'error'){
+      alert(result.message);
+    }
+    
+    
+
+
+
+    // if (true) {
+    //   try {
+    //     // console.log("Sending form data:", formData);
+
+        
+    //   } catch (error) {
+    //     console.error("Error:", error.message);
+    //     alert("An error occurred while submitting the form.");
+    //   }
+    // }
   };
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -140,22 +121,7 @@ export default function RequestService() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.formGroup}>
-              <label htmlFor="name" className={styles.label}>
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className={`${styles.input} ${errors.name ? styles.error : ""}`}
-              />
-              {errors.name && (
-                <span className={styles.error}>{errors.name}</span>
-              )}
-            </div>
+            
 
             <div className={styles.formGroup}>
               <label htmlFor="email" className={styles.label}>
@@ -176,24 +142,7 @@ export default function RequestService() {
               )}
             </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="phone" className={styles.label}>
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className={`${styles.input} ${
-                  errors.phone ? styles.error : ""
-                }`}
-              />
-              {errors.phone && (
-                <span className={styles.error}>{errors.phone}</span>
-              )}
-            </div>
+            
 
             <div className={styles.formGroup}>
               <label htmlFor="serviceType" className={styles.label}>

@@ -4,13 +4,6 @@ import { useState, useEffect } from "react";
 import styles from "./admin.module.css";
 
 export default function AdminDashboard() {
-  const [serverStatus, setServerStatus] = useState({
-    cpu: 0,
-    memory: 0,
-    uptime: 0,
-    activeUsers: 0,
-  });
-
   const [serviceRequests, setServiceRequests] = useState([]);
   const [services, setServices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,60 +21,58 @@ export default function AdminDashboard() {
     icon: "box1",
   });
 
-  const fetchData = async () => {
+  // Fetch all services from backend
+  const fetchServices = async () => {
+    setIsLoading(true);
     setError(null);
-    // Use mock data for service requests
-    const mockServiceRequests = [
-      {
-        id: 1,
-        type: "Maintenance",
-        status: "pending",
-        user: "John Doe",
-        date: "2024-03-20",
-      },
-      {
-        id: 2,
-        type: "Installation",
-        status: "in-progress",
-        user: "Jane Smith",
-        date: "2024-03-19",
-      },
-      {
-        id: 3,
-        type: "Repair",
-        status: "completed",
-        user: "Mike Johnson",
-        date: "2024-03-18",
-      },
-    ];
-    setServiceRequests(mockServiceRequests);
-    setLastUpdated(new Date());
-    setIsLoading(false);
+    try {
+      const response = await fetch(
+        // "http://backend/app/Controllers/get_services.php"
+        "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
+      );
+      if (!response.ok) throw new Error("Failed to fetch services");
+      const data = await response.json();
+      setServices(data);
+      setLastUpdated(new Date());
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch all service requests from backend
+  const fetchServiceRequests = async () => {
+    try {
+      const response = await fetch(
+        "http://backend/app/Controllers/get_service_requests.php"
+      );
+      if (!response.ok) throw new Error("Failed to fetch service requests");
+      const data = await response.json();
+      setServiceRequests(data);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
+    fetchServices();
+    fetchServiceRequests();
   }, []);
-
-  useEffect(() => {
-    const storedServices = localStorage.getItem("services");
-    if (storedServices) {
-      setServices(JSON.parse(storedServices));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("services", JSON.stringify(services));
-  }, [services]);
 
   const handleRefresh = () => {
-    setIsLoading(true);
-    fetchData();
+    fetchServices();
   };
 
   const handleAddService = () => {
+    setEditingService(null);
+    setNewService({
+      title: "",
+      description: "",
+      features: [""],
+      category: "",
+      icon: "box1",
+    });
     setShowAddModal(true);
   };
 
@@ -92,46 +83,60 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteService = async (serviceId) => {
-    if (window.confirm("Are you sure you want to delete this service?")) {
-      try {
-        // Replace with actual API call
-        setServices(services.filter((service) => service.id !== serviceId));
-      } catch (error) {
-        console.error("Error deleting service:", error);
-        setError("Failed to delete service. Please try again.");
-      }
+    if (!window.confirm("Are you sure you want to delete this service?"))
+      return;
+    try {
+      const response = await fetch(
+        "http://backend/app/Controllers/delete_service.php",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: serviceId }),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete service");
+      await fetchServices();
+    } catch (err) {
+      setError(err.message);
     }
   };
 
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
+      // let url = "http://backend/app/Controllers/add_service.php";
+      let url = "http://karim/oop_project/php_backend/app/Controllers/get_services.php";
+      let method = "POST";
       if (editingService) {
-        // Update existing service
-        setServices(
-          services.map((service) =>
-            service.id === editingService.id
-              ? { ...newService, id: service.id }
-              : service
-          )
-        );
-      } else {
-        // Add new service
-        const newId = Math.max(...services.map((s) => s.id), 0) + 1;
-        setServices([...services, { ...newService, id: newId }]);
+        url = "http://backend/app/Controllers/update_service.php";
+        method = "POST";
       }
-      setShowAddModal(false);
-      setEditingService(null);
-      setNewService({
-        title: "",
-        description: "",
-        features: [""],
-        category: "",
-        icon: "box1",
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...newService,
+          id: editingService ? editingService.id : undefined,
+        }),
       });
+      if (!response.ok) throw new Error("Failed to save service");
+      const result = await response.json();
+      if (result.status === "success") {
+        setShowAddModal(false);
+        setEditingService(null);
+        setNewService({
+          title: "",
+          description: "",
+          features: [""],
+          category: "",
+          icon: "box1",
+        });
+        await fetchServices();
+      } else {
+        setError(result.message || "Error in database");
+      }
     } catch (error) {
-      console.error("Error saving service:", error);
-      setError("Failed to save service. Please try again.");
+      setError(error.message);
     }
   };
 
@@ -236,7 +241,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Service Requests Card */}
+          {/* Service Requests Card (now dynamic from backend) */}
           <div className={styles.card}>
             <h2>Recent Service Requests</h2>
             <div className={styles.tableContainer}>
@@ -244,29 +249,22 @@ export default function AdminDashboard() {
                 <thead>
                   <tr>
                     <th>ID</th>
-                    <th>Type</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Service Type</th>
+                    <th>Description</th>
                     <th>Status</th>
-                    <th>User</th>
-                    <th>Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {serviceRequests.map((request) => (
                     <tr key={request.id}>
                       <td>{request.id}</td>
-                      <td>{request.type}</td>
-                      <td>
-                        <span
-                          className={`${styles.status} ${
-                            styles[request.status]
-                          }`}
-                        >
-                          {request.status.charAt(0).toUpperCase() +
-                            request.status.slice(1)}
-                        </span>
-                      </td>
-                      <td>{request.user}</td>
-                      <td>{request.date}</td>
+                      <td>{request.name}</td>
+                      <td>{request.email}</td>
+                      <td>{request.service_type}</td>
+                      <td>{request.service_description}</td>
+                      <td>{request.status}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -292,10 +290,7 @@ export default function AdminDashboard() {
             });
           }}
         >
-          <div
-            className={styles.modal}
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
-          >
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               className={styles.closeButton}

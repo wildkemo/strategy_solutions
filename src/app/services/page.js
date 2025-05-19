@@ -23,6 +23,7 @@ const Services = () => {
     const fetchServices = async () => {
       try {
         const response = await fetch(
+          // "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
           "http://backend/app/Controllers/get_services.php"
         );
         if (!response.ok) {
