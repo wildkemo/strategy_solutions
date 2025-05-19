@@ -47,81 +47,55 @@ export default function RequestService() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      try {
-        console.log("Sending form data:", formData);
-
-        const response = await fetch(
-          "http://backend/app/Controllers/request_service.php",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: formData.email,
-              service_type: formData.serviceType,
-              service_description: formData.description,
-            }),
-          }
-        );
-
-        console.log("Response status:", response.status);
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(
-            `HTTP error! Status: ${response.status}, Message: ${errorText}`
-          );
-        }
-
-        const result = await response.json();
-
-
-        if(result.status == 'success'){
-          alert("Service request submitted successfully");
-        }
-        else if(result.status == 'error'){
-          alert(result.message);
-        }
-        
-        // if(result.databaseSucess == 'true' && result.emailSucess == 'true'){
-
-        //     if(result.usertype == 'admin'){
-
-        //       window.location.href = "/blank_admin";
-        //       return;
-
-        //     }
-        //     else if(result.usertype == 'customer'){
-
-        //       window.location.href = "/blank_customer";
-        //       return;
-
-        //     }
-
-        // }
-        // else{
-
-        //   window.location.href = "/error_test_page";
-        //   return;
-        // }
-
-        // console.log("Success:", result);
-
-        // setIsSubmitted(true);
-        // setFormData({
-        //   name: "",
-        //   email: "",
-        //   phone: "",
-        //   serviceType: "",
-        //   description: "",
-        // });
-      } catch (error) {
-        console.error("Error:", error.message);
-        alert("An error occurred while submitting the form.");
+    const response = await fetch(
+      // "http://backend/app/Controllers/request_service.php",
+      "http://karim/oop_project/php_backend/app/Controllers/request_service.php",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          service_type: formData.serviceType,
+          service_description: formData.description,
+        }),
       }
+    );
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `HTTP error! Status: ${response.status}, Message: ${errorText}`
+      );
     }
+
+    const result = await response.json();
+
+
+    if(result.status == 'success'){
+      alert("Service request submitted successfully");
+    }
+    else if(result.status == 'error'){
+      alert(result.message);
+    }
+    
+    
+
+
+
+    // if (true) {
+    //   try {
+    //     // console.log("Sending form data:", formData);
+
+        
+    //   } catch (error) {
+    //     console.error("Error:", error.message);
+    //     alert("An error occurred while submitting the form.");
+    //   }
+    // }
   };
   const handleChange = (e) => {
     const { name, value } = e.target;

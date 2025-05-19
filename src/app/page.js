@@ -41,8 +41,8 @@ export default function Home() {
 
     if (form.email != "admin@gmail.com") {
       const loginRequest = await fetch(
-        "http://backend/app/Controllers/login.php",
-        //"http://karim/oop_project/php_backend/app/Controllers/login.php",
+        // "http://backend/app/Controllers/login.php",
+        "http://karim/oop_project/php_backend/app/Controllers/login.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
