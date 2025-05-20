@@ -19,8 +19,8 @@ export default function Navbar() {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          // "http://backend/app/Controllers/get_current_user.php",
-          "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          //"http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             method: "GET",
             credentials: "include",
@@ -32,8 +32,7 @@ export default function Navbar() {
         }
 
         const userData = await response.json();
-        if(userData.length !== 0){
-
+        if (userData.length !== 0) {
           setUser(userData);
         }
       } catch (err) {
@@ -53,8 +52,8 @@ export default function Navbar() {
     setIsOrdersLoading(true);
     try {
       const response = await fetch(
-        // "http://backend/app/Controllers/get_user_orders.php",
-        "http://localhost/oop_project/php_backend/app/Controllers/get_user_orders.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/get_user_orders.php",
+        // "http://localhost/oop_project/php_backend/app/Controllers/get_user_orders.php",
         {
           method: "GET",
           credentials: "include",
@@ -66,9 +65,8 @@ export default function Navbar() {
       }
 
       const ordersData = await response.json();
-      if(ordersData.length !== 0){
+      if (ordersData.length !== 0) {
         setOrders(ordersData);
-
       }
     } catch (err) {
       console.error("Error fetching orders:", err);
@@ -83,8 +81,8 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       const response = await fetch(
-        // "http://backend/app/Controllers/logout.php",
-        "http://localhost/oop_project/php_backend/app/Controllers/logout.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/logout.php",
+        // "http://localhost/oop_project/php_backend/app/Controllers/logout.php",
         {
           method: "POST",
           credentials: "include",
@@ -144,9 +142,9 @@ export default function Navbar() {
             Services
           </Link>
           {!isLoading && user && (
-          <Link href="/request-service" className={styles.navLink}>
-          Request Service
-          </Link>
+            <Link href="/request-service" className={styles.navLink}>
+              Request Service
+            </Link>
           )}
           <Link href="/about" className={styles.navLink}>
             About
@@ -166,7 +164,11 @@ export default function Navbar() {
               {user.avatar ? (
                 <img src={user.avatar} alt="Profile" />
               ) : (
-                <span>{user.name ? user.name[0] : "U"}</span>
+                <span>
+                  {user.name && user.name.length > 0
+                    ? user.name[0].toUpperCase()
+                    : "U"}
+                </span>
               )}
             </button>
           </div>

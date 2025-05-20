@@ -2,106 +2,163 @@
 import { useEffect, useState } from "react";
 
 export default function Profile({ userId }) {
-  const [profile, setProfile] = useState({ name: "", email: "" });
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchUserData = async () => {
       try {
         const response = await fetch(
-          "http://backend/app/Controllers/get_user_profile.php",
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userId }),
+            credentials: "include",
           }
         );
-        if (!response.ok) throw new Error("Failed to fetch profile");
+        if (!response.ok) throw new Error("Failed to fetch user data");
         const data = await response.json();
-        setProfile(data);
+        setUser(data);
+        setFormData({
+          name: data.name || "",
+          phone: data.phone || "",
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchProfile();
-  }, [userId]);
+    fetchUserData();
+  }, []);
 
-  const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccess(null);
-    setError(null);
+    if (formData.newPassword !== formData.confirmPassword) {
+      setUpdateError("New passwords do not match");
+      return;
+    }
     try {
       const response = await fetch(
-        "http://backend/app/Controllers/update_user_profile.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/update_user_info.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, ...profile }),
+          credentials: "include",
+          body: JSON.stringify(formData),
         }
       );
-      if (!response.ok) throw new Error("Failed to update profile");
-      setSuccess("Profile updated successfully.");
+      if (!response.ok) throw new Error("Failed to update user info");
+      const result = await response.json();
+      if (result.status === "success") {
+        setUpdateSuccess(true);
+        setUpdateError(null);
+        // Refresh user data
+        const userResponse = await fetch(
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          {
+            credentials: "include",
+          }
+        );
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser(userData);
+          setFormData({
+            name: userData.name || "",
+            phone: userData.phone || "",
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+          });
+        }
+      } else {
+        setUpdateError(result.message || "Update failed");
+      }
     } catch (err) {
-      setError(err.message);
+      setUpdateError(err.message);
     }
   };
 
-  if (loading) return <div style={{ padding: 32 }}>Loading...</div>;
-  if (error)
-    return <div style={{ padding: 32, color: "red" }}>Error: {error}</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div style={{ padding: 32, maxWidth: 480, margin: "0 auto" }}>
+    <div className={styles.profileContainer}>
       <h1>Manage My Profile</h1>
-      <form onSubmit={handleSave} style={{ marginTop: 24 }}>
-        <div style={{ marginBottom: 16 }}>
+      {updateSuccess && (
+        <div className={styles.successMessage}>
+          Profile updated successfully!
+        </div>
+      )}
+      {updateError && <div className={styles.errorMessage}>{updateError}</div>}
+      <form onSubmit={handleSubmit} className={styles.profileForm}>
+        <div className={styles.formGroup}>
           <label>Name</label>
           <input
             type="text"
             name="name"
-            value={profile.name}
-            onChange={handleChange}
-            style={{ width: "100%", padding: 8, marginTop: 4 }}
+            value={formData.name}
+            onChange={handleInputChange}
             required
           />
         </div>
-        <div style={{ marginBottom: 16 }}>
-          <label>Email</label>
+        <div className={styles.formGroup}>
+          <label>Phone Number</label>
           <input
-            type="email"
-            name="email"
-            value={profile.email}
-            onChange={handleChange}
-            style={{ width: "100%", padding: 8, marginTop: 4 }}
+            type="text"
+            name="phone"
+            value={formData.phone}
+            onChange={handleInputChange}
             required
           />
         </div>
-        <button
-          type="submit"
-          style={{
-            padding: "0.7rem 2rem",
-            background: "#4a90e2",
-            color: "#fff",
-            border: "none",
-            borderRadius: 6,
-            fontWeight: 600,
-            fontSize: "1.1rem",
-            cursor: "pointer",
-          }}
-        >
-          Save Changes
+        <div className={styles.formGroup}>
+          <label>Current Password</label>
+          <input
+            type="password"
+            name="currentPassword"
+            value={formData.currentPassword}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label>New Password</label>
+          <input
+            type="password"
+            name="newPassword"
+            value={formData.newPassword}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Confirm New Password</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+          />
+        </div>
+        <button type="submit" className={styles.updateButton}>
+          Update Profile
         </button>
-        {success && (
-          <div style={{ color: "green", marginTop: 16 }}>{success}</div>
-        )}
       </form>
     </div>
   );
