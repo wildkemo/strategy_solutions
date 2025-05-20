@@ -13,8 +13,8 @@ export default function HardwareInfrastructure() {
       try {
         setLoading(true);
         const response = await fetch(
-           "http://backend/app/Controllers/get_services.php"
-          // "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
+          //  "http://backend/app/Controllers/get_services.php"
+          "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
         );
         if (!response.ok) {
           throw new Error("Failed to fetch services");
