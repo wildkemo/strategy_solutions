@@ -1,9 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+// import { useRouter } from "next/navigation";
 import styles from "./RequestService.module.css";
 
+const validateSession = async () => {
+  const response2 = await fetch(
+    "http://localhost/oop_project/php_backend/app/Controllers/validate_request.php",
+    { headers: { "Content-Type": "application/json" }, credentials: "include" }
+  );
+
+  // const response2 = await fetch(
+  //   "http://localhost/strategy_solutions_backend/app/Controllers/validate_request.php",
+  //   { headers: { "Content-Type": "application/json" }, credentials: "include" }
+  // );
+
+  if (!response2.ok) throw new Error("Failed to fetch services");
+
+  let result = await response2.json();
+
+  if (result.status != "success") {
+    return false;
+    throw new Error("Permission required");
+  } else {
+    return true;
+  }
+};
+
 export default function RequestService() {
+  // const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,9 +39,21 @@ export default function RequestService() {
 
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const isValid = await validateSession();
+      if (!isValid) {
+        window.location.href = "/"; // redirect here if not allowed
+      } else {
+        setCheckingSession(false);
+      }
+    };
+    checkSession();
+  }, []);
 
   const validateForm = () => {
-    
     return true;
   };
 
@@ -24,8 +61,8 @@ export default function RequestService() {
     //e.preventDefault();
 
     const response = await fetch(
-       "http://backend/app/Controllers/request_service.php",
-      // "http://localhost/oop_project/php_backend/app/Controllers/request_service.php",
+      //  "http://backend/app/Controllers/request_service.php",
+      "http://localhost/oop_project/php_backend/app/Controllers/request_service.php",
       {
         method: "POST",
         headers: {
@@ -50,29 +87,22 @@ export default function RequestService() {
 
     const result = await response.json();
 
-
-    if(result.status == 'success'){
+    if (result.status == "success") {
       alert("Service request submitted successfully");
-    }
-    else if(result.status == 'error'){
+    } else if (result.status == "error") {
       alert(result.message);
     }
-    
-    
-
-
 
     // if (true) {
     //   try {
     //     // console.log("Sending form data:", formData);
-
-        
     //   } catch (error) {
     //     console.error("Error:", error.message);
     //     alert("An error occurred while submitting the form.");
     //   }
     // }
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -80,6 +110,8 @@ export default function RequestService() {
       [name]: value,
     }));
   };
+
+  if (checkingSession) return <div className={styles.loading}>Loading...</div>;
 
   return (
     <div className={styles.container}>
@@ -96,8 +128,6 @@ export default function RequestService() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className={styles.form}>
-            
-
             <div className={styles.formGroup}>
               <label htmlFor="email" className={styles.label}>
                 Email
@@ -117,8 +147,6 @@ export default function RequestService() {
               )}
             </div>
 
-            
-
             <div className={styles.formGroup}>
               <label htmlFor="serviceType" className={styles.label}>
                 Service Type
@@ -133,28 +161,16 @@ export default function RequestService() {
                 }`}
               >
                 <option value="">Select a service</option>
-                <option value="data-management">
-                  Data Management Solutions
-                </option>
-                <option value="cloud-virtualization">
-                  Cloud & Virtualization
-                </option>
-                <option value="oracle-database">
-                  Oracle Database Technologies
-                </option>
-                <option value="hardware-infrastructure">
-                  Hardware Infrastructure
-                </option>
+                <option value="data-management">Data Management Solutions</option>
+                <option value="cloud-virtualization">Cloud & Virtualization</option>
+                <option value="oracle-database">Oracle Database Technologies</option>
+                <option value="hardware-infrastructure">Hardware Infrastructure</option>
                 <option value="cyber-security">Cyber Security Services</option>
                 <option value="business-continuity">Business Continuity</option>
                 <option value="erp-solutions">ERP Solutions</option>
                 <option value="project-management">Project Management</option>
-                <option value="fusion-middleware">
-                  Fusion Middleware Technologies
-                </option>
-                <option value="outsourcing-support">
-                  Outsourcing & Support
-                </option>
+                <option value="fusion-middleware">Fusion Middleware Technologies</option>
+                <option value="outsourcing-support">Outsourcing & Support</option>
                 <option value="other">Other</option>
               </select>
               {errors.serviceType && (

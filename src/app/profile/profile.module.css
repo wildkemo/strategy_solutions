@@ -1,0 +1,105 @@
+.profileContainer {
+  max-width: 480px;
+  margin: 80px auto 0 auto;
+  background: rgba(20, 20, 20, 0.98);
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.25);
+  padding: 2.5rem 2rem 2rem 2rem;
+  color: #fff;
+  animation: fadeIn 0.7s;
+}
+
+.profileContainer h1 {
+  color: #ffb347;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.profileForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  color: #ffb347;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+.profileForm input[type="text"],
+.profileForm input[type="password"] {
+  padding: 0.8rem 1rem;
+  border: 1.5px solid #444;
+  border-radius: 6px;
+  background: #181818;
+  color: #fff;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+.profileForm input[type="text"]:focus,
+.profileForm input[type="password"]:focus {
+  border: 1.5px solid #ffb347;
+  outline: none;
+}
+
+.updateButton {
+  background: linear-gradient(90deg, #ffb347 60%, #e6a03c 100%);
+  color: #181818;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 6px;
+  padding: 0.9rem 0;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px rgba(255, 179, 71, 0.08);
+}
+
+.updateButton:hover {
+  background: linear-gradient(90deg, #e6a03c 60%, #ffb347 100%);
+  color: #000;
+}
+
+.successMessage {
+  color: #00b894;
+  background: rgba(0, 184, 148, 0.08);
+  border: 1px solid #00b894;
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.errorMessage {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.08);
+  border: 1px solid #e74c3c;
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

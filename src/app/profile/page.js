@@ -1,5 +1,8 @@
 "use client";
+import styles from "./profile.module.css";
 import { useEffect, useState } from "react";
+
+
 
 export default function Profile({ userId }) {
   const [user, setUser] = useState(null);
@@ -9,7 +12,7 @@ export default function Profile({ userId }) {
     name: "",
     phone: "",
     currentPassword: "",
-    newPassword: "",
+    password: "",
     confirmPassword: "",
   });
   const [updateSuccess, setUpdateSuccess] = useState(false);
@@ -19,7 +22,8 @@ export default function Profile({ userId }) {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          // "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             credentials: "include",
           }
@@ -31,7 +35,7 @@ export default function Profile({ userId }) {
           name: data.name || "",
           phone: data.phone || "",
           currentPassword: "",
-          newPassword: "",
+          password: "",
           confirmPassword: "",
         });
       } catch (err) {
@@ -50,13 +54,14 @@ export default function Profile({ userId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.newPassword !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setUpdateError("New passwords do not match");
       return;
     }
     try {
       const response = await fetch(
-        "http://localhost/strategy_solutions_backend/app/Controllers/update_user_info.php",
+        // "http://localhost/strategy_solutions_backend/app/Controllers/update_user_info.php",
+        "http://localhost/oop_project/php_backend/app/Controllers/update_user_info.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -67,11 +72,13 @@ export default function Profile({ userId }) {
       if (!response.ok) throw new Error("Failed to update user info");
       const result = await response.json();
       if (result.status === "success") {
+        alert(result.message)
         setUpdateSuccess(true);
         setUpdateError(null);
         // Refresh user data
         const userResponse = await fetch(
-          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          // "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             credentials: "include",
           }
@@ -83,11 +90,12 @@ export default function Profile({ userId }) {
             name: userData.name || "",
             phone: userData.phone || "",
             currentPassword: "",
-            newPassword: "",
+            password: "",
             confirmPassword: "",
           });
         }
       } else {
+        alert(result.message)
         setUpdateError(result.message || "Update failed");
       }
     } catch (err) {
@@ -142,8 +150,8 @@ export default function Profile({ userId }) {
           <label>New Password</label>
           <input
             type="password"
-            name="newPassword"
-            value={formData.newPassword}
+            name="password"
+            value={formData.password}
             onChange={handleInputChange}
           />
         </div>
