@@ -9,8 +9,8 @@ const validateSession = async () => {
   //  {headers: { 'Content-Type': 'application/json' } ,credentials: 'include'})
 
   const response2 = await fetch(
-    // "http://localhost/strategy_solutions_backend/app/Controllers/route.php",
-    "http://localhost/www/oop_project/php_backend/app/Controllers/route.php",
+    "http://localhost/strategy_solutions_backend/app/Controllers/route.php",
+    // "http://localhost/www/oop_project/php_backend/app/Controllers/route.php",
     { headers: { "Content-Type": "application/json" }, credentials: "include" }
   );
 
@@ -70,6 +70,10 @@ export default function AdminDashboard() {
   const statusButtonRefs = useRef({});
   const statusDropdownRef = useRef(null);
 
+  const [users, setUsers] = useState([]);
+  const [isUsersLoading, setIsUsersLoading] = useState(true);
+  const [usersError, setUsersError] = useState(null);
+
   // Helper to normalize features array
   function normalizeFeatures(features) {
     if (!Array.isArray(features)) return [];
@@ -86,8 +90,8 @@ export default function AdminDashboard() {
     setError(null);
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/get_services.php"
-        "http://localhost/www/oop_project/php_backend/app/Controllers/get_services.php"
+        "http://localhost/strategy_solutions_backend/app/Controllers/get_services.php"
+        // "http://localhost/www/oop_project/php_backend/app/Controllers/get_services.php"
       );
       if (!response.ok) throw new Error("Failed to fetch services");
       let data = await response.json();
@@ -109,8 +113,8 @@ export default function AdminDashboard() {
   const fetchServiceRequests = async () => {
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/get_orders.php"
-        "http://localhost/www/oop_project/php_backend/app/Controllers/get_orders.php"
+        "http://localhost/strategy_solutions_backend/app/Controllers/get_orders.php"
+        // "http://localhost/www/oop_project/php_backend/app/Controllers/get_orders.php"
       );
       if (!response.ok) throw new Error("Failed to fetch service requests");
       const data = await response.json();
@@ -120,9 +124,29 @@ export default function AdminDashboard() {
     }
   };
 
+  // Fetch all users from backend
+  const fetchUsers = async () => {
+    setIsUsersLoading(true);
+    setUsersError(null);
+    try {
+      const response = await fetch(
+        "http://localhost/strategy_solutions_backend/app/Models/Customer.php",
+        { credentials: "include" }
+      );
+      if (!response.ok) throw new Error("Failed to fetch users");
+      const data = await response.json();
+      setUsers(data);
+    } catch (err) {
+      setUsersError(err.message);
+    } finally {
+      setIsUsersLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchServices();
     fetchServiceRequests();
+    fetchUsers();
   }, []);
 
   useEffect(() => {
@@ -170,8 +194,8 @@ export default function AdminDashboard() {
       return;
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/delete_service.php",
-        "http://localhost/www/oop_project/php_backend/app/Controllers/delete_service.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/delete_service.php",
+        // "http://localhost/www/oop_project/php_backend/app/Controllers/delete_service.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -194,14 +218,14 @@ export default function AdminDashboard() {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      
-      
-      // let url = "http://localhost/strategy_solutions_backend/app/Controllers/add_service.php";
-      let url = "hhttp://localhost/www/oop_project/php_backend/app/Controllers/add_service.php";
+      let url =
+        "http://localhost/strategy_solutions_backend/app/Controllers/add_service.php";
+      // let url = "hhttp://localhost/www/oop_project/php_backend/app/Controllers/add_service.php";
       let method = "POST";
       if (editingService) {
-        // url = "http://localhost/strategy_solutions_backend/app/Controllers/update_service.php";
-        url = "http://localhost/www/oop_project/php_backend/app/Controllers/update_service.php";
+        url =
+          "http://localhost/strategy_solutions_backend/app/Controllers/update_service.php";
+        // url = "http://localhost/www/oop_project/php_backend/app/Controllers/update_service.php";
         method = "POST";
       }
       // Always send features as array of objects
@@ -265,8 +289,8 @@ export default function AdminDashboard() {
 
   const handleStatusChange = async (requestId, newStatus) => {
     const response = await fetch(
-      // "http://localhost/strategy_solutions_backend/app/Controllers/update_order_status.php",
-      "http://localhost/www/oop_project/php_backend/app/Controllers/update_order_status.php",
+      "http://localhost/strategy_solutions_backend/app/Controllers/update_order_status.php",
+      // "http://localhost/www/oop_project/php_backend/app/Controllers/update_order_status.php",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -362,8 +386,8 @@ export default function AdminDashboard() {
             onClick={async () => {
               try {
                 const response = await fetch(
-                  // "http://localhost/strategy_solutions_backend/app/Controllers/logout.php",
-                  "http://localhost/www/oop_project/php_backend/app/Controllers/logout.php",
+                  "http://localhost/strategy_solutions_backend/app/Controllers/logout.php",
+                  // "http://localhost/www/oop_project/php_backend/app/Controllers/logout.php",
                   {
                     method: "POST",
                     credentials: "include",
@@ -518,6 +542,77 @@ export default function AdminDashboard() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* User Management Card */}
+          <div className={`${styles.card} ${styles.userCard}`}>
+            <h2>User Management</h2>
+            {users && users.length > 0 && (
+              <div
+                style={{
+                  marginBottom: "1rem",
+                  padding: "0.75rem 1.25rem",
+                  background: "#f8f9fa",
+                  borderRadius: "6px",
+                  color: "#222",
+                  fontWeight: 500,
+                  fontSize: "1.05rem",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                }}
+              >
+                <span style={{ marginRight: "2rem" }}>
+                  <strong>Name:</strong> {users[0].name}
+                </span>
+                <span style={{ marginRight: "2rem" }}>
+                  <strong>Email:</strong> {users[0].email}
+                </span>
+                <span style={{ marginRight: "2rem" }}>
+                  <strong>Company:</strong> {users[0].company_name}
+                </span>
+                <span>
+                  <strong>Phone:</strong> {users[0].phone}
+                </span>
+              </div>
+            )}
+            {isUsersLoading ? (
+              <div className={styles.loading}>Loading users...</div>
+            ) : usersError ? (
+              <div className={styles.error}>{usersError}</div>
+            ) : (
+              <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Company Name</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Gender</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user) => (
+                      <tr key={user.id}>
+                        <td>{user.name}</td>
+                        <td>{user.company_name}</td>
+                        <td>{user.phone}</td>
+                        <td>{user.email}</td>
+                        <td>{user.gender}</td>
+                        <td>
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                            className={styles.deleteButton}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}

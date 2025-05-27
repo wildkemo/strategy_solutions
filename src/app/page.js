@@ -49,8 +49,8 @@ export default function Home() {
 
     if (form.email != "admin@gmail.com") {
       const loginRequest = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/login.php",
-        "http://localhost/www/oop_project/php_backend/app/Controllers/login.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/login.php",
+        // "http://localhost/www/oop_project/php_backend/app/Controllers/login.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -94,8 +94,8 @@ export default function Home() {
       }
     } else {
       const loginRequest = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/login.php",
-        "http://localhost/www/oop_project/php_backend/app/Controllers/login.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/login.php",
+        // "http://localhost/www/oop_project/php_backend/app/Controllers/login.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

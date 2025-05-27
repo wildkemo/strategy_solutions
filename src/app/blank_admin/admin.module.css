@@ -53,6 +53,20 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+  grid-template-areas:
+    "service requests"
+    "user user";
+}
+
+.card:nth-child(1) {
+  grid-area: service;
+}
+.card:nth-child(2) {
+  grid-area: requests;
+}
+.userCard {
+  grid-area: user;
+  grid-column: 1 / span 2;
 }
 
 .card {

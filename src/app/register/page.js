@@ -47,8 +47,8 @@ export default function Register() {
     }
 
     const registerRequest = await fetch(
-      // "http://localhost/strategy_solutions_backend/app/Controllers/register.php",
-      "http://localhost/www/oop_project/php_backend/app/Controllers/register.php",
+      "http://localhost/strategy_solutions_backend/app/Controllers/register.php",
+      // "http://localhost/www/oop_project/php_backend/app/Controllers/register.php",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

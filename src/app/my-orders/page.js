@@ -10,8 +10,8 @@ export default function MyOrders({ userId }) {
     const fetchOrders = async () => {
       try {
         const response = await fetch(
-          // "http://localhost/strategy_solutions_backend/app/Controllers/get_user_orders.php",
-          "http://localhost/www/oop_project/php_backend/app/Controllers/get_user_orders.php",
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_user_orders.php",
+          // "http://localhost/www/oop_project/php_backend/app/Controllers/get_user_orders.php",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

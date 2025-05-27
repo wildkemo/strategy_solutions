@@ -9,6 +9,7 @@ export default function Profile({ userId }) {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    company_name: "",
     currentPassword: "",
     password: "",
     confirmPassword: "",
@@ -22,8 +23,8 @@ export default function Profile({ userId }) {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          // "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
-          "http://localhost/www/oop_project/php_backend/app/Controllers/get_current_user.php",
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          // "http://localhost/www/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             credentials: "include",
           }
@@ -34,6 +35,7 @@ export default function Profile({ userId }) {
         setFormData({
           name: data.name || "",
           phone: data.phone || "",
+          company_name: data.company_name || "",
           currentPassword: "",
           password: "",
           confirmPassword: "",
@@ -64,8 +66,8 @@ export default function Profile({ userId }) {
     }
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/update_user_info.php",
-        "http://localhost/www/oop_project/php_backend/app/Controllers/update_user_info.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/update_user_info.php",
+        // "http://localhost/www/oop_project/php_backend/app/Controllers/update_user_info.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -80,6 +82,8 @@ export default function Profile({ userId }) {
         const updatedFields = [];
         if (formData.name !== user.name) updatedFields.push("Name");
         if (formData.phone !== user.phone) updatedFields.push("Phone Number");
+        if (formData.company_name !== user.company_name)
+          updatedFields.push("Company Name");
         if (formData.password) updatedFields.push("Password");
         let message = result.message;
         if (updatedFields.length > 0) {
@@ -97,8 +101,8 @@ export default function Profile({ userId }) {
         }, 4000);
         // Refresh user data
         const userResponse = await fetch(
-          // "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
-          "http://localhost/www/oop_project/php_backend/app/Controllers/get_current_user.php",
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          // "http://localhost/www/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             credentials: "include",
           }
@@ -109,6 +113,7 @@ export default function Profile({ userId }) {
           setFormData({
             name: userData.name || "",
             phone: userData.phone || "",
+            company_name: userData.company_name || "",
             currentPassword: "",
             password: "",
             confirmPassword: "",
@@ -150,6 +155,16 @@ export default function Profile({ userId }) {
             type="text"
             name="name"
             value={formData.name}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Company Name</label>
+          <input
+            type="text"
+            name="company_name"
+            value={formData.company_name}
             onChange={handleInputChange}
             required
           />
