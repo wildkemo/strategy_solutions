@@ -52,6 +52,7 @@ export default function AdminDashboard() {
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [editingService, setEditingService] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // New service form state
   const [newService, setNewService] = useState({
@@ -284,6 +285,37 @@ export default function AdminDashboard() {
     setStatusDropdown({ open: false, requestId: null });
   };
 
+  // Filtered data based on search
+  const filteredServices = services.filter((service) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      service.title.toLowerCase().includes(term) ||
+      service.category.toLowerCase().includes(term) ||
+      (service.features &&
+        service.features.some((f) =>
+          (f.name + " " + f.description).toLowerCase().includes(term)
+        ))
+    );
+  });
+  const filteredServiceRequests = serviceRequests.filter((request) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      (request.id + "").includes(term) ||
+      (request.name && request.name.toLowerCase().includes(term)) ||
+      (request.email && request.email.toLowerCase().includes(term)) ||
+      (request.phone && request.phone.toLowerCase().includes(term)) ||
+      (request.company_name &&
+        request.company_name.toLowerCase().includes(term)) ||
+      (request.service_type &&
+        request.service_type.toLowerCase().includes(term)) ||
+      (request.service_description &&
+        request.service_description.toLowerCase().includes(term)) ||
+      (request.status && request.status.toLowerCase().includes(term))
+    );
+  });
+
   if (error) {
     return (
       <div className={styles.errorContainer}>
@@ -303,6 +335,20 @@ export default function AdminDashboard() {
       <header className={styles.header}>
         <h1>Admin Dashboard</h1>
         <div className={styles.headerControls}>
+          <input
+            type="text"
+            placeholder="Search all data..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: 4,
+              border: "1px solid #ccc",
+              fontSize: "1rem",
+              marginRight: "1rem",
+              minWidth: 200,
+            }}
+          />
           <div className={styles.lastUpdated}>
             Last updated: {lastUpdated.toLocaleTimeString()}
           </div>
@@ -361,7 +407,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {services.map((service) => (
+                  {filteredServices.map((service) => (
                     <tr key={service.id}>
                       <td>{service.title}</td>
                       <td>{service.category}</td>
@@ -407,7 +453,7 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {serviceRequests.map((request) => (
+                  {filteredServiceRequests.map((request) => (
                     <tr key={request.id}>
                       <td data-label="ID">{request.id}</td>
                       <td data-label="Name">{request.name}</td>
