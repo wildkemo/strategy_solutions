@@ -8,6 +8,7 @@ export default function Register() {
     name: "",
     email: "",
     gender: "",
+    companyName: "",
     phone: "",
     password: "",
     confirmPassword: "",
@@ -24,6 +25,7 @@ export default function Register() {
     if (
       !form.name.trim() ||
       !form.email.trim() ||
+      !form.companyName.trim() ||
       !form.phone.trim() ||
       !form.password.trim() ||
       !form.confirmPassword.trim()
@@ -45,41 +47,37 @@ export default function Register() {
     }
 
     const registerRequest = await fetch(
-      //  "http://localhost/strategy_solutions_backend/app/Controllers/register.php",
-      "http://karim/oop_project/php_backend/app/Controllers/register.php",
-       {
-       method: "POST",
-       headers:{"Content-Type": "application/json"},
+      "http://localhost/strategy_solutions_backend/app/Controllers/register.php",
+      // "http://karim/oop_project/php_backend/app/Controllers/register.php",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          action: 'register',
+          action: "register",
           name: form.name,
           email: form.email,
           phone: form.phone,
+          companyName: form.companyName,
           password: form.password,
-          gender: form.gender
-        })
-    });
+          gender: form.gender,
+        }),
+      }
+    );
 
-
-      if (!registerRequest.ok) {
+    if (!registerRequest.ok) {
       let errorText = await registerRequest.text();
       throw new Error(
         `HTTP error! Status: ${registerRequest.status}, Message: ${errorText}`
       );
+    } else {
+      const registerResponse = await registerRequest.json();
+
+      if (registerResponse.status == "success") {
+        window.location.href = "/services";
+      } else if (registerResponse.status == "error") {
+        alert(registerResponse.message);
       }
-      else{
-        const registerResponse = await registerRequest.json();
-
-        if (registerResponse.status == "success") {
-         
-          window.location.href = '/services'
-
-       } else if (registerResponse.status == "error") {
-          alert(registerResponse.message);
-        }
-      }
-
-    
+    }
 
     // if (!registerRequest.ok) {
     //   let errorText = await registerRequest.text();
@@ -96,8 +94,6 @@ export default function Register() {
     //     alert(registerResponse.action);
     //   }
     // }
-
-    
 
     // setFormError("");
     // setFormSuccess(true);
@@ -134,6 +130,17 @@ export default function Register() {
                 onChange={handleChange}
                 required
                 type="email"
+                autoComplete="email"
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Company Name</label>
+              <input
+                className={styles.input}
+                name="companyName"
+                value={form.companyName}
+                onChange={handleChange}
+                required
               />
             </div>
             <div className={styles.formGroup}>
@@ -158,6 +165,8 @@ export default function Register() {
                 value={form.phone}
                 onChange={handleChange}
                 required
+                type="tel"
+                autoComplete="tel"
               />
             </div>
             <div className={styles.formGroup}>
@@ -169,6 +178,7 @@ export default function Register() {
                 onChange={handleChange}
                 required
                 type="password"
+                autoComplete="new-password"
               />
             </div>
             <div className={styles.formGroup}>
@@ -180,6 +190,7 @@ export default function Register() {
                 onChange={handleChange}
                 required
                 type="password"
+                autoComplete="new-password"
               />
             </div>
             {formError && <div className={styles.error}>{formError}</div>}

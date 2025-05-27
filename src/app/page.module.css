@@ -12,6 +12,7 @@
   justify-items: center;
   min-height: 100svh;
   padding: 80px;
+  padding-top: 80px;
   gap: 64px;
   font-family: var(--font-geist-sans);
   position: relative;
@@ -78,6 +79,8 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
   animation: fadeIn 1.2s ease;
+  padding-top: 100px;
+  margin-top: 80px;
 }
 
 .heroContent {
@@ -300,8 +303,9 @@
 
 @media (max-width: 600px) {
   .page {
-    padding: 32px;
+    padding: 8px;
     padding-bottom: 80px;
+    padding-top: 60px;
   }
 
   .main {
@@ -330,6 +334,11 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+  }
+
+  .hero {
+    padding-top: 70px;
+    margin-top: 100px;
   }
 }
 
@@ -487,4 +496,118 @@
   border-radius: 20px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
   background: #fff;
+}
+
+@media (max-width: 900px) {
+  .main {
+    padding: 20px 8px;
+    gap: 40px;
+  }
+  .hero {
+    padding: 20px;
+    min-height: 60vh;
+  }
+  .features {
+    padding: 30px 0;
+  }
+  .ctaSection {
+    padding: 40px 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 8px;
+    padding-bottom: 80px;
+  }
+  .main {
+    padding: 8px 2px;
+    gap: 24px;
+  }
+  .hero {
+    padding: 10px;
+    border-radius: 10px;
+    min-height: 40vh;
+  }
+  .heroContent {
+    padding: 12px 0;
+    border-radius: 10px;
+  }
+  .hero h1 {
+    font-size: 2rem;
+  }
+  .heroSubtitle {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+  .features h2 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+  .featureGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 2px;
+  }
+  .featureCard {
+    padding: 14px;
+    border-radius: 8px;
+  }
+  .featureCard h3 {
+    font-size: 1.1rem;
+  }
+  .featureCard p {
+    font-size: 0.98rem;
+  }
+  .ctaSection {
+    padding: 18px 2px;
+    border-radius: 10px;
+  }
+  .ctaSection h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  .ctaSection p {
+    font-size: 1rem;
+    margin-bottom: 18px;
+  }
+  .ctas {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ctas a {
+    font-size: 13px;
+    height: 36px;
+    padding: 0 10px;
+  }
+  .footer {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    padding: 10px 0;
+    border-radius: 0;
+  }
+  .featuresHeader {
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .solutionsImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero h1 {
+    font-size: 1.2rem;
+  }
+  .ctaSection h2 {
+    font-size: 1rem;
+  }
+  .featureCard h3 {
+    font-size: 0.95rem;
+  }
 }

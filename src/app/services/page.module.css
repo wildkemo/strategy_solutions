@@ -159,3 +159,106 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 900px) {
+  .main {
+    padding: 20px 8px;
+    gap: 40px;
+  }
+  .hero {
+    padding: 20px;
+  }
+  .services {
+    gap: 40px;
+  }
+  .ctaSection {
+    padding: 30px 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .main {
+    padding: 8px 2px;
+    gap: 18px;
+  }
+  .hero {
+    padding: 10px;
+    border-radius: 10px;
+  }
+  .hero h1 {
+    font-size: 1.3rem;
+  }
+  .heroSubtitle {
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+  .services {
+    gap: 18px;
+  }
+  .serviceCategory h2 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  .serviceGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .serviceCard {
+    width: 100%;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    padding: 10px 6px;
+    min-width: 0;
+    word-break: break-word;
+  }
+  .serviceCard h3 {
+    font-size: 1rem;
+    margin-bottom: 6px;
+    word-break: break-word;
+  }
+  .serviceCard p {
+    font-size: 0.93rem;
+    margin-bottom: 8px;
+    word-break: break-word;
+  }
+  .serviceCard ul {
+    padding-left: 10px;
+  }
+  .serviceCard li {
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    padding-left: 14px;
+    word-break: break-word;
+  }
+  .ctaSection {
+    padding: 10px 2px;
+    border-radius: 10px;
+  }
+  .ctaSection h2 {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .ctaSection p {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+  }
+  .primary {
+    min-height: 38px;
+    font-size: 0.98rem;
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .hero h1 {
+    font-size: 1rem;
+  }
+  .serviceCard h3 {
+    font-size: 0.85rem;
+  }
+  .ctaSection h2 {
+    font-size: 0.9rem;
+  }
+}

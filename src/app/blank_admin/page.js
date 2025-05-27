@@ -9,8 +9,8 @@ const validateSession = async () => {
   //  {headers: { 'Content-Type': 'application/json' } ,credentials: 'include'})
 
   const response2 = await fetch(
-    // "http://localhost/strategy_solutions_backend/app/Controllers/route.php",
-    "http://localhost/oop_project/php_backend/app/Controllers/route.php",
+    "http://localhost/strategy_solutions_backend/app/Controllers/route.php",
+    // "http://localhost/oop_project/php_backend/app/Controllers/route.php",
     { headers: { "Content-Type": "application/json" }, credentials: "include" }
   );
 
@@ -85,8 +85,8 @@ export default function AdminDashboard() {
     setError(null);
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/get_services.php"
-        "http://localhost/oop_project/php_backend/app/Controllers/get_services.php"
+        "http://localhost/strategy_solutions_backend/app/Controllers/get_services.php"
+        // "http://localhost/oop_project/php_backend/app/Controllers/get_services.php"
       );
       if (!response.ok) throw new Error("Failed to fetch services");
       let data = await response.json();
@@ -108,8 +108,8 @@ export default function AdminDashboard() {
   const fetchServiceRequests = async () => {
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/get_orders.php"
-        "http://karim/oop_project/php_backend/app/Controllers/get_orders.php"
+        "http://localhost/strategy_solutions_backend/app/Controllers/get_orders.php"
+        // "http://karim/oop_project/php_backend/app/Controllers/get_orders.php"
       );
       if (!response.ok) throw new Error("Failed to fetch service requests");
       const data = await response.json();
@@ -169,8 +169,8 @@ export default function AdminDashboard() {
       return;
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/delete_service.php",
-        "http://karim/oop_project/php_backend/app/Controllers/delete_service.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/delete_service.php",
+        // "http://karim/oop_project/php_backend/app/Controllers/delete_service.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -193,13 +193,15 @@ export default function AdminDashboard() {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      // let url = "http://localhost/strategy_solutions_backend/app/Controllers/add_service.php";
-        
-      let url = "http://karim/oop_project/php_backend/app/Controllers/add_service.php";
+      let url =
+        "http://localhost/strategy_solutions_backend/app/Controllers/add_service.php";
+
+      // let url = "http://karim/oop_project/php_backend/app/Controllers/add_service.php";
       let method = "POST";
       if (editingService) {
-        // url = "http://localhost/strategy_solutions_backend/app/Controllers/update_service.php";
-        url = "http://karim/oop_project/php_backend/app/Controllers/update_service.php";
+        url =
+          "http://localhost/strategy_solutions_backend/app/Controllers/update_service.php";
+        // url = "http://karim/oop_project/php_backend/app/Controllers/update_service.php";
         method = "POST";
       }
       // Always send features as array of objects
@@ -263,8 +265,8 @@ export default function AdminDashboard() {
 
   const handleStatusChange = async (requestId, newStatus) => {
     const response = await fetch(
-      // "http://localhost/strategy_solutions_backend/app/Controllers/update_order_status.php",
-      "http://karim/oop_project/php_backend/app/Controllers/update_order_status.php",
+      "http://localhost/strategy_solutions_backend/app/Controllers/update_order_status.php",
+      // "http://karim/oop_project/php_backend/app/Controllers/update_order_status.php",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -315,8 +317,8 @@ export default function AdminDashboard() {
             onClick={async () => {
               try {
                 const response = await fetch(
-                  // "http://localhost/strategy_solutions_backend/app/Controllers/logout.php",
-                  "http://localhost/oop_project/php_backend/app/Controllers/logout.php",
+                  "http://localhost/strategy_solutions_backend/app/Controllers/logout.php",
+                  // "http://localhost/oop_project/php_backend/app/Controllers/logout.php",
                   {
                     method: "POST",
                     credentials: "include",
@@ -397,6 +399,8 @@ export default function AdminDashboard() {
                     <th>ID</th>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Phone</th>
+                    <th>Company Name</th>
                     <th>Service Type</th>
                     <th>Description</th>
                     <th>Status</th>
@@ -405,12 +409,16 @@ export default function AdminDashboard() {
                 <tbody>
                   {serviceRequests.map((request) => (
                     <tr key={request.id}>
-                      <td>{request.id}</td>
-                      <td>{request.name}</td>
-                      <td>{request.email}</td>
-                      <td>{request.service_type}</td>
-                      <td>{request.service_description}</td>
-                      <td style={{ position: "relative" }}>
+                      <td data-label="ID">{request.id}</td>
+                      <td data-label="Name">{request.name}</td>
+                      <td data-label="Email">{request.email}</td>
+                      <td data-label="Phone">{request.phone}</td>
+                      <td data-label="Company Name">{request.company_name}</td>
+                      <td data-label="Service Type">{request.service_type}</td>
+                      <td data-label="Description">
+                        {request.service_description}
+                      </td>
+                      <td data-label="Status" style={{ position: "relative" }}>
                         <button
                           ref={(el) =>
                             (statusButtonRefs.current[request.id] = el)

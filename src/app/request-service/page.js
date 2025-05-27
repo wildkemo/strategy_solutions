@@ -11,8 +11,8 @@ const validateSession = async () => {
   // );
 
   const response2 = await fetch(
-    // "http://localhost/strategy_solutions_backend/app/Controllers/validate_request.php",
-    "http://localhost/oop_project/php_backend/app/Controllers/validate_request.php",
+    "http://localhost/strategy_solutions_backend/app/Controllers/validate_request.php",
+    // "http://localhost/oop_project/php_backend/app/Controllers/validate_request.php",
     { headers: { "Content-Type": "application/json" }, credentials: "include" }
   );
 
@@ -28,6 +28,57 @@ const validateSession = async () => {
   }
 };
 
+function PopupNotification({ message, onClose }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 9999,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "rgba(0,0,0,0.3)",
+        minHeight: "100vh",
+      }}
+    >
+      <div
+        style={{
+          background: "#fff",
+          color: "#222",
+          padding: "2rem 1.5rem 1.5rem 1.5rem",
+          borderRadius: "12px",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+          maxWidth: 400,
+          width: "90%",
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 14,
+            background: "none",
+            border: "none",
+            fontSize: 22,
+            color: "#888",
+            cursor: "pointer",
+          }}
+        >
+          &times;
+        </button>
+        <h2 style={{ marginBottom: 12, color: "#0070f3" }}>Success</h2>
+        <div style={{ fontSize: "1.1rem" }}>{message}</div>
+      </div>
+    </div>
+  );
+}
+
 export default function RequestService() {
   // const router = useRouter();
   const [formData, setFormData] = useState({
@@ -41,6 +92,7 @@ export default function RequestService() {
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -54,16 +106,25 @@ export default function RequestService() {
     checkSession();
   }, []);
 
+  useEffect(() => {
+    if (showPopup) {
+      const timer = setTimeout(() => {
+        window.location.href = "/services?requested=1";
+      }, 2000); // 2 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [showPopup]);
+
   const validateForm = () => {
     return true;
   };
 
   const handleSubmit = async (e) => {
-    //e.preventDefault();
+    e.preventDefault();
 
     const response = await fetch(
-      //  "http://localhost/strategy_solutions_backend/app/Controllers/request_service.php",
-      "http://localhost/oop_project/php_backend/app/Controllers/request_service.php",
+      "http://localhost/strategy_solutions_backend/app/Controllers/request_service.php",
+      // "http://localhost/oop_project/php_backend/app/Controllers/request_service.php",
       {
         method: "POST",
         headers: {
@@ -89,7 +150,7 @@ export default function RequestService() {
     const result = await response.json();
 
     if (result.status == "success") {
-      alert("Service request submitted successfully");
+      window.location.href = "/services?requested=1";
     } else if (result.status == "error") {
       alert(result.message);
     }
@@ -116,18 +177,20 @@ export default function RequestService() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.content}>
-        <h1 className={styles.title}>Request a Service</h1>
-        <p className={styles.subtitle}>
-          Fill out the form below and we'll get back to you within 24 hours
-        </p>
-
-        {isSubmitted ? (
-          <div className={styles.success}>
-            <h2>Thank you for your request!</h2>
-            <p>We will get back to you shortly.</p>
-          </div>
-        ) : (
+      {showPopup && (
+        <PopupNotification
+          message={
+            "Your service has been requested successfully. Stay tuned for our company's response."
+          }
+          onClose={() => setShowPopup(false)}
+        />
+      )}
+      {!isSubmitted && (
+        <div className={styles.content}>
+          <h1 className={styles.title}>Request a Service</h1>
+          <p className={styles.subtitle}>
+            Fill out the form below and we'll get back to you within 24 hours
+          </p>
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
               <label htmlFor="email" className={styles.label}>
@@ -162,16 +225,28 @@ export default function RequestService() {
                 }`}
               >
                 <option value="">Select a service</option>
-                <option value="data-management">Data Management Solutions</option>
-                <option value="cloud-virtualization">Cloud & Virtualization</option>
-                <option value="oracle-database">Oracle Database Technologies</option>
-                <option value="hardware-infrastructure">Hardware Infrastructure</option>
+                <option value="data-management">
+                  Data Management Solutions
+                </option>
+                <option value="cloud-virtualization">
+                  Cloud & Virtualization
+                </option>
+                <option value="oracle-database">
+                  Oracle Database Technologies
+                </option>
+                <option value="hardware-infrastructure">
+                  Hardware Infrastructure
+                </option>
                 <option value="cyber-security">Cyber Security Services</option>
                 <option value="business-continuity">Business Continuity</option>
                 <option value="erp-solutions">ERP Solutions</option>
                 <option value="project-management">Project Management</option>
-                <option value="fusion-middleware">Fusion Middleware Technologies</option>
-                <option value="outsourcing-support">Outsourcing & Support</option>
+                <option value="fusion-middleware">
+                  Fusion Middleware Technologies
+                </option>
+                <option value="outsourcing-support">
+                  Outsourcing & Support
+                </option>
                 <option value="other">Other</option>
               </select>
               {errors.serviceType && (
@@ -202,8 +277,8 @@ export default function RequestService() {
               Submit Request
             </button>
           </form>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

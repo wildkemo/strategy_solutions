@@ -22,8 +22,8 @@ export default function Profile({ userId }) {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          // "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
-          "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          // "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             credentials: "include",
           }
@@ -64,8 +64,8 @@ export default function Profile({ userId }) {
     }
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/update_user_info.php",
-        "http://localhost/oop_project/php_backend/app/Controllers/update_user_info.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/update_user_info.php",
+        // "http://localhost/oop_project/php_backend/app/Controllers/update_user_info.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -97,8 +97,8 @@ export default function Profile({ userId }) {
         }, 4000);
         // Refresh user data
         const userResponse = await fetch(
-          // "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
-          "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          // "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             credentials: "include",
           }

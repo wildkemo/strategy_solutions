@@ -469,3 +469,39 @@
   background: #f8f9fa;
   color: #0984e3;
 }
+
+@media (max-width: 600px) {
+  .table,
+  .table thead,
+  .table tbody,
+  .table th,
+  .table td,
+  .table tr {
+    display: block;
+    width: 100%;
+  }
+  .table thead {
+    display: none;
+  }
+  .table tr {
+    margin-bottom: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 1rem 0.5rem;
+  }
+  .table td {
+    padding: 0.5rem 0.5rem;
+    text-align: left;
+    position: relative;
+    font-size: 0.98rem;
+    border-bottom: none;
+  }
+  .table td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #636e72;
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+}
