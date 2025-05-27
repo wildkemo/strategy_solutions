@@ -15,8 +15,8 @@ export default function ERPSolutions() {
       try {
         setLoading(true);
         const response = await fetch(
-          "http://localhost/strategy_solutions_backend/app/Controllers/get_services.php"
-          // "http://karim/oop_project/php_backend/app/Controllers/get_services.php"
+          // "http://localhost/strategy_solutions_backend/app/Controllers/get_services.php"
+          "http://karim/www/oop_project/php_backend/app/Controllers/get_services.php"
         );
         if (!response.ok) {
           throw new Error("Failed to fetch services");
@@ -48,8 +48,8 @@ export default function ERPSolutions() {
     e.preventDefault();
     try {
       const response = await fetch(
-        "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
-        // "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
+        // "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+        "http://localhost/www/oop_project/php_backend/app/Controllers/get_current_user.php",
         { credentials: "include" }
       );
       if (response.ok) {

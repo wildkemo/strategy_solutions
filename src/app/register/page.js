@@ -47,19 +47,21 @@ export default function Register() {
     }
 
     const registerRequest = await fetch(
-      "http://localhost/strategy_solutions_backend/app/Controllers/register.php",
-      // "http://karim/oop_project/php_backend/app/Controllers/register.php",
+      // "http://localhost/strategy_solutions_backend/app/Controllers/register.php",
+      "http://localhost/www/oop_project/php_backend/app/Controllers/register.php",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({
           action: "register",
           name: form.name,
           email: form.email,
           phone: form.phone,
-          companyName: form.companyName,
+          // companyName: form.companyName,
           password: form.password,
           gender: form.gender,
+          company_name: form.companyName,
         }),
       }
     );

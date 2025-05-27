@@ -11,8 +11,8 @@ const validateSession = async () => {
   // );
 
   const response2 = await fetch(
-    "http://localhost/strategy_solutions_backend/app/Controllers/validate_request.php",
-    // "http://localhost/oop_project/php_backend/app/Controllers/validate_request.php",
+    // "http://localhost/strategy_solutions_backend/app/Controllers/validate_request.php",
+    "http://localhost/www/oop_project/php_backend/app/Controllers/validate_request.php",
     { headers: { "Content-Type": "application/json" }, credentials: "include" }
   );
 
@@ -123,13 +123,14 @@ export default function RequestService() {
     e.preventDefault();
 
     const response = await fetch(
-      "http://localhost/strategy_solutions_backend/app/Controllers/request_service.php",
-      // "http://localhost/oop_project/php_backend/app/Controllers/request_service.php",
+      // "http://localhost/strategy_solutions_backend/app/Controllers/request_service.php",
+      "http://localhost/www/oop_project/php_backend/app/Controllers/request_service.php",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify({
           email: formData.email,
           service_type: formData.serviceType,
