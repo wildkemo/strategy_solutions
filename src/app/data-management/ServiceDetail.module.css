@@ -1,3 +1,171 @@
 .featureCardFadeIn {
   animation: fadeIn 1s ease;
 }
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: overlayFadeIn 0.3s ease;
+}
+
+.modal {
+  background: linear-gradient(
+    145deg,
+    rgba(25, 25, 25, 0.98),
+    rgba(15, 15, 15, 0.98)
+  );
+  border-radius: 20px;
+  padding: 2.5rem;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(255, 179, 71, 0.1);
+  animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 179, 71, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 179, 71, 0.2) 50%,
+    transparent 100%
+  );
+}
+
+.modal h2 {
+  color: #ffb347;
+  font-size: 1.75rem;
+  margin-bottom: 1.25rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.5px;
+}
+
+.modal p {
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+}
+
+.modalButton {
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  display: inline-block;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.modalButton:first-child {
+  background: linear-gradient(135deg, #ffb347 0%, #e6a03c 100%);
+  color: #181818;
+  border: none;
+  box-shadow: 0 4px 15px rgba(255, 179, 71, 0.3);
+}
+
+.modalButton:last-child {
+  background: transparent;
+  color: #ffb347;
+  border: 2px solid rgba(255, 179, 71, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 179, 71, 0.1);
+}
+
+.modalButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modalButton:first-child:hover {
+  background: linear-gradient(135deg, #ffc066 0%, #ffb347 100%);
+  box-shadow: 0 6px 20px rgba(255, 179, 71, 0.4);
+}
+
+.modalButton:last-child:hover {
+  border-color: #ffb347;
+  background: rgba(255, 179, 71, 0.1);
+}
+
+.modalButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Add a subtle pulse animation to the login button */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 15px rgba(255, 179, 71, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 25px rgba(255, 179, 71, 0.5);
+  }
+  100% {
+    box-shadow: 0 4px 15px rgba(255, 179, 71, 0.3);
+  }
+}
+
+.modalButton:first-child {
+  animation: pulse 2s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

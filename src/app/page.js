@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -9,6 +10,13 @@ export default function Home() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("showSignIn")) {
+      setShowModal(true);
+    }
+  }, [searchParams]);
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -41,12 +49,12 @@ export default function Home() {
 
     if (form.email != "admin@gmail.com") {
       const loginRequest = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/login.php",
-        "http://localhost/oop_project/php_backend/app/Controllers/login.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/login.php",
+        // "http://localhost/oop_project/php_backend/app/Controllers/login.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: 'include',
+          credentials: "include",
           body: JSON.stringify({
             action: "login",
             email: form.email,
@@ -84,12 +92,12 @@ export default function Home() {
       }
     } else {
       const loginRequest = await fetch(
-        //  "http://localhost/strategy_solutions_backend/app/Controllers/login.php",
-        "http://localhost/oop_project/php_backend/app/Controllers/login.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/login.php",
+        //"http://localhost/oop_project/php_backend/app/Controllers/login.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: 'include',
+          credentials: "include",
           body: JSON.stringify({
             action: "login-as-admin",
             email: form.email,

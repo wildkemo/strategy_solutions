@@ -4,14 +4,14 @@ import { useState, useEffect, useRef } from "react";
 import styles from "./admin.module.css";
 
 const validateSession = async () => {
-  const response2 = await fetch(
-  "http://localhost/oop_project/php_backend/app/Controllers/route.php",
-   {headers: { 'Content-Type': 'application/json' } ,credentials: 'include'})
-
   // const response2 = await fetch(
-  //   "http://localhost/strategy_solutions_backend/app/Controllers/route.php",
-  //   { headers: { "Content-Type": "application/json" }, credentials: "include" }
-  // );
+  // "http://localhost/oop_project/php_backend/app/Controllers/route.php",
+  //  {headers: { 'Content-Type': 'application/json' } ,credentials: 'include'})
+
+  const response2 = await fetch(
+    "http://localhost/strategy_solutions_backend/app/Controllers/route.php",
+    { headers: { "Content-Type": "application/json" }, credentials: "include" }
+  );
 
   if (!response2.ok) throw new Error("Failed to fetch services");
 
@@ -84,8 +84,8 @@ export default function AdminDashboard() {
     setError(null);
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/get_services.php"
-        "http://localhost/oop_project/php_backend/app/Controllers/get_services.php"
+        "http://localhost/strategy_solutions_backend/app/Controllers/get_services.php"
+        // "http://localhost/oop_project/php_backend/app/Controllers/get_services.php"
       );
       if (!response.ok) throw new Error("Failed to fetch services");
       let data = await response.json();
@@ -107,8 +107,8 @@ export default function AdminDashboard() {
   const fetchServiceRequests = async () => {
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/get_orders.php"
-        "http://karim/oop_project/php_backend/app/Controllers/get_orders.php"
+        "http://localhost/strategy_solutions_backend/app/Controllers/get_orders.php"
+        // "http://karim/oop_project/php_backend/app/Controllers/get_orders.php"
       );
       if (!response.ok) throw new Error("Failed to fetch service requests");
       const data = await response.json();
@@ -168,8 +168,8 @@ export default function AdminDashboard() {
       return;
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/delete_service.php",
-        "http://karim/oop_project/php_backend/app/Controllers/delete_service.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/delete_service.php",
+        // "http://karim/oop_project/php_backend/app/Controllers/delete_service.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -192,13 +192,13 @@ export default function AdminDashboard() {
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
-      // let url = "http://localhost/strategy_solutions_backend/app/Controllers/add_service.php";
+      let url = "http://localhost/strategy_solutions_backend/app/Controllers/add_service.php";
         
-      let url = "http://karim/oop_project/php_backend/app/Controllers/add_service.php";
+      // let url = "http://karim/oop_project/php_backend/app/Controllers/add_service.php";
       let method = "POST";
       if (editingService) {
-        // url = "http://localhost/strategy_solutions_backend/app/Controllers/update_service.php";
-        url = "http://karim/oop_project/php_backend/app/Controllers/update_service.php";
+        url = "http://localhost/strategy_solutions_backend/app/Controllers/update_service.php";
+        // url = "http://karim/oop_project/php_backend/app/Controllers/update_service.php";
         method = "POST";
       }
       // Always send features as array of objects
@@ -262,8 +262,8 @@ export default function AdminDashboard() {
 
   const handleStatusChange = async (requestId, newStatus) => {
     const response = await fetch(
-      // "http://localhost/strategy_solutions_backend/app/Controllers/update_order_status.php",
-      "http://karim/oop_project/php_backend/app/Controllers/update_order_status.php",
+      "http://localhost/strategy_solutions_backend/app/Controllers/update_order_status.php",
+      // "http://karim/oop_project/php_backend/app/Controllers/update_order_status.php",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -314,8 +314,8 @@ export default function AdminDashboard() {
             onClick={async () => {
               try {
                 const response = await fetch(
-                  // "http://localhost/strategy_solutions_backend/app/Controllers/logout.php",
-                  "http://localhost/oop_project/php_backend/app/Controllers/logout.php",
+                  "http://localhost/strategy_solutions_backend/app/Controllers/logout.php",
+                  // "http://localhost/oop_project/php_backend/app/Controllers/logout.php",
                   {
                     method: "POST",
                     credentials: "include",

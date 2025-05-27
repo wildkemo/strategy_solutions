@@ -1,8 +1,6 @@
 "use client";
 import styles from "./profile.module.css";
-import { useEffect, useState } from "react";
-
-
+import { useEffect, useState, useRef } from "react";
 
 export default function Profile({ userId }) {
   const [user, setUser] = useState(null);
@@ -17,13 +15,15 @@ export default function Profile({ userId }) {
   });
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState(null);
+  const [updatedFieldsMessage, setUpdatedFieldsMessage] = useState("");
+  const messageTimeoutRef = useRef(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          // "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
-          "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          // "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             credentials: "include",
           }
@@ -58,10 +58,14 @@ export default function Profile({ userId }) {
       setUpdateError("New passwords do not match");
       return;
     }
+    if (formData.password && formData.password.length < 8) {
+      setUpdateError("New password must be at least 8 characters long");
+      return;
+    }
     try {
       const response = await fetch(
-        // "http://localhost/strategy_solutions_backend/app/Controllers/update_user_info.php",
-        "http://localhost/oop_project/php_backend/app/Controllers/update_user_info.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/update_user_info.php",
+        // "http://localhost/oop_project/php_backend/app/Controllers/update_user_info.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -72,13 +76,29 @@ export default function Profile({ userId }) {
       if (!response.ok) throw new Error("Failed to update user info");
       const result = await response.json();
       if (result.status === "success") {
-        alert(result.message)
+        // Determine which fields were updated
+        const updatedFields = [];
+        if (formData.name !== user.name) updatedFields.push("Name");
+        if (formData.phone !== user.phone) updatedFields.push("Phone Number");
+        if (formData.password) updatedFields.push("Password");
+        let message = result.message;
+        if (updatedFields.length > 0) {
+          message = `You have updated the following: ${updatedFields.join(
+            ", "
+          )}`;
+        }
+        setUpdatedFieldsMessage(message);
         setUpdateSuccess(true);
         setUpdateError(null);
+        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
+        messageTimeoutRef.current = setTimeout(() => {
+          setUpdatedFieldsMessage("");
+          setUpdateSuccess(false);
+        }, 4000);
         // Refresh user data
         const userResponse = await fetch(
-          // "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
-          "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          // "http://localhost/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
             credentials: "include",
           }
@@ -95,7 +115,7 @@ export default function Profile({ userId }) {
           });
         }
       } else {
-        alert(result.message)
+        alert(result.message);
         setUpdateError(result.message || "Update failed");
       }
     } catch (err) {
@@ -109,7 +129,15 @@ export default function Profile({ userId }) {
   return (
     <div className={styles.profileContainer}>
       <h1>Manage My Profile</h1>
-      {updateSuccess && (
+      {updatedFieldsMessage && (
+        <div
+          className={styles.successMessage}
+          style={{ animation: "fadeIn 0.7s" }}
+        >
+          {updatedFieldsMessage}
+        </div>
+      )}
+      {updateSuccess && !updatedFieldsMessage && (
         <div className={styles.successMessage}>
           Profile updated successfully!
         </div>

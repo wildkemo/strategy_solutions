@@ -5,15 +5,15 @@ import { useState, useEffect } from "react";
 import styles from "./RequestService.module.css";
 
 const validateSession = async () => {
-  const response2 = await fetch(
-    "http://localhost/oop_project/php_backend/app/Controllers/validate_request.php",
-    { headers: { "Content-Type": "application/json" }, credentials: "include" }
-  );
-
   // const response2 = await fetch(
-  //   "http://localhost/strategy_solutions_backend/app/Controllers/validate_request.php",
+  //   "http://localhost/oop_project/php_backend/app/Controllers/validate_request.php",
   //   { headers: { "Content-Type": "application/json" }, credentials: "include" }
   // );
+
+  const response2 = await fetch(
+    "http://localhost/strategy_solutions_backend/app/Controllers/validate_request.php",
+    { headers: { "Content-Type": "application/json" }, credentials: "include" }
+  );
 
   if (!response2.ok) throw new Error("Failed to fetch services");
 
@@ -61,8 +61,8 @@ export default function RequestService() {
     //e.preventDefault();
 
     const response = await fetch(
-      //  "http://backend/app/Controllers/request_service.php",
-      "http://localhost/oop_project/php_backend/app/Controllers/request_service.php",
+       "http://localhost/strategy_solutions_backend/app/Controllers/request_service.php",
+      // "http://localhost/oop_project/php_backend/app/Controllers/request_service.php",
       {
         method: "POST",
         headers: {
