@@ -19,6 +19,30 @@ export default function Profile({ userId }) {
   const [updatedFieldsMessage, setUpdatedFieldsMessage] = useState("");
   const messageTimeoutRef = useRef(null);
 
+  // const func = async () => {
+  //   const response = await fetch(
+  //         "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+  //         // "http://localhost/www/oop_project/php_backend/app/Controllers/get_current_user.php",
+  //         {
+  //           method: "POST",
+  //           headers: { "Content-Type": "application/json" },
+  //           credentials: "include",
+  //         }
+  //       );
+  //       if (!response.ok) throw new Error("Failed to fetch user data");
+  //       const data = await response.json();
+  //       setUser(data);
+  //       setFormData({
+  //         name: data.name || "",
+  //         phone: data.phone || "",
+  //         company_name: data.company_name || "",
+  //         currentPassword: "",
+  //         password: "",
+  //         confirmPassword: "",
+  //       });
+  // }
+  // func();
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -26,16 +50,20 @@ export default function Profile({ userId }) {
           "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
           // "http://localhost/www/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             credentials: "include",
           }
         );
         if (!response.ok) throw new Error("Failed to fetch user data");
         const data = await response.json();
-        setUser(data);
+        // console.log(data); // Add this after fetching
+        const userdata = data[0];
+        setUser(userdata);
         setFormData({
-          name: data.name || "",
-          phone: data.phone || "",
-          company_name: data.company_name || "",
+          name: userdata.name ,
+          phone: userdata.phone ,
+          company_name: userdata.company_name ,
           currentPassword: "",
           password: "",
           confirmPassword: "",
@@ -104,16 +132,19 @@ export default function Profile({ userId }) {
           "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
           // "http://localhost/www/oop_project/php_backend/app/Controllers/get_current_user.php",
           {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             credentials: "include",
           }
         );
         if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setUser(userData);
+          const data = await userResponse.json();
+          const userdata = data[0];
+          setUser(userdata);
           setFormData({
-            name: userData.name || "",
-            phone: userData.phone || "",
-            company_name: userData.company_name || "",
+            name: userdata.name || "",
+            phone: userdata.phone || "",
+            company_name: userdata.company_name || "",
             currentPassword: "",
             password: "",
             confirmPassword: "",
@@ -121,7 +152,7 @@ export default function Profile({ userId }) {
         }
       } else {
         alert(result.message);
-        setUpdateError(result.message || "Update failed");
+        setUpdateError(result.message);
       }
     } catch (err) {
       setUpdateError(err.message);

@@ -130,7 +130,7 @@ export default function AdminDashboard() {
     setUsersError(null);
     try {
       const response = await fetch(
-        "http://localhost/strategy_solutions_backend/app/Models/Customer.php",
+        "http://localhost/strategy_solutions_backend/app/Controllers/get_users.php",
         { credentials: "include" }
       );
       if (!response.ok) throw new Error("Failed to fetch users");
@@ -179,6 +179,29 @@ export default function AdminDashboard() {
       icon: "box1",
     });
     setShowAddModal(true);
+  };
+
+  const handleDeleteUser = async (ID, EMAIL) => {
+    
+    const response = await fetch(
+        "http://localhost/strategy_solutions_backend/app/Controllers/delete_user.php",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: ID, email: EMAIL }),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete service");
+      const result = await response.json();
+      if (result.status == "success") {
+        alert(result.message);
+      } else {
+        alert(result.message);
+      }
+      await fetchUsers();
+      await fetchServiceRequests();
+      await fetchServices();
+
   };
 
   const handleEditService = (service) => {
@@ -601,7 +624,7 @@ export default function AdminDashboard() {
                         <td>{user.gender}</td>
                         <td>
                           <button
-                            onClick={() => handleDeleteUser(user.id)}
+                            onClick={() => handleDeleteUser(user.id, user.email)}
                             className={styles.deleteButton}
                           >
                             Delete
