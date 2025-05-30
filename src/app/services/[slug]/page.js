@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import styles from "../data-management/ServiceDetail.module.css";
 import Link from "next/link";
+import LoadingScreen from "../../components/LoadingScreen";
 
 // // Static services (same as in services/page.js)
 // const staticServices = [
@@ -301,10 +302,8 @@ export default function ServiceDetailPage() {
         }
       }
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000); // Hide after 4 seconds
     } catch {
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000);
     }
   };
 
@@ -313,13 +312,7 @@ export default function ServiceDetailPage() {
   }
 
   if (loading) {
-    return (
-      <div className={styles.serviceDetailContainer}>
-        <div className={styles.serviceDetailContent}>
-          <h1 className={styles.serviceTitle}>Loading...</h1>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (error) {
@@ -390,7 +383,10 @@ export default function ServiceDetailPage() {
                 }}
               >
                 <button
-                  onClick={() => (window.location.href = "/?showSignIn=1")}
+                  onClick={() => {
+                    setErrorMessage("");
+                    window.location.href = "/?showSignIn=1";
+                  }}
                   style={{
                     background: "#fff",
                     color: "#e74c3c",
@@ -418,6 +414,7 @@ export default function ServiceDetailPage() {
                     cursor: "pointer",
                     transition: "background 0.2s",
                   }}
+                  onClick={() => setErrorMessage("")}
                 >
                   Return to Service Page
                 </Link>

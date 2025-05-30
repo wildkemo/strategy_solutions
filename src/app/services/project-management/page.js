@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import styles from "../data-management/ServiceDetail.module.css";
 import Link from "next/link";
+import LoadingScreen from "../../components/LoadingScreen";
 
 export default function ProjectManagement() {
   const [service, setService] = useState(null);
@@ -56,21 +57,13 @@ export default function ProjectManagement() {
         }
       }
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000);
     } catch {
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000);
     }
   };
 
   if (loading) {
-    return (
-      <div className={styles.serviceDetailContainer}>
-        <div className={styles.serviceDetailContent}>
-          <h1 className={styles.serviceTitle}>Loading...</h1>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (error) {
@@ -136,7 +129,10 @@ export default function ProjectManagement() {
                 }}
               >
                 <button
-                  onClick={() => (window.location.href = "/?showSignIn=1")}
+                  onClick={() => {
+                    setErrorMessage("");
+                    window.location.href = "/?showSignIn=1";
+                  }}
                   style={{
                     background: "#fff",
                     color: "#e74c3c",
@@ -164,6 +160,7 @@ export default function ProjectManagement() {
                     cursor: "pointer",
                     transition: "background 0.2s",
                   }}
+                  onClick={() => setErrorMessage("")}
                 >
                   Return to Service Page
                 </Link>

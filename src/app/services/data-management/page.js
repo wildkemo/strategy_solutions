@@ -1,10 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./ServiceDetail.module.css";
 import Link from "next/link";
 import Image from "next/image";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const DataManagement = () => {
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [service, setService] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchService = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_services.php"
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch services");
+        }
+        const services = await response.json();
+        const found = services.find(
+          (s) => s.title.toLowerCase() === "data management solutions"
+        );
+        setService(found || null);
+      } catch (err) {
+        setError(err.message);
+        setService(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchService();
+  }, []);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (error) {
+    return (
+      <div className={styles.serviceDetailContainer}>
+        <div className={styles.serviceDetailContent}>
+          <h1 className={styles.serviceTitle}>Error</h1>
+          <p>{error}</p>
+          <Link href="/services" className={styles.requestButton}>
+            Back to Services
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!service) {
+    return (
+      <div className={styles.serviceDetailContainer}>
+        <div className={styles.serviceDetailContent}>
+          <h1 className={styles.serviceTitle}>Service Not Found</h1>
+          <Link href="/services" className={styles.requestButton}>
+            Back to Services
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const handleRequestService = async (e) => {
     e.preventDefault();
@@ -22,10 +82,8 @@ const DataManagement = () => {
         }
       }
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000);
     } catch {
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000);
     }
   };
 
@@ -77,7 +135,10 @@ const DataManagement = () => {
                 }}
               >
                 <button
-                  onClick={() => (window.location.href = "/?showSignIn=1")}
+                  onClick={() => {
+                    setErrorMessage("");
+                    window.location.href = "/?showSignIn=1";
+                  }}
                   style={{
                     background: "#fff",
                     color: "#e74c3c",
@@ -105,6 +166,7 @@ const DataManagement = () => {
                     cursor: "pointer",
                     transition: "background 0.2s",
                   }}
+                  onClick={() => setErrorMessage("")}
                 >
                   Return to Service Page
                 </Link>

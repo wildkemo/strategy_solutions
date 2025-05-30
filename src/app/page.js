@@ -10,6 +10,8 @@ export default function Home() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -17,6 +19,33 @@ export default function Home() {
       setShowModal(true);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    // Fetch user data to determine if signed in
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          { method: "GET", credentials: "include" }
+        );
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData && userData.length > 0) {
+            setUser(userData[0]);
+          } else {
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchUserData();
+  }, []);
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -77,13 +106,11 @@ export default function Home() {
           setFormError("");
           setFormSuccess(true);
           window.location.href = "/services";
-        } 
-        else if (loginResponse.status == "sucess-admin") {
+        } else if (loginResponse.status == "sucess-admin") {
           setFormError("");
           setFormSuccess(true);
           window.location.href = "/blank_admin";
-        } 
-        else if (loginResponse.status == "error") {
+        } else if (loginResponse.status == "error") {
           //alert(loginResponse.message);
           setFormError(loginResponse.message);
           setFormSuccess(false);
@@ -148,9 +175,11 @@ export default function Home() {
             Empowering businesses with innovative strategies and solutions
           </p>
           <div className={styles.ctas}>
-            <button onClick={handleOpenModal} className={styles.primary}>
-              Get Started
-            </button>
+            {!isLoading && !user && (
+              <button onClick={handleOpenModal} className={styles.primary}>
+                Get Started
+              </button>
+            )}
             <a href="/services" className={styles.secondary}>
               Learn More
             </a>

@@ -18,6 +18,8 @@ export default function Profile({ userId }) {
   const [updateError, setUpdateError] = useState(null);
   const [updatedFieldsMessage, setUpdatedFieldsMessage] = useState("");
   const messageTimeoutRef = useRef(null);
+  const [wrongPasswordPopup, setWrongPasswordPopup] = useState(false);
+  const [samePasswordPopup, setSamePasswordPopup] = useState(false);
 
   // const func = async () => {
   //   const response = await fetch(
@@ -61,9 +63,9 @@ export default function Profile({ userId }) {
         const userdata = data[0];
         setUser(userdata);
         setFormData({
-          name: userdata.name ,
-          phone: userdata.phone ,
-          company_name: userdata.company_name ,
+          name: userdata.name,
+          phone: userdata.phone,
+          company_name: userdata.company_name,
           currentPassword: "",
           password: "",
           confirmPassword: "",
@@ -90,6 +92,16 @@ export default function Profile({ userId }) {
     }
     if (formData.password && formData.password.length < 8) {
       setUpdateError("New password must be at least 8 characters long");
+      return;
+    }
+    // Check if new password and old password are the same
+    if (
+      formData.password &&
+      formData.currentPassword &&
+      formData.password === formData.currentPassword
+    ) {
+      setSamePasswordPopup(true);
+      setUpdateError(null);
       return;
     }
     try {
@@ -122,11 +134,6 @@ export default function Profile({ userId }) {
         setUpdatedFieldsMessage(message);
         setUpdateSuccess(true);
         setUpdateError(null);
-        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
-        messageTimeoutRef.current = setTimeout(() => {
-          setUpdatedFieldsMessage("");
-          setUpdateSuccess(false);
-        }, 4000);
         // Refresh user data
         const userResponse = await fetch(
           "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
@@ -150,6 +157,13 @@ export default function Profile({ userId }) {
             confirmPassword: "",
           });
         }
+      } else if (
+        result.status === "error" &&
+        result.message &&
+        result.message.toLowerCase().includes("wrong password")
+      ) {
+        setWrongPasswordPopup(true);
+        setUpdateError(null);
       } else {
         alert(result.message);
         setUpdateError(result.message);
@@ -165,18 +179,30 @@ export default function Profile({ userId }) {
   return (
     <div className={styles.profileContainer}>
       <h1>Manage My Profile</h1>
-      {updatedFieldsMessage && (
-        <div
-          className={styles.successMessage}
-          style={{ animation: "fadeIn 0.7s" }}
-        >
-          {updatedFieldsMessage}
-        </div>
+      {updateSuccess && updatedFieldsMessage && (
+        <PopupNotification
+          message={updatedFieldsMessage}
+          onClose={() => {
+            setUpdateSuccess(false);
+            setUpdatedFieldsMessage("");
+          }}
+        />
       )}
-      {updateSuccess && !updatedFieldsMessage && (
-        <div className={styles.successMessage}>
-          Profile updated successfully!
-        </div>
+      {wrongPasswordPopup && (
+        <PopupNotification
+          message={"Wrong password"}
+          onClose={() => setWrongPasswordPopup(false)}
+          error
+        />
+      )}
+      {samePasswordPopup && (
+        <PopupNotification
+          message={
+            "Choose another password. Old and new passwords are the same."
+          }
+          onClose={() => setSamePasswordPopup(false)}
+          error
+        />
       )}
       {updateError && <div className={styles.errorMessage}>{updateError}</div>}
       <form onSubmit={handleSubmit} className={styles.profileForm}>
@@ -238,10 +264,78 @@ export default function Profile({ userId }) {
             onChange={handleInputChange}
           />
         </div>
+        {/* Show error if passwords do not match and both fields are filled, under confirm password */}
+        {formData.password &&
+          formData.confirmPassword &&
+          formData.password !== formData.confirmPassword && (
+            <div
+              className={styles.errorMessage}
+              style={{ marginTop: "-1rem", marginBottom: "1rem" }}
+            >
+              Passwords do not match
+            </div>
+          )}
         <button type="submit" className={styles.updateButton}>
           Update Profile
         </button>
       </form>
+    </div>
+  );
+}
+
+function PopupNotification({ message, onClose, error }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 9999,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "rgba(0,0,0,0.3)",
+        minHeight: "100vh",
+      }}
+    >
+      <div
+        style={{
+          background: error ? "#fff" : "#fff",
+          color: error ? "#e74c3c" : "#222",
+          padding: "2rem 1.5rem 1.5rem 1.5rem",
+          borderRadius: "12px",
+          boxShadow: error
+            ? "0 4px 24px rgba(231,76,60,0.18)"
+            : "0 4px 24px rgba(0,0,0,0.18)",
+          border: error ? "1.5px solid #e74c3c" : undefined,
+          maxWidth: 400,
+          width: "90%",
+          textAlign: "center",
+          position: "relative",
+          animation: "fadeIn 0.7s",
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 14,
+            background: "none",
+            border: "none",
+            fontSize: 22,
+            color: error ? "#e74c3c" : "#888",
+            cursor: "pointer",
+          }}
+        >
+          &times;
+        </button>
+        <h2 style={{ marginBottom: 12, color: error ? "#e74c3c" : "#0070f3" }}>
+          {error ? "Error" : "Success"}
+        </h2>
+        <div style={{ fontSize: "1.1rem" }}>{message}</div>
+      </div>
     </div>
   );
 }

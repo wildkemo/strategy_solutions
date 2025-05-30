@@ -519,3 +519,23 @@
     margin-bottom: 0.2rem;
   }
 }
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "service"
+      "requests"
+      "user";
+  }
+  .card {
+    min-height: auto;
+  }
+  .tableContainer {
+    max-height: none;
+  }
+  .headerControls {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+}

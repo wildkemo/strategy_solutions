@@ -52,7 +52,7 @@ export default function Register() {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           action: "register",
           name: form.name,
@@ -75,7 +75,7 @@ export default function Register() {
       const registerResponse = await registerRequest.json();
 
       if (registerResponse.status == "success") {
-        window.location.href = "/services";
+        window.location.href = "/?showSignIn=1";
       } else if (registerResponse.status == "error") {
         alert(registerResponse.message);
       }

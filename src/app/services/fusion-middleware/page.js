@@ -1,9 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./ServiceDetail.module.css";
 import Link from "next/link";
+import Image from "next/image";
+import LoadingScreen from "../../components/LoadingScreen";
 
 export default function FusionMiddleware() {
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   const handleRequestService = async (e) => {
     e.preventDefault();
@@ -21,10 +36,8 @@ export default function FusionMiddleware() {
         }
       }
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000);
     } catch {
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000);
     }
   };
 
@@ -88,7 +101,10 @@ export default function FusionMiddleware() {
               }}
             >
               <button
-                onClick={() => (window.location.href = "/?showSignIn=1")}
+                onClick={() => {
+                  setErrorMessage("");
+                  window.location.href = "/?showSignIn=1";
+                }}
                 style={{
                   background: "#fff",
                   color: "#e74c3c",
@@ -116,6 +132,7 @@ export default function FusionMiddleware() {
                   cursor: "pointer",
                   transition: "background 0.2s",
                 }}
+                onClick={() => setErrorMessage("")}
               >
                 Return to Service Page
               </Link>

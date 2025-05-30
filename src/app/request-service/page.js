@@ -11,8 +11,8 @@ const validateSession = async () => {
   // );
 
   const response2 = await fetch(
+    // "http://localhost/strategy_solutions_backend/app/Controllers/validate_request.php",
     "http://localhost/strategy_solutions_backend/app/Controllers/validate_request.php",
-    // "http://localhost/www/oop_project/php_backend/app/Controllers/validate_request.php",
     { headers: { "Content-Type": "application/json" }, credentials: "include" }
   );
 
@@ -28,7 +28,7 @@ const validateSession = async () => {
   }
 };
 
-function PopupNotification({ message, onClose }) {
+function PopupNotification({ message, onClose, error }) {
   return (
     <div
       style={{
@@ -72,7 +72,9 @@ function PopupNotification({ message, onClose }) {
         >
           &times;
         </button>
-        <h2 style={{ marginBottom: 12, color: "#0070f3" }}>Success</h2>
+        <h2 style={{ marginBottom: 12, color: "#0070f3" }}>
+          {error ? "Error" : "Success"}
+        </h2>
         <div style={{ fontSize: "1.1rem" }}>{message}</div>
       </div>
     </div>
@@ -93,6 +95,8 @@ export default function RequestService() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
+  const [signedInEmail, setSignedInEmail] = useState("");
+  const [showEmailPopup, setShowEmailPopup] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -115,6 +119,29 @@ export default function RequestService() {
     }
   }, [showPopup]);
 
+  useEffect(() => {
+    // Fetch signed-in user's email
+    const fetchSignedInEmail = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost/strategy_solutions_backend/app/Controllers/get_current_user.php",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data[0] && data[0].email) {
+            setSignedInEmail(data[0].email);
+          }
+        }
+      } catch {}
+    };
+    fetchSignedInEmail();
+  }, []);
+
   const validateForm = () => {
     return true;
   };
@@ -122,15 +149,24 @@ export default function RequestService() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if entered email matches signed-in email
+    if (
+      signedInEmail &&
+      formData.email.trim().toLowerCase() !== signedInEmail.trim().toLowerCase()
+    ) {
+      setShowEmailPopup(true);
+      return;
+    }
+
     const response = await fetch(
+      // "http://localhost/strategy_solutions_backend/app/Controllers/request_service.php",
       "http://localhost/strategy_solutions_backend/app/Controllers/request_service.php",
-      // "http://localhost/www/oop_project/php_backend/app/Controllers/request_service.php",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           email: formData.email,
           service_type: formData.serviceType,
@@ -184,6 +220,13 @@ export default function RequestService() {
             "Your service has been requested successfully. Stay tuned for our company's response."
           }
           onClose={() => setShowPopup(false)}
+        />
+      )}
+      {showEmailPopup && (
+        <PopupNotification
+          message={"Enter your mail you have signed in with"}
+          onClose={() => setShowEmailPopup(false)}
+          error
         />
       )}
       {!isSubmitted && (

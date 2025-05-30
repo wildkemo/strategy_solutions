@@ -56,10 +56,8 @@ export default function HardwareInfrastructure() {
         }
       }
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000);
     } catch {
       setErrorMessage("You can't request a service unless you are signed in.");
-      setTimeout(() => setErrorMessage(""), 4000);
     }
   };
 
@@ -176,7 +174,10 @@ export default function HardwareInfrastructure() {
                 }}
               >
                 <button
-                  onClick={() => (window.location.href = "/?showSignIn=1")}
+                  onClick={() => {
+                    setErrorMessage("");
+                    window.location.href = "/?showSignIn=1";
+                  }}
                   style={{
                     background: "#fff",
                     color: "#e74c3c",
@@ -204,6 +205,7 @@ export default function HardwareInfrastructure() {
                     cursor: "pointer",
                     transition: "background 0.2s",
                   }}
+                  onClick={() => setErrorMessage("")}
                 >
                   Return to Service Page
                 </Link>

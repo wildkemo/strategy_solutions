@@ -26,6 +26,61 @@ const validateSession = async () => {
   }
 };
 
+function PopupNotification({ message, onClose, success = true }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 9999,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "rgba(0,0,0,0.3)",
+        minHeight: "100vh",
+      }}
+    >
+      <div
+        style={{
+          background: "#fff",
+          color: success ? "#0070f3" : "#e74c3c",
+          padding: "2rem 1.5rem 1.5rem 1.5rem",
+          borderRadius: "12px",
+          boxShadow: success
+            ? "0 4px 24px rgba(0,112,243,0.18)"
+            : "0 4px 24px rgba(231,76,60,0.18)",
+          border: success ? "1.5px solid #0070f3" : "1.5px solid #e74c3c",
+          maxWidth: 400,
+          width: "90%",
+          textAlign: "center",
+          position: "relative",
+          animation: "fadeIn 0.7s",
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 14,
+            background: "none",
+            border: "none",
+            fontSize: 22,
+            color: success ? "#0070f3" : "#e74c3c",
+            cursor: "pointer",
+          }}
+        >
+          &times;
+        </button>
+        <h2 style={{ marginBottom: 12 }}>{success ? "Success" : "Deleted"}</h2>
+        <div style={{ fontSize: "1.1rem" }}>{message}</div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   useEffect(() => {
     const checkSession = async () => {
@@ -73,6 +128,12 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [isUsersLoading, setIsUsersLoading] = useState(true);
   const [usersError, setUsersError] = useState(null);
+
+  const [popup, setPopup] = useState({
+    show: false,
+    message: "",
+    success: true,
+  });
 
   // Helper to normalize features array
   function normalizeFeatures(features) {
@@ -182,26 +243,24 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteUser = async (ID, EMAIL) => {
-    
     const response = await fetch(
-        "http://localhost/strategy_solutions_backend/app/Controllers/delete_user.php",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: ID, email: EMAIL }),
-        }
-      );
-      if (!response.ok) throw new Error("Failed to delete service");
-      const result = await response.json();
-      if (result.status == "success") {
-        alert(result.message);
-      } else {
-        alert(result.message);
+      "http://localhost/strategy_solutions_backend/app/Controllers/delete_user.php",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: ID, email: EMAIL }),
       }
-      await fetchUsers();
-      await fetchServiceRequests();
-      await fetchServices();
-
+    );
+    if (!response.ok) throw new Error("Failed to delete service");
+    const result = await response.json();
+    if (result.status == "success") {
+      setPopup({ show: true, message: "User deleted.", success: false });
+    } else {
+      alert(result.message);
+    }
+    await fetchUsers();
+    await fetchServiceRequests();
+    await fetchServices();
   };
 
   const handleEditService = (service) => {
@@ -228,11 +287,11 @@ export default function AdminDashboard() {
       if (!response.ok) throw new Error("Failed to delete service");
       const result = await response.json();
       if (result.status == "success") {
-        alert(result.message);
+        setPopup({ show: true, message: "Service deleted.", success: false });
+        await fetchServices();
       } else {
         alert(result.message);
       }
-      await fetchServices();
     } catch (err) {
       setError(err.message);
     }
@@ -245,11 +304,13 @@ export default function AdminDashboard() {
         "http://localhost/strategy_solutions_backend/app/Controllers/add_service.php";
       // let url = "hhttp://localhost/www/oop_project/php_backend/app/Controllers/add_service.php";
       let method = "POST";
+      let isEdit = false;
       if (editingService) {
         url =
           "http://localhost/strategy_solutions_backend/app/Controllers/update_service.php";
         // url = "http://localhost/www/oop_project/php_backend/app/Controllers/update_service.php";
         method = "POST";
+        isEdit = true;
       }
       // Always send features as array of objects
       const features = normalizeFeatures(newService.features);
@@ -265,7 +326,6 @@ export default function AdminDashboard() {
       if (!response.ok) throw new Error("Failed to save service");
       const result = await response.json();
       if (result.status === "success") {
-        alert(result.message);
         setShowAddModal(false);
         setEditingService(null);
         setNewService({
@@ -276,6 +336,19 @@ export default function AdminDashboard() {
           icon: "box1",
         });
         await fetchServices();
+        if (isEdit) {
+          setPopup({
+            show: true,
+            message: `Service '${newService.title}' edited successfully.`,
+            success: true,
+          });
+        } else {
+          setPopup({
+            show: true,
+            message: `Service '${newService.title}' added successfully.`,
+            success: true,
+          });
+        }
       } else {
         alert(result.message);
         setError(result.message || "Error in database");
@@ -332,33 +405,44 @@ export default function AdminDashboard() {
   };
 
   // Filtered data based on search
+  const term = searchTerm.toLowerCase();
+  const matches = (value) =>
+    value && value.toString().toLowerCase().includes(term);
+
   const filteredServices = services.filter((service) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
+    if (!term) return true;
     return (
-      service.title.toLowerCase().includes(term) ||
-      service.category.toLowerCase().includes(term) ||
+      matches(service.id) ||
+      matches(service.title) ||
+      matches(service.category) ||
       (service.features &&
-        service.features.some((f) =>
-          (f.name + " " + f.description).toLowerCase().includes(term)
-        ))
+        service.features.some((f) => matches(f.name) || matches(f.description)))
     );
   });
+
   const filteredServiceRequests = serviceRequests.filter((request) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
+    if (!term) return true;
     return (
-      (request.id + "").includes(term) ||
-      (request.name && request.name.toLowerCase().includes(term)) ||
-      (request.email && request.email.toLowerCase().includes(term)) ||
-      (request.phone && request.phone.toLowerCase().includes(term)) ||
-      (request.company_name &&
-        request.company_name.toLowerCase().includes(term)) ||
-      (request.service_type &&
-        request.service_type.toLowerCase().includes(term)) ||
-      (request.service_description &&
-        request.service_description.toLowerCase().includes(term)) ||
-      (request.status && request.status.toLowerCase().includes(term))
+      matches(request.id) ||
+      matches(request.name) ||
+      matches(request.email) ||
+      matches(request.phone) ||
+      matches(request.company_name) ||
+      matches(request.service_type) ||
+      matches(request.service_description) ||
+      matches(request.status)
+    );
+  });
+
+  const filteredUsers = users.filter((user) => {
+    if (!term) return true;
+    return (
+      matches(user.id) ||
+      matches(user.name) ||
+      matches(user.email) ||
+      matches(user.phone) ||
+      matches(user.company_name) ||
+      matches(user.gender)
     );
   });
 
@@ -378,6 +462,13 @@ export default function AdminDashboard() {
 
   return (
     <div className={styles.dashboard}>
+      {popup.show && (
+        <PopupNotification
+          message={popup.message}
+          onClose={() => setPopup({ show: false, message: "", success: true })}
+          success={popup.success}
+        />
+      )}
       <header className={styles.header}>
         <h1>Admin Dashboard</h1>
         <div className={styles.headerControls}>
@@ -570,33 +661,7 @@ export default function AdminDashboard() {
           {/* User Management Card */}
           <div className={`${styles.card} ${styles.userCard}`}>
             <h2>User Management</h2>
-            {users && users.length > 0 && (
-              <div
-                style={{
-                  marginBottom: "1rem",
-                  padding: "0.75rem 1.25rem",
-                  background: "#f8f9fa",
-                  borderRadius: "6px",
-                  color: "#222",
-                  fontWeight: 500,
-                  fontSize: "1.05rem",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-                }}
-              >
-                <span style={{ marginRight: "2rem" }}>
-                  <strong>Name:</strong> {users[0].name}
-                </span>
-                <span style={{ marginRight: "2rem" }}>
-                  <strong>Email:</strong> {users[0].email}
-                </span>
-                <span style={{ marginRight: "2rem" }}>
-                  <strong>Company:</strong> {users[0].company_name}
-                </span>
-                <span>
-                  <strong>Phone:</strong> {users[0].phone}
-                </span>
-              </div>
-            )}
+            {filteredUsers && filteredUsers.length > 0 && null}
             {isUsersLoading ? (
               <div className={styles.loading}>Loading users...</div>
             ) : usersError ? (
@@ -615,8 +680,8 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.map((user) => (
-                      <tr key={user.id}>
+                    {filteredUsers.map((user) => (
+                      <tr key={user.id || user.email || user.name}>
                         <td>{user.name}</td>
                         <td>{user.company_name}</td>
                         <td>{user.phone}</td>
@@ -624,7 +689,9 @@ export default function AdminDashboard() {
                         <td>{user.gender}</td>
                         <td>
                           <button
-                            onClick={() => handleDeleteUser(user.id, user.email)}
+                            onClick={() =>
+                              handleDeleteUser(user.id, user.email)
+                            }
                             className={styles.deleteButton}
                           >
                             Delete
@@ -758,7 +825,6 @@ export default function AdminDashboard() {
                           e.target.value
                         )
                       }
-                      required
                       style={{ minHeight: "60px" }}
                     />
                     <button
