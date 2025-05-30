@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 // import { useRouter } from "next/navigation";
 import styles from "./RequestService.module.css";
+import LoadingScreen from "../components/LoadingScreen";
 
 const validateSession = async () => {
   // const response2 = await fetch(
@@ -97,6 +98,7 @@ export default function RequestService() {
   const [showPopup, setShowPopup] = useState(false);
   const [signedInEmail, setSignedInEmail] = useState("");
   const [showEmailPopup, setShowEmailPopup] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -148,18 +150,17 @@ export default function RequestService() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true);
     // Check if entered email matches signed-in email
     if (
       signedInEmail &&
       formData.email.trim().toLowerCase() !== signedInEmail.trim().toLowerCase()
     ) {
       setShowEmailPopup(true);
+      setLoading(false);
       return;
     }
-
     const response = await fetch(
-      // "http://localhost/strategy_solutions_backend/app/Controllers/request_service.php",
       "http://localhost/strategy_solutions_backend/app/Controllers/request_service.php",
       {
         method: "POST",
@@ -174,32 +175,20 @@ export default function RequestService() {
         }),
       }
     );
-
-    console.log("Response status:", response.status);
-
     if (!response.ok) {
       const errorText = await response.text();
+      setLoading(false);
       throw new Error(
         `HTTP error! Status: ${response.status}, Message: ${errorText}`
       );
     }
-
     const result = await response.json();
-
+    setLoading(false);
     if (result.status == "success") {
-      window.location.href = "/services?requested=1";
+      setShowPopup(true);
     } else if (result.status == "error") {
       alert(result.message);
     }
-
-    // if (true) {
-    //   try {
-    //     // console.log("Sending form data:", formData);
-    //   } catch (error) {
-    //     console.error("Error:", error.message);
-    //     alert("An error occurred while submitting the form.");
-    //   }
-    // }
   };
 
   const handleChange = (e) => {
@@ -211,6 +200,7 @@ export default function RequestService() {
   };
 
   if (checkingSession) return <div className={styles.loading}>Loading...</div>;
+  if (loading) return <LoadingScreen />;
 
   return (
     <div className={styles.container}>
