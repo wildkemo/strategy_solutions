@@ -1,10 +1,14 @@
 .serviceDetailContainer {
   min-height: 100vh;
   padding: 100px 20px;
-  background: #111;
-  color: #fff;
+  background: #f3f1eb !important;
+  color: #000 !important;
   overflow: hidden;
   position: relative;
+}
+
+.serviceDetailContainer * {
+  color: #000 !important;
 }
 
 .serviceDetailLayout {
@@ -21,9 +25,10 @@
 .serviceDetailContent {
   max-width: 1100px;
   margin: 0 auto;
-  background: #111;
+  background: #fff !important;
+  color: #000 !important;
   border-radius: 20px;
-  border: 1px solid #222;
+  border: 1px solid #e0e0e0 !important;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
   padding: 48px 32px 40px 32px;
   animation: fadeIn 1.2s ease;
@@ -44,9 +49,10 @@
 .serviceHeader {
   text-align: center;
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: #fff !important;
+  color: #000 !important;
   border-radius: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #e0e0e0 !important;
   backdrop-filter: blur(5px);
 }
 
@@ -63,7 +69,7 @@
 .serviceSubtitle {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #e0e0e0;
+  color: #000 !important;
   margin-bottom: 2.2rem;
   letter-spacing: 1.5px;
   text-align: left;
@@ -72,7 +78,7 @@
 
 .serviceDescription {
   font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.9);
   line-height: 1.6;
   max-width: 800px;
   margin: 0 auto;
@@ -85,17 +91,18 @@
 }
 
 .section {
-  background: rgba(255, 255, 255, 0.1);
+  background: #fff !important;
+  color: #000 !important;
   padding: 2rem;
   border-radius: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #e0e0e0 !important;
   backdrop-filter: blur(5px);
 }
 
 .sectionTitle {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
-  color: #ffffff;
+  color: #000 !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
@@ -110,9 +117,10 @@
 .benefitItem {
   padding: 1rem;
   margin-bottom: 0.5rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: #fff !important;
+  color: #000 !important;
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e0e0e0 !important;
   transition: all 0.3s ease;
 }
 
@@ -125,22 +133,23 @@
 .ctaSection {
   text-align: center;
   padding: 3rem;
-  background: rgba(0, 0, 0, 0.4);
+  background: #fff !important;
+  color: #000 !important;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #e0e0e0 !important;
   backdrop-filter: blur(10px);
 }
 
 .ctaTitle {
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: #ffffff;
+  color: #000 !important;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .ctaDescription {
   font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.9);
   margin-bottom: 2rem;
   max-width: 600px;
   margin-left: auto;
@@ -188,7 +197,7 @@
 
 .whatWeDoList {
   list-style: disc inside;
-  color: #fff;
+  color: #000 !important;
   font-size: 1.15rem;
   line-height: 2.1;
   margin-left: 0.5rem;
@@ -209,7 +218,7 @@
   margin-bottom: 0.7rem;
   margin-left: 1.5rem;
   font-size: 1.08rem;
-  color: #bdbdbd;
+  color: #000 !important;
   font-weight: 400;
   line-height: 2;
 }

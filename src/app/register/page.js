@@ -3,6 +3,56 @@
 import { useState } from "react";
 import styles from "../request-service/RequestService.module.css";
 
+function Popup({ message, onClose }) {
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        background: "rgba(0,0,0,0.3)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9999,
+      }}
+    >
+      <div
+        style={{
+          background: "#fff",
+          color: "#d63031",
+          padding: "2rem 2.5rem",
+          borderRadius: 16,
+          boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
+          fontWeight: 600,
+          fontSize: "1.2rem",
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 16,
+            background: "none",
+            border: "none",
+            fontSize: 22,
+            color: "#888",
+            cursor: "pointer",
+          }}
+        >
+          &times;
+        </button>
+        {message}
+      </div>
+    </div>
+  );
+}
+
 export default function Register() {
   const [form, setForm] = useState({
     name: "",
@@ -15,6 +65,7 @@ export default function Register() {
   });
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState(false);
+  const [showUserExists, setShowUserExists] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -77,7 +128,14 @@ export default function Register() {
       if (registerResponse.status == "success") {
         window.location.href = "/?showSignIn=1";
       } else if (registerResponse.status == "error") {
-        alert(registerResponse.message);
+        if (
+          registerResponse.message &&
+          registerResponse.message.toLowerCase().includes("already exists")
+        ) {
+          setShowUserExists(true);
+        } else {
+          setFormError(registerResponse.message);
+        }
       }
     }
 
@@ -107,6 +165,12 @@ export default function Register() {
     <div className={styles.container}>
       <div className={styles.content}>
         <h2 className={styles.title}>Register</h2>
+        {showUserExists && (
+          <Popup
+            message="User already exists"
+            onClose={() => setShowUserExists(false)}
+          />
+        )}
         {formSuccess ? (
           <div className={styles.success}>
             Registration successful! You can now log in.

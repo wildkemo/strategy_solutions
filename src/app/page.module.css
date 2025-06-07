@@ -4,16 +4,18 @@
   --gray-alpha-100: rgba(var(--gray-rgb), 0.05);
 
   --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
+  --button-secondary-hover: #ffffff;
 
   display: grid;
   grid-template-rows: 20px 1fr 20px;
   align-items: center;
   justify-items: center;
   min-height: 100svh;
-  padding: 80px;
-  padding-top: 80px;
-  gap: 64px;
+ 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
   font-family: var(--font-geist-sans);
   position: relative;
   z-index: 1;
@@ -30,7 +32,10 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 0;
+  box-sizing: border-box;
+  
+  
 }
 
 @media (prefers-color-scheme: dark) {
@@ -68,21 +73,25 @@
 
 /* Hero Section */
 .hero {
-  min-height: 80vh;
+  min-height: 100vh; /* Ensure the hero section takes up the full viewport height */
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: url("/images/server3.png") center center / cover no-repeat;
-  border-radius: 20px;
-  padding: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+    background: url("/images/bb2af275-e7f6-4e3e-acc4-3f60fd7341d1.png") center center / cover no-repeat; /* Set the background image */
+    background-size: cover; /* Ensure the image covers the entire section */
+  background-position: center; /* Center the image */
+  border-radius: 0;
+  padding: 0;
+  border: none;
   position: relative;
   animation: fadeIn 1.2s ease;
-  padding-top: 100px;
-  margin-top: 80px;
+  width: 100vw;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: hidden; /* Prevent any content from overflowing */
+  height: 100%;
 }
-
 .heroContent {
   width: 100%;
   height: 100%;
@@ -101,12 +110,12 @@
   font-size: 4rem;
   font-weight: 700;
   margin-bottom: 20px;
-  color: #ffb347;
+  color: #ffffff;
 }
 
 .heroSubtitle {
   font-size: 1.5rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: #fcfcfc;
   margin-bottom: 40px;
 }
 
@@ -119,7 +128,7 @@
 .features h2 {
   font-size: 2.5rem;
   margin-bottom: 40px;
-  color: #ffffff;
+  color: #000;
 }
 
 .featureGrid {
@@ -159,11 +168,11 @@
 .featureCard h3 {
   font-size: 1.5rem;
   margin-bottom: 15px;
-  color: #ffffff;
+  color: #000;
 }
 
 .featureCard p {
-  color: rgba(255, 255, 255, 0.9);
+  color: #000;
   line-height: 1.6;
 }
 
@@ -610,4 +619,24 @@
   .featureCard h3 {
     font-size: 0.95rem;
   }
+}
+
+
+.footer{
+  display: flex;
+  gap: 24px;
+  color: #fff !important;
+  background: #000 !important;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 0;
+  position: fixed; /* Fix the footer at the bottom */
+  left: 0; /* Align to the left edge */
+  bottom: 0; /* Align to the bottom of the viewport */
+  z-index: 100; /* Ensure it stays above other content */
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+  flex-shrink: 0;
 }

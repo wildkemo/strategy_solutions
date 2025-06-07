@@ -169,3 +169,12 @@
     transform: translateY(0);
   }
 }
+
+.serviceDetailContainer {
+  background: #f3f1eb !important;
+  color: #000 !important;
+}
+
+.serviceDetailContainer * {
+  color: #000 !important;
+}

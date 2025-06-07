@@ -27,7 +27,7 @@ export default function ContactPage() {
         </div>
       </div>
       <footer className={styles.footer}>
-        Copyright 2025 Strategy Solution. All Rights Reserved.
+      Copyright © 2025 Strategy Solution - All Rights Reserved.
       </footer>
     </div>
   );

@@ -18,7 +18,7 @@
 .servicesTitle {
   text-align: center;
   margin-bottom: 50px;
-  color: #ffffff;
+  color: #000;
   font-size: 2.5rem;
   opacity: 0;
   animation: fadeIn 1s ease forwards;
@@ -87,6 +87,14 @@
   font-size: 0.9rem;
   line-height: 1.5;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.serviceBox,
+.serviceBox h2,
+.serviceBox li,
+.explanation {
+  color: #000 !important;
+  text-shadow: none !important;
 }
 
 .box1 {

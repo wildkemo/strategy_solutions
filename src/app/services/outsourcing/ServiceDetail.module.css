@@ -1,18 +1,23 @@
 .serviceDetailContainer {
   min-height: 100vh;
   padding: 100px 20px;
-  background: #111;
-  color: #fff;
+  background: #f3f1eb !important;
+  color: #000 !important;
   overflow: hidden;
   position: relative;
+}
+
+.serviceDetailContainer * {
+  color: #000 !important;
 }
 
 .serviceDetailContent {
   max-width: 1200px;
   margin: 0 auto;
-  background: #111;
+  background: #fff !important;
+  color: #000 !important;
   border-radius: 20px;
-  border: 1px solid #222;
+  border: 1px solid #e0e0e0 !important;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
   padding: 48px 32px 40px 32px;
   animation: fadeIn 1.2s ease;
@@ -37,6 +42,9 @@
   border-left: 3px solid #ffb347;
   padding-left: 2.5rem;
   margin-left: 2.5rem;
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
 .highlightTitle {
@@ -48,10 +56,16 @@
   border-radius: 0 8px 8px 0;
   margin-bottom: 1.2rem;
   display: inline-block;
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
 .sectionBlock {
   margin-bottom: 2.5rem;
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
 .sectionTitle {
@@ -64,10 +78,13 @@
   display: inline-block;
   margin-right: 0.7rem;
   vertical-align: middle;
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #e0e0e0 !important;
 }
 
 .sectionText {
-  color: #fff;
+  color: #000 !important;
   font-size: 1.18rem;
   line-height: 1.7;
   display: inline;
@@ -140,4 +157,4 @@
 .contactButton:hover {
   background-color: rgba(74, 144, 226, 0.1);
   transform: translateY(-2px);
-} 
+}

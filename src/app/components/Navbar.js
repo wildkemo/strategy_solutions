@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
@@ -13,7 +13,23 @@ export default function Navbar() {
   const [isLoading, setIsLoading] = useState(true);
   const [isOrdersLoading, setIsOrdersLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setHasMounted(true);
+    if (pathname.startsWith("/services")) {
+      setScrolled(false);
+      return;
+    }
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -110,8 +126,26 @@ export default function Navbar() {
     }
   }, [sidebarOpen, user]);
 
+  const isSolidNavbarPage =
+    pathname.startsWith("/services") ||
+    pathname.startsWith("/about") ||
+    pathname.startsWith("/contact") ||
+    pathname.startsWith("/request-service") ||
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/my-orders") ||
+    pathname.startsWith("/register");
+  const navbarClass = isSolidNavbarPage
+    ? `${styles.navbar} ${styles.scrolled}`
+    : hasMounted
+    ? `${styles.navbar} ${scrolled ? styles.scrolled : ""}`
+    : styles.navbar;
+
+  if (!hasMounted) {
+    return null;
+  }
+
   return (
-    <nav className={styles.navbar}>
+    <nav className={navbarClass}>
       <div className={styles.container}>
         <Link href="/" className={styles.logo}>
           Strategy Solution
@@ -161,15 +195,11 @@ export default function Navbar() {
               onClick={() => setSidebarOpen(true)}
               aria-label="Open profile sidebar"
             >
-              {user.avatar ? (
-                <img src={user.avatar} alt="Profile" />
-              ) : (
-                <span>
-                  {user.name && user.name.length > 0
-                    ? user.name[0].toUpperCase()
-                    : "U"}
-                </span>
-              )}
+              <img
+                src="/images/user profile.avif"
+                alt="Profile"
+                style={{ width: "100%", height: "100%", borderRadius: "50%" }}
+              />
             </button>
           </div>
         )}

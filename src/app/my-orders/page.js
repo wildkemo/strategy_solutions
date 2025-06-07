@@ -15,7 +15,7 @@ export default function MyOrders({ userId }) {
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            credentials: 'include',
+            credentials: "include",
             body: JSON.stringify({ userId }),
           }
         );
@@ -36,7 +36,7 @@ export default function MyOrders({ userId }) {
     return <div style={{ padding: 32, color: "red" }}>Error: {error}</div>;
 
   return (
-    <div style={{ padding: 32 }}>
+    <div style={{ padding: "80px 32px 32px 32px" }}>
       <h1>My Orders</h1>
       <table
         style={{ width: "100%", borderCollapse: "collapse", marginTop: 24 }}

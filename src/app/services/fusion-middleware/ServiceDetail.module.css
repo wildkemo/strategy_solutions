@@ -1,18 +1,23 @@
 .serviceDetailContainer {
   min-height: 100vh;
   padding: 100px 20px;
-  background: #111;
-  color: #fff;
+  background: #f3f1eb !important;
+  color: #000 !important;
   overflow: hidden;
   position: relative;
+}
+
+.serviceDetailContainer * {
+  color: #000 !important;
 }
 
 .serviceDetailContent {
   max-width: 1200px;
   margin: 0 auto;
-  background: #111;
+  background: #fff !important;
+  color: #000 !important;
   border-radius: 20px;
-  border: 1px solid #222;
+  border: 1px solid #e0e0e0 !important;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
   padding: 48px 32px 40px 32px;
   animation: fadeIn 1.2s ease;
@@ -40,6 +45,8 @@
 
 .whatWeDoSection {
   margin-bottom: 2.5rem;
+  background: #fff !important;
+  color: #000 !important;
 }
 
 .whatWeDoTitle {

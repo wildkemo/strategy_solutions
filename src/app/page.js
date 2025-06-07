@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 
 export default function Home() {
@@ -12,13 +11,10 @@ export default function Home() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (searchParams.get("showSignIn")) {
-      setShowModal(true);
-    }
-  }, [searchParams]);
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     // Fetch user data to determine if signed in
@@ -166,216 +162,138 @@ export default function Home() {
   };
 
   return (
-    <main className={styles.main}>
-      {/* Hero Section */}
-      <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <h1>Strategy Solution</h1>
-          <p className={styles.heroSubtitle}>
-            Empowering businesses with innovative strategies and solutions
-          </p>
-          <div className={styles.ctas}>
-            {!isLoading && !user && (
-              <button onClick={handleOpenModal} className={styles.primary}>
-                Get Started
-              </button>
-            )}
-            <a href="/services" className={styles.secondary}>
-              Learn More
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className={styles.features}>
-        <div className={styles.featuresHeader}>
-          <Image
-            src="/images/server1.png"
-            alt="Server Rack"
-            width={80}
-            height={80}
-            className={styles.solutionsImage}
-            priority
-          />
-          <h2>Our Solutions</h2>
-        </div>
-        <div className={styles.featureGrid}>
-          <div className={styles.featureCard}>
-            <h3>Strategic Planning</h3>
-            <p>
-              Comprehensive business strategy development and implementation
+    <>
+      <main className={styles.main}>
+        {/* Hero Section */}
+        <section className={styles.hero}>
+          <div className={styles.heroContent}>
+            <h1>Strategy Solution</h1>
+            <p className={styles.heroSubtitle}>
+              Empowering businesses with innovative strategies and solutions
             </p>
-          </div>
-          <div className={styles.featureCard}>
-            <h3>Digital Transformation</h3>
-            <p>
-              Modernize your business with cutting-edge technology solutions
-            </p>
-          </div>
-          <div className={styles.featureCard}>
-            <h3>Performance Optimization</h3>
-            <p>Enhance efficiency and productivity across your organization</p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className={styles.ctaSection}>
-        <h2>Ready to Transform Your Business?</h2>
-        <p>Let's discuss how we can help you achieve your goals</p>
-        <a href="#contact" className={styles.primary}>
-          Contact Us
-        </a>
-      </section>
-
-      {/* Modal Validation Form */}
-      {showModal && (
-        <div className={styles.modalOverlay} onClick={handleCloseModal}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <button
-              className={styles.closeButton}
-              onClick={handleCloseModal}
-              aria-label="Close"
-            >
-              ×
-            </button>
-            <h2>Sign In</h2>
-            {formSuccess ? (
-              <div className={styles.successMessage}>
-                Thank you! We'll contact you soon.
-                <br />
-                <a href="/register" className={styles.registerLink}>
-                  Go to Register Form
-                </a>
-              </div>
-            ) : (
-              <form
-                onSubmit={handleFormSubmit}
-                className={styles.validationForm}
-              >
-                <div className={styles.formGroup}>
-                  <label>Email</label>
-                  <input
-                    name="email"
-                    value={form.email}
-                    onChange={handleFormChange}
-                    required
-                    type="email"
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label>Password</label>
-                  <input
-                    name="password"
-                    value={form.password}
-                    onChange={handleFormChange}
-                    required
-                    type="password"
-                  />
-                </div>
-                {formError && (
-                  <div className={styles.formError}>{formError}</div>
-                )}
-                <button type="submit" className={styles.saveButton}>
-                  Submit
+            <div className={styles.ctas}>
+              {!isLoading && !user && (
+                <button onClick={handleOpenModal} className={styles.primary}>
+                  Get Started
                 </button>
-                <a href="/register" className={styles.registerLink}>
-                  Go to Register Form
-                </a>
-              </form>
-            )}
+              )}
+              <a href="/services" className={styles.secondary}>
+                Learn More
+              </a>
+            </div>
           </div>
-        </div>
-      )}
-    </main>
-    // <div className={styles.page}>
-    //   <main className={styles.main}>
-    //     <Image
-    //       className={styles.logo}
-    //       src="/next.svg"
-    //       alt="Next.js logo"
-    //       width={180}
-    //       height={38}
-    //       priority
-    //     />
-    //     <ol>
-    //       <li>
-    //         Get started by editing <code>src/app/page.js</code>.
-    //       </li>
-    //       <li>Save and see your changes instantly.</li>
-    //     </ol>
+        </section>
 
-    //     <div className={styles.ctas}>
-    //       <a
-    //         className={styles.primary}
-    //         href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-    //         target="_blank"
-    //         rel="noopener noreferrer"
-    //       >
-    //         <Image
-    //           className={styles.logo}
-    //           src="/vercel.svg"
-    //           alt="Vercel logomark"
-    //           width={20}
-    //           height={20}
-    //         />
-    //         Deploy now
-    //       </a>
-    //       <a
-    //         href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-    //         target="_blank"
-    //         rel="noopener noreferrer"
-    //         className={styles.secondary}
-    //       >
-    //         Read our docs
-    //       </a>
-    //     </div>
-    //   </main>
-    //   <footer className={styles.footer}>
-    //     <a
-    //       href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       <Image
-    //         aria-hidden
-    //         src="/file.svg"
-    //         alt="File icon"
-    //         width={16}
-    //         height={16}
-    //       />
-    //       Learn
-    //     </a>
-    //     <a
-    //       href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       <Image
-    //         aria-hidden
-    //         src="/window.svg"
-    //         alt="Window icon"
-    //         width={16}
-    //         height={16}
-    //       />
-    //       Examples
-    //     </a>
-    //     <a
-    //       href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       <Image
-    //         aria-hidden
-    //         src="/globe.svg"
-    //         alt="Globe icon"
-    //         width={16}
-    //         height={16}
-    //       />
-    //       Go to nextjs.org →
-    //     </a>
-    //   </footer>
-    // </div>
+        {/* Features Section */}
+        <section className={styles.features}>
+          <div className={styles.featuresHeader}>
+            <Image
+              src="/images/server1.png"
+              alt="Server Rack"
+              width={80}
+              height={80}
+              className={styles.solutionsImage}
+              priority
+            />
+            <h2>Our Solutions</h2>
+          </div>
+          <div className={styles.featureGrid}>
+            <div className={styles.featureCard}>
+              <h3>Strategic Planning</h3>
+              <p>
+                Comprehensive business strategy development and implementation
+              </p>
+            </div>
+            <div className={styles.featureCard}>
+              <h3>Digital Transformation</h3>
+              <p>
+                Modernize your business with cutting-edge technology solutions
+              </p>
+            </div>
+            <div className={styles.featureCard}>
+              <h3>Performance Optimization</h3>
+              <p>Enhance efficiency and productivity across your organization</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Modal Validation Form */}
+        {showModal && (
+          <div className={styles.modalOverlay} onClick={handleCloseModal}>
+            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+              <button
+                className={styles.closeButton}
+                onClick={handleCloseModal}
+                aria-label="Close"
+              >
+                ×
+              </button>
+              <h2>Sign In</h2>
+              {formSuccess ? (
+                <div className={styles.successMessage}>
+                  Thank you! We'll contact you soon.
+                  <br />
+                  <a href="/register" className={styles.registerLink}>
+                    Go to Register Form
+                  </a>
+                </div>
+              ) : (
+                <form
+                  onSubmit={handleFormSubmit}
+                  className={styles.validationForm}
+                >
+                  <div className={styles.formGroup}>
+                    <label>Email</label>
+                    <input
+                      name="email"
+                      value={form.email}
+                      onChange={handleFormChange}
+                      required
+                      type="email"
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Password</label>
+                    <input
+                      name="password"
+                      value={form.password}
+                      onChange={handleFormChange}
+                      required
+                      type="password"
+                    />
+                  </div>
+                  {formError && (
+                    <div className={styles.formError}>{formError}</div>
+                  )}
+                  <button type="submit" className={styles.saveButton}>
+                    Submit
+                  </button>
+                  <a href="/register" className={styles.registerLink}>
+                    Go to Register Form
+                  </a>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+      </main>
+      <footer
+        style={{
+          width: "100vw",
+          background: "#000",
+          color: "#fff",
+          textAlign: "center",
+          padding: "1rem 0",
+          fontSize: "1.3rem",
+          fontWeight: 500,
+          boxShadow: "0 -2px 12px rgba(0,0,0,0.08)",
+          marginTop: "2.5rem",
+          left: 0,
+          right: 0
+        }}
+      >
+        Copyright © 2025 Strategy Solution - All Rights Reserved.
+      </footer>
+    </>
   );
 }

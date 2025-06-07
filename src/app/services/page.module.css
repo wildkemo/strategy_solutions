@@ -11,22 +11,20 @@
 .hero {
   text-align: center;
   padding: 60px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: #f3f1eb;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #e0e0e0;
 }
 
 .hero h1 {
   font-size: 3.5rem;
-  color: #ffffff;
+  color: #000;
   margin-bottom: 20px;
 }
 
 .heroSubtitle {
   font-size: 1.5rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: #000;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -45,7 +43,7 @@
 
 .serviceCategory h2 {
   font-size: 2.5rem;
-  color: #ffffff;
+  color: #000;
   text-align: center;
 }
 
@@ -56,14 +54,13 @@
 }
 
 .serviceCard {
-  background: rgba(255, 255, 255, 0.2);
+  background: #f3f1eb;
+  color: #222;
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #e0e0e0;
 }
 
 .serviceCard:hover {
@@ -73,12 +70,12 @@
 
 .serviceCard h3 {
   font-size: 1.5rem;
-  color: #ffffff;
+  color: #000;
   margin-bottom: 15px;
 }
 
 .serviceCard p {
-  color: rgba(255, 255, 255, 0.9);
+  color: #000;
   margin-bottom: 20px;
   line-height: 1.6;
 }
@@ -90,7 +87,7 @@
 }
 
 .serviceCard li {
-  color: rgba(255, 255, 255, 0.8);
+  color: #000;
   margin-bottom: 10px;
   padding-left: 25px;
   position: relative;
@@ -98,7 +95,7 @@
 
 .serviceCard li:before {
   content: "•";
-  color: rgba(255, 255, 255, 0.9);
+  color: #000;
   position: absolute;
   left: 0;
 }
@@ -106,24 +103,24 @@
 .ctaSection {
   text-align: center;
   padding: 60px 40px;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: #f3f1eb;
+  color: #000;
   border-radius: 20px;
-  color: #ffffff;
   margin-top: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #e0e0e0;
 }
 
 .ctaSection h2 {
   font-size: 2.5rem;
   margin-bottom: 20px;
+  color: #000;
 }
 
 .ctaSection p {
   font-size: 1.2rem;
   margin-bottom: 40px;
   opacity: 0.9;
+  color: #000;
 }
 
 .primary {

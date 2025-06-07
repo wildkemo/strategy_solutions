@@ -1,16 +1,16 @@
 .profileContainer {
   max-width: 480px;
   margin: 80px auto 0 auto;
-  background: rgba(20, 20, 20, 0.98);
+  background: #fff;
   border-radius: 18px;
-  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
   padding: 2.5rem 2rem 2rem 2rem;
-  color: #fff;
+  color: #000;
   animation: fadeIn 0.7s;
 }
 
 .profileContainer h1 {
-  color: #ffb347;
+  color: #4a90e2;
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 2rem;
@@ -30,7 +30,7 @@
 }
 
 .formGroup label {
-  color: #ffb347;
+  color: #4a90e2;
   font-weight: 600;
   margin-bottom: 0.2rem;
 }
@@ -38,10 +38,10 @@
 .profileForm input[type="text"],
 .profileForm input[type="password"] {
   padding: 0.8rem 1rem;
-  border: 1.5px solid #444;
+  border: 1.5px solid #ccc;
   border-radius: 6px;
-  background: #181818;
-  color: #fff;
+  background: #fafafa;
+  color: #000;
   font-size: 1rem;
   transition: border 0.2s;
 }
@@ -50,11 +50,12 @@
 .profileForm input[type="password"]:focus {
   border: 1.5px solid #ffb347;
   outline: none;
+  background: #fff;
 }
 
 .updateButton {
-  background: linear-gradient(90deg, #ffb347 60%, #e6a03c 100%);
-  color: #181818;
+  background: #4a90e2;
+  color: #fff;
   font-weight: 700;
   font-size: 1.1rem;
   border: none;
@@ -67,12 +68,11 @@
 }
 
 .updateButton:hover {
-  background: linear-gradient(90deg, #e6a03c 60%, #ffb347 100%);
-  color: #000;
+  background: #357abd;
 }
 
 .successMessage {
-  color: #00b894;
+  color: #4a90e2;
   background: rgba(0, 184, 148, 0.08);
   border: 1px solid #00b894;
   border-radius: 6px;
@@ -83,7 +83,7 @@
 }
 
 .errorMessage {
-  color: #e74c3c;
+  color: #d63031;
   background: rgba(231, 76, 60, 0.08);
   border: 1px solid #e74c3c;
   border-radius: 6px;
