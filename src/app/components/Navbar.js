@@ -148,7 +148,11 @@ export default function Navbar() {
     <nav className={navbarClass}>
       <div className={styles.container}>
         <Link href="/" className={styles.logo}>
-          Strategy Solution
+          <img
+            src="/images/WhatsApp_Image_2025-06-08_at_20.37.40_9716fb98-removebg-preview.png"
+            alt="Strategy Solutions Logo"
+            className={styles.logoImage}
+          />
         </Link>
 
         {/* Mobile menu button */}

@@ -40,6 +40,11 @@
   color: #4a90e2;
 }
 
+.logoImage {
+  max-height: 50px;
+  width: auto;
+}
+
 .navLinks {
   display: flex;
   gap: 2rem;
@@ -109,6 +114,12 @@
 
 /* Mobile styles */
 @media (max-width: 768px) {
+  .navbar {
+    background-color: #ffffff;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
   .menuButton {
     display: block;
   }
@@ -120,7 +131,7 @@
     height: 100vh;
     width: 70vw;
     max-width: 320px;
-    background: rgba(0, 0, 0, 0.95);
+    background: #ffffff;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     flex-direction: column;
@@ -163,6 +174,27 @@
   .overlay.hide {
     opacity: 0;
     pointer-events: none;
+  }
+
+  .navLink {
+    color: #000000;
+  }
+
+  .menuIcon {
+    background-color: #000000;
+  }
+
+  .menuIcon::before,
+  .menuIcon::after {
+    background-color: #000000;
+  }
+
+  .logo {
+    color: #000000;
+  }
+
+  .mainImage {
+    margin-top: -10px;
   }
 }
 
@@ -225,7 +257,7 @@
   background: none;
   border: none;
   font-size: 2rem;
-  color: #ffb347;
+  color: #4a90e2;
   position: absolute;
   top: 1rem;
   right: 1rem;
@@ -234,7 +266,7 @@
 }
 
 .closeButton:hover {
-  color: #e6a03c;
+  color: #4a90e2;
 }
 
 .userInfo {
@@ -275,18 +307,18 @@
 }
 
 .orderItem {
+  /* background: #4a90e2; */
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.05);
   border-radius: 6px;
   font-size: 0.9rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #4a90e2;
 }
 
 .orderService {
-  color: rgba(255, 255, 255, 0.9);
+  color: #000;
   font-weight: 500;
 }
 

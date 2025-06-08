@@ -10,6 +10,13 @@ const LoadingScreen = () => {
             <div className={styles.logoCircle}></div>
             <div className={styles.logoCircle}></div>
             <div className={styles.logoCircle}></div>
+            <div className={styles.logoCircle}></div>
+            <div className={styles.logoCircle}></div>
+            <div className={styles.logoCircle}></div>
+            <div className={styles.logoCircle}></div>
+            <div className={styles.logoCircle}></div>
+            <div className={styles.logoCircle}></div>
+            <div className={styles.logoCircle}></div>
           </div>
         </div>
         <h2 className={styles.loadingText}>Loading...</h2>
