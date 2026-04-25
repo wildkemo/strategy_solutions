@@ -17,6 +17,7 @@ This project is a web application with a React-based frontend integrated into an
   - ESLint for linting
 - **Backend:**
   - Express.js
+  - Prisma ORM
 
 ## Building and Running
 
@@ -25,7 +26,15 @@ This project is a web application with a React-based frontend integrated into an
 From the root directory:
 - `npm install`: Install root dependencies.
 - `npm run build`: Installs all dependencies (root and frontend) and builds the frontend production assets.
+- `npx prisma generate`: Generates the Prisma Client (handled automatically by `postinstall`).
 - `npm start`: Starts the Express server which serves the API and the frontend.
+
+## Database (Prisma)
+
+- **Schema:** Located at `prisma/schema.prisma`.
+- **Client Instance:** Access the singleton client via `src/utils/prisma.js`.
+- **Migration:** Run `npx prisma migrate dev` to create and apply migrations during development.
+- **Studio:** Run `npx prisma studio` to view and edit your data in a GUI.
 
 ### Development
 

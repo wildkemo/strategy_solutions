@@ -34,3 +34,5 @@ dist-ssr/
 # Vite specific
 Frontend/Strategy-Solution/dist/
 Frontend/Strategy-Solution/node_modules/
+
+/src/generated/prisma

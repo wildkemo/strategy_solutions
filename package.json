@@ -10,12 +10,16 @@
     "start": "node index.js",
     "dev": "concurrently \"node --watch index.js\" \"npm run dev --prefix Frontend/Strategy-Solution\"",
     "build": "npm install && npm install --prefix Frontend/Strategy-Solution && npm run build --prefix Frontend/Strategy-Solution",
+    "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@prisma/client": "^7.8.0",
     "express": "^5.2.1"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "dotenv": "^17.4.2",
+    "prisma": "^7.8.0"
   }
 }
