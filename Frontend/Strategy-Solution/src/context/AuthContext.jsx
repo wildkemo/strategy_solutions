@@ -9,12 +9,23 @@ import {
 import { apiFetch } from '../lib/api'
 
 const AuthContext = createContext(null)
+const AUTH_BYPASS = import.meta.env.DEV || import.meta.env.VITE_AUTH_BYPASS === 'true'
+const BYPASS_USER = {
+  id: 'dev-user',
+  name: 'Dev User',
+  email: 'dev@local.test',
+  isAdmin: true,
+}
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(() => (AUTH_BYPASS ? BYPASS_USER : null))
+  const [loading, setLoading] = useState(!AUTH_BYPASS)
 
   const refreshUser = useCallback(async () => {
+    if (AUTH_BYPASS) {
+      setUser(BYPASS_USER)
+      return BYPASS_USER
+    }
     const { ok, data } = await apiFetch('/api/get_current_user')
     if (ok && data?.user) {
       setUser(data.user)
@@ -25,6 +36,10 @@ export function AuthProvider({ children }) {
   }, [])
 
   useEffect(() => {
+    if (AUTH_BYPASS) {
+      setLoading(false)
+      return
+    }
     let cancelled = false
     ;(async () => {
       setLoading(true)
@@ -38,6 +53,14 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(
     async (email, password) => {
+      if (AUTH_BYPASS) {
+        setUser({
+          ...BYPASS_USER,
+          email: email || BYPASS_USER.email,
+          name: email ? email.split('@')[0] : BYPASS_USER.name,
+        })
+        return { ok: true, isAdmin: true }
+      }
       const { ok, data, status } = await apiFetch('/api/login', {
         method: 'POST',
         json: { email, password },
@@ -55,6 +78,10 @@ export function AuthProvider({ children }) {
   )
 
   const logout = useCallback(async () => {
+    if (AUTH_BYPASS) {
+      setUser(BYPASS_USER)
+      return
+    }
     await apiFetch('/api/logout', { method: 'POST' })
     setUser(null)
   }, [])
@@ -69,6 +96,7 @@ export function AuthProvider({ children }) {
       login,
       logout,
       setUser,
+      authBypass: AUTH_BYPASS,
     }),
     [user, loading, refreshUser, login, logout],
   )

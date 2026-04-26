@@ -8,6 +8,7 @@
   display: flex;
   align-items: flex-end;
   padding: 4rem 1.5rem 3.5rem;
+  margin: 0 2.25rem;
   background:
     linear-gradient(
       105deg,
@@ -15,9 +16,9 @@
       var(--hero-overlay-mid) 55%,
       transparent 100%
     ),
-    url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&q=80')
-      center/cover no-repeat;
+    var(--hero-image) center center / cover no-repeat;
   color: var(--color-white);
+  border-radius: var(--radius-lg);
 }
 
 .heroInner {
@@ -242,6 +243,10 @@
   .hero {
     padding-top: 3rem;
     min-height: 48vh;
+    margin: 0 0.85rem;
+    background-position:
+      center,
+      62% center;
   }
 }
 

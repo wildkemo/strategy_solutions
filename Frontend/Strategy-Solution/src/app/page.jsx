@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Footer } from './components/Footer'
+import heroServersImage from '../assets/bb2af275-e7f6-4e3e-acc4-3f60fd7341d1.png'
 import styles from './page.module.css'
 
 const serviceCards = [
@@ -63,7 +64,10 @@ const industries = [
 export default function HomePage() {
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
+      <section
+        className={styles.hero}
+        style={{ '--hero-image': `url(${heroServersImage})` }}
+      >
         <div className={styles.heroInner}>
           <h1 className={styles.heroTitle}>
           Empowering businesses with innovative strategies and solutions
