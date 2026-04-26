@@ -243,7 +243,7 @@ This document explains the design of each frontend page in `src/pages` only (no 
 - Validation error messaging.
 - Links to registration and forgot password.
 - Redirect behavior:
-  - Admin -> `/blank_admin`
+  - Admin -> `/admin_dashboard`
   - Customer -> `/services`
 
 ### Mobile behavior
@@ -343,7 +343,7 @@ This document explains the design of each frontend page in `src/pages` only (no 
 
 ---
 
-## 12) Admin Dashboard Page (`/blank_admin`) - `src/pages/AdminDashboard/AdminDashboard.jsx`
+## 12) Admin Dashboard Page (`/admin_dashboard`) - `src/pages/AdminDashboard/AdminDashboard.jsx`
 
 ### Design intent
 - Management console style interface with sectioned data blocks.

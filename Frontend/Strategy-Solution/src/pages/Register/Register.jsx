@@ -37,59 +37,60 @@ export default function RegisterPage() {
     setError('')
     if (!validate()) return
     setBusy(true)
-    const { ok, data, status } = await apiFetch('/api/register', {
+    
+    // 1. Signup the user
+    const signupRes = await apiFetch('/api/signup', {
       method: 'POST',
-      json: { name, email },
+      json: { name, email, companyName: company, phone, password },
     })
-    setBusy(false)
-    if (status === 409 || data?.status === 'error') {
-      if (status === 409 || /exist|registered/i.test(data?.message || '')) {
-        setExistsOpen(true)
-        return
-      }
-    }
-    if (ok && (data?.status === 'success' || data?.message)) {
-      setOtpOpen(true)
+
+    if (signupRes.status === 409) {
+      setBusy(false)
+      setError(signupRes.data?.error || 'Account already exists')
+      setExistsOpen(true)
       return
     }
-    setError(data?.message || 'Registration could not start')
+
+    if (!signupRes.ok) {
+      setBusy(false)
+      setError(signupRes.data?.error || signupRes.data?.details?.join(', ') || 'Registration failed')
+      return
+    }
+
+    // 2. Request OTP (access token cookie is already set by signup)
+    const otpRes = await apiFetch('/api/otp/create', {
+      method: 'POST'
+    })
+
+    setBusy(false)
+    if (otpRes.ok) {
+      setOtpOpen(true)
+    } else {
+      setError(otpRes.data?.error || 'Could not send OTP. Please try logging in to verify your account.')
+    }
   }
 
   const finalize = async () => {
     setBusy(true)
     setError('')
-    const v = await apiFetch('/api/verify', {
+    
+    // 3. Validate OTP
+    const v = await apiFetch('/api/otp/validate', {
       method: 'POST',
-      json: { otp, email, purpose: 'Registration' },
+      json: { otp },
     })
+
     if (!v.ok) {
       setBusy(false)
-      setError(v.data?.message || 'Invalid or expired OTP')
+      setError(v.data?.error || v.data?.details?.join(', ') || 'Invalid or expired OTP')
       return
     }
-    const { ok, data } = await apiFetch('/api/insert_new_customer', {
-      method: 'POST',
-      json: {
-        name,
-        email,
-        phone,
-        company_name: company,
-        password,
-      },
-    })
+
+    // 4. Success!
     setBusy(false)
-    if (!ok) {
-      setError(data?.message || 'Could not create account')
-      return
-    }
     setOtpOpen(false)
-    const loginRes = await login(email, password)
-    if (loginRes.ok) {
-      await refreshUser()
-      navigate('/services', { replace: true })
-    } else {
-      navigate('/login', { replace: true })
-    }
+    await refreshUser()
+    navigate('/services', { replace: true })
   }
 
   return (
@@ -205,7 +206,7 @@ export default function RegisterPage() {
           </Link>
         }
       >
-        <p>This email is already registered. Try signing in instead.</p>
+        <p>{error || 'This account is already registered.'} Try signing in instead.</p>
       </Modal>
     </div>
   )

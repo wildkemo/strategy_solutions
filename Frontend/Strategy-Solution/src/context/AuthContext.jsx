@@ -28,8 +28,12 @@ export function AuthProvider({ children }) {
     }
     const { ok, data } = await apiFetch('/api/get_current_user')
     if (ok && data?.user) {
-      setUser(data.user)
-      return data.user
+      const userWithAdmin = {
+        ...data.user,
+        isAdmin: data.user.role === 'ADMIN'
+      }
+      setUser(userWithAdmin)
+      return userWithAdmin
     }
     setUser(null)
     return null
@@ -65,7 +69,7 @@ export function AuthProvider({ children }) {
         method: 'POST',
         json: { email, password },
       })
-      if (ok && data?.status === 'success') {
+      if (ok && data?.user) {
         await refreshUser()
         return { ok: true, isAdmin: !!data.isAdmin }
       }

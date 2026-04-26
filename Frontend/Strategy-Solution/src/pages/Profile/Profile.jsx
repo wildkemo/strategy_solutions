@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { apiFetch } from '../../lib/api'
 import { Modal } from '../../components/Modal'
@@ -7,7 +7,8 @@ import forms from '../../styles/forms.module.css'
 import styles from './Profile.module.css'
 
 export default function ProfilePage() {
-  const { user, refreshUser, isAdmin } = useAuth()
+  const { user, refreshUser, isAdmin, logout } = useAuth()
+  const navigate = useNavigate()
   const [name, setName] = useState(user?.name || '')
   const [company, setCompany] = useState(user?.company_name || '')
   const [phone, setPhone] = useState(user?.phone || '')
@@ -19,6 +20,11 @@ export default function ProfilePage() {
   const [successOpen, setSuccessOpen] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
   const [errOpen, setErrOpen] = useState(false)
+
+  const [deleteStep, setDeleteStep] = useState(null)
+  const [deleteOtp, setDeleteOtp] = useState('')
+  const [deleteBusy, setDeleteBusy] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
 
   useEffect(() => {
     if (!user) return
@@ -69,6 +75,43 @@ export default function ProfilePage() {
     }
   }
 
+  const openDeleteFlow = async () => {
+    setDeleteError('')
+    setDeleteStep('otp')
+    setDeleteBusy(true)
+    const { ok, data } = await apiFetch('/api/send_otp', {
+      method: 'POST',
+      json: { purpose: 'Delete Account' },
+    })
+    setDeleteBusy(false)
+    if (!ok) setDeleteError(data?.message || 'Could not send OTP')
+  }
+
+  const goToConfirmDelete = () => {
+    if (deleteOtp.length < 4) return
+    setDeleteError('')
+    setDeleteStep('confirm')
+  }
+
+  const finalizeDelete = async () => {
+    setDeleteBusy(true)
+    setDeleteError('')
+    const { ok, data } = await apiFetch('/api/delete_account', {
+      method: 'DELETE',
+      json: { otp: deleteOtp, purpose: 'Delete Account' },
+    })
+    setDeleteBusy(false)
+    if (ok) {
+      await logout()
+      setDeleteStep(null)
+      setDeleteOtp('')
+      navigate('/')
+    } else {
+      setDeleteStep('otp')
+      setDeleteError(data?.message || 'Could not delete account')
+    }
+  }
+
   return (
     <div className={`${forms.pageCenter} ${styles.pageWrap}`}>
       <div className={`${forms.card} ${styles.card}`}>
@@ -76,8 +119,8 @@ export default function ProfilePage() {
         <p className={forms.sub}>Keep your account details up to date.</p>
         {error ? <p className={forms.error}>{error}</p> : null}
         {isAdmin ? (
-          <Link to="/blank_admin" className={styles.adminDash}>
-            Return to Admin Dashboard
+          <Link to="/admin_dashboard" className={styles.adminDash}>
+            Go to Admin Dashboard
           </Link>
         ) : null}
         <form onSubmit={onSubmit}>
@@ -151,6 +194,20 @@ export default function ProfilePage() {
             {busy ? 'Saving…' : 'Save changes'}
           </button>
         </form>
+
+        <div className={styles.dangerZone}>
+          <h2 className={styles.dangerTitle}>Danger Zone</h2>
+          <p className={styles.dangerText}>
+            Deleting your account is permanent and cannot be undone.
+          </p>
+          <button
+            type="button"
+            className={styles.dangerBtn}
+            onClick={openDeleteFlow}
+          >
+            Delete Account
+          </button>
+        </div>
       </div>
 
       <Modal open={successOpen} title="Saved" onClose={() => setSuccessOpen(false)}>
@@ -163,6 +220,73 @@ export default function ProfilePage() {
         onClose={() => setErrOpen(false)}
       >
         <p>Your current password did not match. Try again.</p>
+      </Modal>
+
+      <Modal
+        open={deleteStep === 'otp'}
+        title="Delete account"
+        onClose={() => !deleteBusy && setDeleteStep(null)}
+        actions={
+          <>
+            <button
+              type="button"
+              className={styles.ghostBtn}
+              onClick={() => setDeleteStep(null)}
+              disabled={deleteBusy}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className={styles.primaryBtn}
+              onClick={goToConfirmDelete}
+              disabled={deleteBusy || deleteOtp.length < 4}
+            >
+              Continue
+            </button>
+          </>
+        }
+      >
+        <p>Enter the OTP sent to your email.</p>
+        {deleteError ? <p className={styles.errText}>{deleteError}</p> : null}
+        <input
+          className={styles.otpInput}
+          value={deleteOtp}
+          onChange={(e) => setDeleteOtp(e.target.value)}
+          placeholder="6-digit code"
+          autoComplete="one-time-code"
+        />
+      </Modal>
+
+      <Modal
+        open={deleteStep === 'confirm'}
+        title="Confirm deletion"
+        onClose={() => !deleteBusy && setDeleteStep(null)}
+        actions={
+          <>
+            <button
+              type="button"
+              className={styles.ghostBtn}
+              onClick={() => setDeleteStep(null)}
+              disabled={deleteBusy}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className={styles.dangerBtn}
+              onClick={finalizeDelete}
+              disabled={deleteBusy}
+            >
+              Permanently delete
+            </button>
+          </>
+        }
+      >
+        <p>
+          This will remove your account and associated data. This cannot be
+          undone.
+        </p>
       </Modal>
     </div>
   )

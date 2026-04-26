@@ -28,7 +28,7 @@
  * - Redirection: Redirect to /login if token is missing/invalid (and refresh fails).
  * 
  * D. Role-Based Access Control (Admin Dashboard):
- * - Target: /blank_admin*
+ * - Target: /admin_dashboard*
  * - Verification: Extracts JWT payload from access_token and checks 'admin' boolean claim.
  * - Enforcement: Redirect to /services if payload.admin is false.
  * 

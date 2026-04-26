@@ -61,7 +61,12 @@ export const signup = async (req, res) => {
 
     const { name, email, password, phone, companyName } = signupData;
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { phone }]
+      }
+    });
+
     if (existingUser) {
       return res.status(409).json({ error: 'User already exists' });
     }

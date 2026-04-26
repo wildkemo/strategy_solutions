@@ -66,50 +66,9 @@ export function Navbar() {
   const pendingOrders = allPending.slice(0, 3)
   const recentOrders = allOrders.slice(0, 3)
 
-  const [deleteStep, setDeleteStep] = useState(null)
-  const [deleteOtp, setDeleteOtp] = useState('')
-  const [deleteBusy, setDeleteBusy] = useState(false)
-  const [deleteError, setDeleteError] = useState('')
+  const [logoutOpen, setLogoutOpen] = useState(false)
 
   const closeMobile = () => setMobileOpen(false)
-
-  const openDeleteFlow = async () => {
-    setDeleteError('')
-    setDeleteStep('otp')
-    setDeleteBusy(true)
-    const { ok, data } = await apiFetch('/api/send_otp', {
-      method: 'POST',
-      json: { purpose: 'Delete Account' },
-    })
-    setDeleteBusy(false)
-    if (!ok) setDeleteError(data?.message || 'Could not send OTP')
-  }
-
-  const goToConfirmDelete = () => {
-    if (deleteOtp.length < 4) return
-    setDeleteError('')
-    setDeleteStep('confirm')
-  }
-
-  const finalizeDelete = async () => {
-    setDeleteBusy(true)
-    setDeleteError('')
-    const { ok, data } = await apiFetch('/api/delete_account', {
-      method: 'DELETE',
-      json: { otp: deleteOtp, purpose: 'Delete Account' },
-    })
-    setDeleteBusy(false)
-    if (ok) {
-      await logout()
-      setDeleteStep(null)
-      setDeleteOtp('')
-      setPanelOpen(false)
-      navigate('/')
-    } else {
-      setDeleteStep('otp')
-      setDeleteError(data?.message || 'Could not delete account')
-    }
-  }
 
   return (
     <>
@@ -269,7 +228,7 @@ export function Navbar() {
               </Link>
               {isAdmin ? (
                 <Link
-                  to="/blank_admin"
+                  to="/admin_dashboard"
                   onClick={() => setPanelOpen(false)}
                   className={styles.panelBtnAdmin}
                 >
@@ -278,19 +237,8 @@ export function Navbar() {
               ) : null}
               <button
                 type="button"
-                className={styles.panelBtnDanger}
-                onClick={openDeleteFlow}
-              >
-                Delete account
-              </button>
-              <button
-                type="button"
                 className={styles.panelBtnGhost}
-                onClick={async () => {
-                  await logout()
-                  setPanelOpen(false)
-                  navigate('/')
-                }}
+                onClick={() => setLogoutOpen(true)}
               >
                 Logout
               </button>
@@ -300,72 +248,34 @@ export function Navbar() {
       ) : null}
 
       <Modal
-        open={deleteStep === 'otp'}
-        title="Delete account"
-        onClose={() => !deleteBusy && setDeleteStep(null)}
+        open={logoutOpen}
+        title="Sign out?"
+        onClose={() => setLogoutOpen(false)}
         actions={
           <>
             <button
               type="button"
               className={styles.btnGhost}
-              onClick={() => setDeleteStep(null)}
-              disabled={deleteBusy}
+              onClick={() => setLogoutOpen(false)}
             >
               Cancel
             </button>
             <button
               type="button"
               className={styles.btnPrimary}
-              onClick={goToConfirmDelete}
-              disabled={deleteBusy || deleteOtp.length < 4}
+              onClick={async () => {
+                await logout()
+                setLogoutOpen(false)
+                setPanelOpen(false)
+                navigate('/')
+              }}
             >
-              Continue
+              Sign out
             </button>
           </>
         }
       >
-        <p>Enter the OTP sent to your email.</p>
-        {deleteError ? (
-          <p className={styles.errText}>{deleteError}</p>
-        ) : null}
-        <input
-          className={styles.otpInput}
-          value={deleteOtp}
-          onChange={(e) => setDeleteOtp(e.target.value)}
-          placeholder="6-digit code"
-          autoComplete="one-time-code"
-        />
-      </Modal>
-
-      <Modal
-        open={deleteStep === 'confirm'}
-        title="Confirm deletion"
-        onClose={() => !deleteBusy && setDeleteStep(null)}
-        actions={
-          <>
-            <button
-              type="button"
-              className={styles.btnGhost}
-              onClick={() => setDeleteStep(null)}
-              disabled={deleteBusy}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              className={styles.btnDanger}
-              onClick={finalizeDelete}
-              disabled={deleteBusy}
-            >
-              Permanently delete
-            </button>
-          </>
-        }
-      >
-        <p>
-          This will remove your account and associated data. This cannot be
-          undone.
-        </p>
+        <p>Are you sure you want to log out of your account?</p>
       </Modal>
     </>
   )

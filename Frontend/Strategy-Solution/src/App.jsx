@@ -36,7 +36,7 @@ function GuestOnly({ children }) {
     )
   }
   if (user) {
-    return <Navigate to={isAdmin ? '/blank_admin' : '/services'} replace />
+    return <Navigate to={isAdmin ? '/admin_dashboard' : '/services'} replace />
   }
   return children
 }
@@ -75,7 +75,7 @@ export default function App() {
           }
         />
         <Route
-          path="/blank_admin"
+          path="/admin_dashboard"
           element={
             <RequireAuth adminOnly>
               <AdminDashboardPage />

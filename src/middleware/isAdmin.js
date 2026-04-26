@@ -6,7 +6,14 @@
  * - Used to protect routes labeled "Security: Admin Only" in API-ROUTES.md.
  * 
  * Logic:
- * - Extracts JWT payload.
- * - Checks if payload.admin is true.
- * - Returns 401/403 if check fails, otherwise calls next().
+ * - Checks if req.user (populated by checkAuth) has the role 'ADMIN'.
+ * - Returns 403 Forbidden if the check fails.
  */
+const isAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== 'ADMIN') {
+    return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+  }
+  next();
+};
+
+export default isAdmin;

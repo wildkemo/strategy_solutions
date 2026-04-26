@@ -19,7 +19,7 @@ export default function LoginPage() {
     const res = await login(email, password)
     setBusy(false)
     if (res.ok) {
-      navigate(res.isAdmin ? '/blank_admin' : '/services', { replace: true })
+      navigate(res.isAdmin ? '/admin_dashboard' : '/services', { replace: true })
     } else {
       setError(res.message || 'Login failed')
     }

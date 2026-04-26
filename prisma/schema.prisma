@@ -31,6 +31,7 @@ model User {
   refreshTokens RefreshToken[]
 
   @@map("users")
+  @@unique([email, phone])
 }
 
 model RefreshToken {
@@ -68,7 +69,7 @@ model Otp {
   createdAt DateTime @default(now())
 
   userId Int
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("otps")
 }

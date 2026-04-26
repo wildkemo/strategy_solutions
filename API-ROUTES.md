@@ -49,9 +49,9 @@ This document provides a comprehensive overview of all API routes and middleware
 - **Requirement:** A valid `access_token` cookie must be present.
 - **Redirection:** If the token is missing, the user is redirected to `/login`.
 
-##### D. Role-Based Access Control (Admin Dashboard)
+### Role-Based Access Control (Admin Dashboard)
 
-- **Target:** `/blank_admin` and its sub-routes.
+- **Target:** `/admin_dashboard` and its sub-routes.
 - **Verification Process:**
   1. Extracts the JWT payload from `access_token` using `jwtVerify`.
   2. Inspects the `admin` boolean claim within the payload.
