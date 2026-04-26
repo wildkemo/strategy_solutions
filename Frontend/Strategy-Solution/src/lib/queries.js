@@ -16,6 +16,17 @@ export function useServicesQuery() {
   })
 }
 
+export function useCategoriesQuery() {
+  return useQuery({
+    queryKey: ['categories'],
+    queryFn: async () => {
+      const { ok, data } = await apiFetch('/api/get_categories')
+      if (!ok) throw new Error(data?.message || 'Failed to fetch categories')
+      return Array.isArray(data) ? data : data?.categories || []
+    },
+  })
+}
+
 /**
  * --- Customer Queries ---
  */

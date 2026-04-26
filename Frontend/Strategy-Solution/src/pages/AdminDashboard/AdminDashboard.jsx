@@ -7,6 +7,7 @@ import {
   useAllOrdersQuery,
   useAllCustomersQuery,
   useAdminsQuery,
+  useCategoriesQuery,
 } from '../../lib/queries'
 import { Modal } from '../../components/Modal'
 import styles from './AdminDashboard.module.css'
@@ -20,6 +21,7 @@ export default function AdminDashboardPage() {
 
   // --- Queries ---
   const { data: services = [] } = useServicesQuery()
+  const { data: categories = [] } = useCategoriesQuery()
   const { data: orders = [] } = useAllOrdersQuery()
   const { data: customers = [] } = useAllCustomersQuery()
   const { data: admins = [] } = useAdminsQuery()
@@ -29,12 +31,12 @@ export default function AdminDashboardPage() {
   const [qCust, setQCust] = useState('')
 
   const [svcModal, setSvcModal] = useState(null)
+  const [deleteConfirmSvc, setDeleteConfirmSvc] = useState(null)
   const [svcForm, setSvcForm] = useState({
     id: null,
     title: '',
     description: '',
-    category: '',
-    icon: '',
+    categoryId: '',
     features: [{ ...emptyFeature }],
     image: null,
   })
@@ -49,6 +51,15 @@ export default function AdminDashboardPage() {
     window.setTimeout(() => setToast(null), 3200)
   }
 
+  // --- Helpers ---
+
+  const removeFeature = (index) => {
+    setSvcForm((f) => {
+      const next = f.features.filter((_, i) => i !== index)
+      return { ...f, features: next.length ? next : [{ ...emptyFeature }] }
+    })
+  }
+
   // --- Mutations ---
 
   const saveServiceMutation = useMutation({
@@ -57,8 +68,7 @@ export default function AdminDashboardPage() {
       if (form.id) fd.append('id', String(form.id))
       fd.append('title', form.title)
       fd.append('description', form.description)
-      fd.append('category', form.category)
-      fd.append('icon', form.icon)
+      fd.append('categoryId', form.categoryId)
       fd.append(
         'features',
         JSON.stringify(
@@ -167,8 +177,7 @@ export default function AdminDashboardPage() {
       id: null,
       title: '',
       description: '',
-      category: '',
-      icon: '',
+      categoryId: '',
       features: [{ ...emptyFeature }],
       image: null,
     })
@@ -188,8 +197,7 @@ export default function AdminDashboardPage() {
       id: s.id,
       title: s.title || '',
       description: s.description || '',
-      category: s.category || '',
-      icon: s.icon || '',
+      categoryId: String(s.categoryId || ''),
       features: normalized,
       image: null,
     })
@@ -204,7 +212,7 @@ export default function AdminDashboardPage() {
   const addAdmin = () => addAdminMutation.mutate(adminForm)
 
   const filterSvc = services.filter((s) =>
-    [s.title, s.category, s.description].some((x) =>
+    [s.title, s.category?.name, s.description].some((x) =>
       (x || '').toLowerCase().includes(qSvc.toLowerCase()),
     ),
   )
@@ -282,12 +290,12 @@ export default function AdminDashboardPage() {
                   <tr key={s.id}>
                     <td>{s.id}</td>
                     <td>{s.title}</td>
-                    <td>{s.category}</td>
+                    <td>{s.category?.name || '—'}</td>
                     <td>
                       <button type="button" className={styles.rowBtn} onClick={() => openEditService(s)}>
                         Edit
                       </button>
-                      <button type="button" className={styles.rowBtnDanger} onClick={() => deleteService(s.id)}>
+                      <button type="button" className={styles.rowBtnDanger} onClick={() => setDeleteConfirmSvc(s)}>
                         Delete
                       </button>
                     </td>
@@ -298,6 +306,34 @@ export default function AdminDashboardPage() {
           </div>
         </section>
       ) : null}
+
+      {/* Service Delete Confirmation */}
+      <Modal
+        open={!!deleteConfirmSvc}
+        title="Confirm Deletion"
+        onClose={() => setDeleteConfirmSvc(null)}
+        actions={
+          <>
+            <button type="button" className={styles.rowBtn} onClick={() => setDeleteConfirmSvc(null)}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              className={styles.rowBtnDanger}
+              onClick={() => {
+                deleteService(deleteConfirmSvc.id)
+                setDeleteConfirmSvc(null)
+              }}
+            >
+              Confirm Delete
+            </button>
+          </>
+        }
+      >
+        <p className={styles.muted}>
+          Are you sure you want to delete <strong>{deleteConfirmSvc?.title}</strong>? This action is permanent.
+        </p>
+      </Modal>
 
       {tab === 'orders' ? (
         <section className={styles.section}>
@@ -460,10 +496,17 @@ export default function AdminDashboardPage() {
           </label>
           <label>
             Category
-            <input
-              value={svcForm.category}
-              onChange={(e) => setSvcForm((f) => ({ ...f, category: e.target.value }))}
-            />
+            <select
+              value={svcForm.categoryId}
+              onChange={(e) => setSvcForm((f) => ({ ...f, categoryId: e.target.value }))}
+            >
+              <option value="">Select Category</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </label>
           <label className={styles.full}>
             Description
@@ -471,13 +514,6 @@ export default function AdminDashboardPage() {
               rows={3}
               value={svcForm.description}
               onChange={(e) => setSvcForm((f) => ({ ...f, description: e.target.value }))}
-            />
-          </label>
-          <label>
-            Icon label
-            <input
-              value={svcForm.icon}
-              onChange={(e) => setSvcForm((f) => ({ ...f, icon: e.target.value }))}
             />
           </label>
           <label className={styles.full}>
@@ -512,6 +548,14 @@ export default function AdminDashboardPage() {
                     setSvcForm((f) => ({ ...f, features: next }))
                   }}
                 />
+                <button
+                  type="button"
+                  className={styles.removeFeatureBtn}
+                  onClick={() => removeFeature(i)}
+                  title="Remove feature"
+                >
+                  ×
+                </button>
               </div>
             ))}
             <button

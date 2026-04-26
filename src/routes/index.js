@@ -9,13 +9,29 @@ import otpRoutes from './otpRoutes.js';
 
 const router = express.Router();
 
-// Apply global authentication check for all routes in this router
+/**
+ * Route Mounting Strategy:
+ * 1. Public Routes: Accessible by anyone, no authentication middleware.
+ * 2. Auth Routes: Login/Signup, also public.
+ * 3. checkAuth Middleware: Protects everything below it.
+ * 4. Protected Routes: Requires a valid access_token.
+ * 5. Admin Routes: Inside adminRoutes, specific routes use the isAdmin middleware.
+ */
+
+// --- 1. Public Routes ---
+// serviceRoutes contains get_services, get_categories, and image/:filename
+router.use('/api', serviceRoutes);
+
+// --- 2. Authentication Routes ---
+router.use('/api', authRoutes);
+
+// --- 3. Authentication Middleware ---
+// From this point down, a valid access_token is required.
 router.use(checkAuth);
 
-router.use('/api', authRoutes);
+// --- 4. Protected Routes ---
 router.use('/api', userRoutes);
 router.use('/api', adminRoutes);
-router.use('/api', serviceRoutes);
 router.use('/api', orderRoutes);
 router.use('/api/otp', otpRoutes);
 

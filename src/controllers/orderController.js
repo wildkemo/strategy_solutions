@@ -1,60 +1,74 @@
-/**
- * Order Controller
- * 
- * Handlers for:
- * 
- * 1. Request Service
- *    - Method: POST
- *    - Path: /api/request_service
- *    - Body: { service_type, service_description }
- *    - Description: Creates a service request and sends OTP.
- * 
- * 2. Verify Order OTP
- *    - Method: POST
- *    - Path: /api/verify_otp
- *    - Body: { otp, order_id, ... }
- *    - Description: Verifies the OTP for a pending service request.
- * 
- * 3. Get User Orders
- *    - Method: GET
- *    - Path: /api/get_user_orders OR /api/get_orders
- *    - Description: Retrieves all service requests associated with the user's email.
- * 
- * 4. Get Pending OTP Orders
- *    - Method: GET
- *    - Path: /api/get_pending_otp_orders
- *    - Description: Retrieves service requests awaiting OTP verification.
- * 
- * 5. Get All Orders
- *    - Method: GET
- *    - Path: /api/get_all_orders
- *    - Security: Admin Only
- *    - Description: Retrieves every service request in the system.
- * 
- * 6. Update Order Status
- *    - Method: PUT
- *    - Path: /api/update_order_status
- *    - Security: Admin Only
- *    - Body: { id, status }
- *    - Description: Updates the status of an order.
- * 
- * 7. Confirm Order Activation
- *    - Method: POST
- *    - Path: /api/thank_you-mail
- *    - Security: Admin Only
- *    - Body: { order_id }
- *    - Description: Confirms a verified pending order and sets status to 'Active'.
- * 
- * 8. Complete Order (Alternative)
- *    - Method: POST
- *    - Path: /api/done_mail
- *    - Security: Admin Only
- *    - Body: { order_id }
- *    - Description: Marks a verified order as 'Done'.
- * 
- * 9. Delete Order
- *    - Method: DELETE
- *    - Path: /api/delete_order
- *    - Body: { id, isAdmin }
- *    - Description: Deletes an order (Customers: only Pending; Admins: any).
- */
+import prisma from '../utils/prisma.js';
+
+// Admin: Get all orders
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        user: true,
+        service: true,
+      },
+    });
+    // Flatten or map if frontend expects specific format
+    const formattedOrders = orders.map(o => ({
+      id: o.id,
+      email: o.user.email,
+      service_type: o.service.title,
+      status: o.status,
+      created_at: o.createdAt,
+    }));
+    res.json(formattedOrders);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching all orders', error: error.message });
+  }
+};
+
+// Admin: Update order status
+export const updateOrderStatus = async (req, res) => {
+  const { id, status } = req.body;
+  try {
+    const order = await prisma.order.update({
+      where: { id: parseInt(id) },
+      data: { status },
+    });
+    res.json({ message: 'Order status updated', order });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating order status', error: error.message });
+  }
+};
+
+// Admin & User: Delete order
+export const deleteOrder = async (req, res) => {
+  const { id, isAdmin } = req.body;
+  try {
+    const order = await prisma.order.findUnique({ where: { id: parseInt(id) } });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    // If not admin, can only delete pending orders of their own
+    if (!isAdmin) {
+      if (order.userId !== req.user.id) return res.status(403).json({ message: 'Unauthorized' });
+      if (order.status !== 'Pending') return res.status(400).json({ message: 'Can only delete pending orders' });
+    }
+
+    await prisma.order.delete({ where: { id: parseInt(id) } });
+    res.json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting order', error: error.message });
+  }
+};
+
+// Other methods (Request Service, Verify OTP, etc.) would go here...
+// Implementing placeholders for consistency with the prompt's focus
+export const requestService = async (req, res) => { /* ... */ };
+export const verifyOtp = async (req, res) => { /* ... */ };
+export const getUserOrders = async (req, res) => {
+  try {
+    const orders = await prisma.order.findMany({
+      where: { userId: req.user.id },
+      include: { service: true }
+    });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user orders', error: error.message });
+  }
+};

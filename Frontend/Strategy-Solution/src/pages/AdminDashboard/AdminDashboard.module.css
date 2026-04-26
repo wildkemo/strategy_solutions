@@ -169,9 +169,32 @@
 
 .featureRow {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr 2fr auto;
   gap: 0.5rem;
   margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.removeFeatureBtn {
+  background: var(--color-error-soft);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-sm);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.removeFeatureBtn:hover {
+  background: var(--color-error);
+  color: white;
 }
 
 .muted {

@@ -1,63 +1,52 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider   = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  ADMIN
-  CUSTOMER
-}
-
 model User {
-  id          Int      @id @default(autoincrement())
-  name        String
-  email       String   @unique
-  password    String
-  role        Role     @default(CUSTOMER)
-  phone       String
-  companyName String   @default("N/A (Admin User)")
-  isActivated Boolean @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  password      String
+  role          Role           @default(CUSTOMER)
+  phone         String
+  companyName   String         @default("N/A (Admin User)")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  isActivated   Boolean        @default(false)
   orders        Order[]
   otps          Otp[]
   refreshTokens RefreshToken[]
 
-  @@map("users")
   @@unique([email, phone])
+  @@map("users")
 }
 
 model RefreshToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime
   createdAt DateTime @default(now())
   revoked   Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
 }
 
 model Order {
   id                 Int      @id @default(autoincrement())
-  serviceDescription String
   status             String   @default("Pending")
   createdAt          DateTime @default(now())
   expiresAt          DateTime
-
-  serviceId Int
-  service   Service @relation(fields: [serviceId], references: [id])
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  serviceDescription String
+  serviceId          Int
+  userId             Int
+  service            Service  @relation(fields: [serviceId], references: [id])
+  user               User     @relation(fields: [userId], references: [id])
 
   @@map("orders")
 }
@@ -65,26 +54,23 @@ model Order {
 model Otp {
   id        Int      @id @default(autoincrement())
   otp       String
-  expiresAt DateTime
   createdAt DateTime @default(now())
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("otps")
 }
 
 model Service {
-  id          Int    @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String
   features    String
   image       String
-
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  orders Order[]
+  categoryId  Int
+  orders      Order[]
+  category    Category @relation(fields: [categoryId], references: [id])
 
   @@map("services")
 }
@@ -95,4 +81,9 @@ model Category {
   services Service[]
 
   @@map("categories")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
 }

@@ -3,7 +3,6 @@
  * 
  * Purpose: 
  * - Verifies that the authenticated user has administrative privileges.
- * - Used to protect routes labeled "Security: Admin Only" in API-ROUTES.md.
  * 
  * Logic:
  * - Checks if req.user (populated by checkAuth) has the role 'ADMIN'.

@@ -7,11 +7,13 @@ const checkAuth = (req, res, next) => {
     '/api/signup',
     '/api/refresh_token',
     '/api/refresh',
-    '/api/health'
+    '/api/health',
+    '/api/get_services',
+    '/api/get_categories'
   ];
   
   // 1. If it's a public API route, allow it
-  if (publicApiRoutes.includes(req.path)) {
+  if (publicApiRoutes.includes(req.path) || req.path.startsWith('/api/image/')) {
     return next();
   }
 
