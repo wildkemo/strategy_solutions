@@ -1,11 +1,15 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import pg from 'pg';
+import 'dotenv/config';
 
 /**
- * Prisma Client singleton utility.
- * 
- * This ensures only one instance of PrismaClient is created and reused
- * throughout the application, preventing exhaustion of database connections.
+ * Prisma Client singleton utility using pg adapter for Prisma 7+.
  */
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL;
+
+const pool = new pg.Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 export default prisma;

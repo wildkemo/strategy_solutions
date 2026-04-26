@@ -1,8 +1,8 @@
+import express from 'express';
+const router = express.Router();
+
 /**
- * OTP Routes
- * 
- * Maps the following paths to otpController:
- * - POST /api/send_otp
- * - POST /api/verify
- * - POST /api/reset_password
+ * OTP Routes (To be implemented)
  */
+
+export default router;

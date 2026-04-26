@@ -1,17 +1,17 @@
 # Frontend Page Design Guide
 
-This document explains the design of each frontend page in `src/app` only (no backend/API routes).
+This document explains the design of each frontend page in `src/pages` only (no backend/API routes).
 
 ## Global Frontend Structure
 
 ### Shared layout shell
-- The app uses a global layout in `src/app/layout.js`.
+- The app uses a global layout in `src/layouts/AppLayout.jsx`.
 - Every page is wrapped with:
   - `SessionRefresher` (session keep-alive behavior).
   - Global `Navbar` at the top.
   - The page content inside `<main>`.
 
-### Global navigation (`src/app/components/Navbar.js`)
+### Global navigation (`src/components/Navbar.jsx`)
 - **Desktop navbar**: logo on the left, page links in the center, user profile icon or loading spinner on the right.
 - **Mobile navbar**: hamburger menu opens a slide-in nav with overlay.
 - **Conditional links**:
@@ -42,7 +42,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ## Page-by-Page Design
 
-## 1) Home Page (`/`) - `src/app/page.js`
+## 1) Home Page (`/`) - `src/pages/Home/Home.jsx`
 
 ### Layout and flow
 - Long-form marketing page with clear top-to-bottom storytelling.
@@ -84,7 +84,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 2) About Page (`/about`) - `src/app/about/page.tsx`
+## 2) About Page (`/about`) - `src/pages/About/About.jsx`
 
 ### Design style
 - Reuses home page style tokens/classes to stay visually consistent.
@@ -107,7 +107,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 3) Contact Page (`/contact`) - `src/app/contact/page.js`
+## 3) Contact Page (`/contact`) - `src/pages/Contact/Contact.jsx`
 
 ### Overall layout
 - Marketing + utility page: intro, direct contact channels, map, CTA, footer.
@@ -138,7 +138,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 4) Services Listing Page (`/services`) - `src/app/services/page.jsx`
+## 4) Services Listing Page (`/services`) - `src/pages/Services/Services.jsx`
 
 ### Purpose
 - Dynamic catalog page that fetches services from API and renders cards.
@@ -166,7 +166,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 5) Service Detail Page (`/services/[slug]`) - `src/app/services/[slug]/page.jsx`
+## 5) Service Detail Page (`/services/[slug]`) - `src/pages/ServiceDetail/ServiceDetail.jsx`
 
 ### Layout
 - Single-service deep dive page with large hero card + feature grid + action buttons.
@@ -202,7 +202,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 6) Request Service Page (`/request-service`) - `src/app/request-service/page.js`
+## 6) Request Service Page (`/request-service`) - `src/pages/RequestService/RequestService.jsx`
 
 ### Purpose and behavior
 - Main service request form for signed-in users.
@@ -232,7 +232,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 7) Login Page (`/login`) - `src/app/login/page.js`
+## 7) Login Page (`/login`) - `src/pages/Login/Login.jsx`
 
 ### Split-screen composition (desktop)
 - Left: sign-in form in styled card.
@@ -252,10 +252,10 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 8) Register Page (`/register`) - `src/app/register/page.js`
+## 8) Register Page (`/register`) - `src/pages/Register/Register.jsx`
 
 ### Visual structure
-- Uses same form visual system as request/login (shared module).
+- Uses same form visual system as request/login (shared styles in `src/styles/forms.module.css`).
 - Single centered card on neutral background.
 
 ### Form content
@@ -272,7 +272,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 9) Forgot Password Page (`/forgot-password`) - `src/app/forgot-password/page.js`
+## 9) Forgot Password Page (`/forgot-password`) - `src/pages/ForgotPassword/ForgotPassword.jsx`
 
 ### Layout
 - Same split style as login:
@@ -295,7 +295,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 10) Profile Page (`/profile`) - `src/app/profile/page.js`
+## 10) Profile Page (`/profile`) - `src/pages/Profile/Profile.jsx`
 
 ### Purpose
 - User account management form with optional admin-specific behavior.
@@ -317,7 +317,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 11) My Orders Page (`/my-orders`) - `src/app/my-orders/page.js`
+## 11) My Orders Page (`/my-orders`) - `src/pages/MyOrders/MyOrders.jsx`
 
 ### Layout style
 - Data-heavy page with table-first design.
@@ -339,11 +339,11 @@ This document explains the design of each frontend page in `src/app` only (no ba
 - Dedicated empty state message if no orders exist.
 
 ### Footer
-- Minimal link-based footer (privacy/terms/contact style links).
+- Minimal link-based footer (privacy/terms/contact style links in `src/components/Footer.jsx`).
 
 ---
 
-## 12) Admin Dashboard Page (`/blank_admin`) - `src/app/blank_admin/page.js`
+## 12) Admin Dashboard Page (`/blank_admin`) - `src/pages/AdminDashboard/AdminDashboard.jsx`
 
 ### Design intent
 - Management console style interface with sectioned data blocks.
@@ -385,7 +385,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 13) Placeholder Customer Page (`/blank_customer`) - `src/app/blank_customer/page.js`
+## 13) Placeholder Customer Page (`/blank_customer`) - `src/pages/BlankCustomer/BlankCustomer.jsx`
 
 ### Design
 - Minimal full-viewport centered page.
@@ -397,7 +397,7 @@ This document explains the design of each frontend page in `src/app` only (no ba
 
 ---
 
-## 14) Error Test Page (`/error_test_page`) - `src/app/error_test_page/page.js`
+## 14) Error Test Page (`/error_test_page`) - `src/pages/ErrorTest/ErrorTest.jsx`
 
 ### Design
 - Minimal full-viewport centered page, similar to `blank_customer`.
@@ -412,5 +412,5 @@ This document explains the design of each frontend page in `src/app` only (no ba
 ## Frontend-Only Notes
 
 - This guide intentionally excludes `/api/*` routes and backend implementation details.
-- All descriptions are based on frontend JSX structure, CSS modules, and inline styles in `src/app`.
+- All descriptions are based on frontend JSX structure, CSS modules, and global styles in `src/pages`, `src/components`, and `src/layouts`.
 

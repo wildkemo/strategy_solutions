@@ -1,7 +1,10 @@
+import express from 'express';
+const router = express.Router();
+
 /**
- * Admin Routes
- * 
- * Maps the following paths to adminController:
- * - GET /api/get_admins (Admin Only)
- * - POST /api/add_admin (Admin Only)
+ * Admin Routes (To be implemented)
+ * - GET /api/get_admins
+ * - POST /api/add_admin
  */
+
+export default router;
