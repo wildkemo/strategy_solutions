@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useUserOrdersQuery, usePendingOrdersQuery } from '../lib/queries'
 import { apiFetch } from '../lib/api'
 import { Modal } from './Modal'
 import { ThemeToggle } from './ThemeToggle'
@@ -57,31 +58,18 @@ export function Navbar() {
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
-  const [pendingOrders, setPendingOrders] = useState([])
-  const [recentOrders, setRecentOrders] = useState([])
+
+  const isCustomer = !!user && !isAdmin
+  const { data: allPending = [] } = usePendingOrdersQuery(isCustomer)
+  const { data: allOrders = [] } = useUserOrdersQuery()
+
+  const pendingOrders = allPending.slice(0, 3)
+  const recentOrders = allOrders.slice(0, 3)
+
   const [deleteStep, setDeleteStep] = useState(null)
   const [deleteOtp, setDeleteOtp] = useState('')
   const [deleteBusy, setDeleteBusy] = useState(false)
   const [deleteError, setDeleteError] = useState('')
-
-  useEffect(() => {
-    if (!user || isAdmin) return
-    let cancelled = false
-    ;(async () => {
-      const [p, o] = await Promise.all([
-        apiFetch('/api/get_pending_otp_orders'),
-        apiFetch('/api/get_user_orders'),
-      ])
-      if (cancelled) return
-      if (p.ok && p.data?.pendingOrders)
-        setPendingOrders(p.data.pendingOrders.slice(0, 3))
-      if (o.ok && o.data?.orders)
-        setRecentOrders(o.data.orders.slice(0, 3))
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [user, isAdmin, panelOpen])
 
   const closeMobile = () => setMobileOpen(false)
 

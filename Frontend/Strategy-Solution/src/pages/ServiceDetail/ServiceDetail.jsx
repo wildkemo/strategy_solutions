@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { useServicesQuery } from '../../lib/queries'
 import { apiFetch } from '../../lib/api'
 import { parseServiceFeatures, serviceImageUrl } from '../../lib/services'
 import { parseServiceIdFromSlug, servicePath } from '../../lib/slug'
@@ -35,8 +36,7 @@ export default function ServiceDetailPage() {
   const { slug } = useParams()
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
-  const [list, setList] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { data: list = [], isLoading } = useServicesQuery()
   const [signInModal, setSignInModal] = useState(false)
   const [otpModal, setOtpModal] = useState(false)
   const [successModal, setSuccessModal] = useState(false)
@@ -44,20 +44,6 @@ export default function ServiceDetailPage() {
   const [orderId, setOrderId] = useState(null)
   const [otpError, setOtpError] = useState('')
   const [otpBusy, setOtpBusy] = useState(false)
-
-  useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      const { ok, data } = await apiFetch('/api/get_services')
-      if (cancelled) return
-      if (ok && Array.isArray(data)) setList(data)
-      else if (ok && data?.services) setList(data.services)
-      setLoading(false)
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   const service = useMemo(() => {
     const id = parseServiceIdFromSlug(slug)
@@ -117,7 +103,7 @@ export default function ServiceDetailPage() {
     }
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className={styles.page}>
         <p className={styles.center}>Loading…</p>

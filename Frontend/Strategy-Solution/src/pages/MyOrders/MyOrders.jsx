@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useUserOrdersQuery } from '../../lib/queries'
 import { apiFetch } from '../../lib/api'
 import { Footer } from '../../components/Footer'
 import { Modal } from '../../components/Modal'
@@ -14,22 +16,25 @@ function statusClass(status) {
 }
 
 export default function MyOrdersPage() {
-  const [orders, setOrders] = useState([])
+  const queryClient = useQueryClient()
+  const { data: orders = [], isLoading } = useUserOrdersQuery()
   const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(true)
   const [deleteId, setDeleteId] = useState(null)
-  const [busy, setBusy] = useState(false)
 
-  const load = async () => {
-    const { ok, data } = await apiFetch('/api/get_user_orders')
-    if (ok && data?.orders) setOrders(data.orders)
-    else if (ok && Array.isArray(data)) setOrders(data)
-    setLoading(false)
-  }
-
-  useEffect(() => {
-    load()
-  }, [])
+  const deleteMutation = useMutation({
+    mutationFn: async (id) => {
+      const { ok, data } = await apiFetch('/api/delete_order', {
+        method: 'DELETE',
+        json: { id, isAdmin: false },
+      })
+      if (!ok) throw new Error(data?.message || 'Delete failed')
+      return id
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-orders'] })
+      setDeleteId(null)
+    },
+  })
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -44,15 +49,10 @@ export default function MyOrdersPage() {
 
   const confirmDelete = async () => {
     if (deleteId == null) return
-    setBusy(true)
-    await apiFetch('/api/delete_order', {
-      method: 'DELETE',
-      json: { id: deleteId, isAdmin: false },
-    })
-    setBusy(false)
-    setDeleteId(null)
-    load()
+    deleteMutation.mutate(deleteId)
   }
+
+  const busy = deleteMutation.isPending
 
   return (
     <div className={styles.page}>
@@ -69,7 +69,7 @@ export default function MyOrdersPage() {
           />
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <p className={styles.muted}>Loading…</p>
         ) : filtered.length === 0 ? (
           <p className={styles.empty}>You have no orders yet.</p>

@@ -1,19 +1,28 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '../../lib/api'
 import { parseServiceFeatures } from '../../lib/services'
+import {
+  useServicesQuery,
+  useAllOrdersQuery,
+  useAllCustomersQuery,
+  useAdminsQuery,
+} from '../../lib/queries'
 import { Modal } from '../../components/Modal'
 import styles from './AdminDashboard.module.css'
 
 const emptyFeature = { name: '', description: '' }
 
 export default function AdminDashboardPage() {
+  const queryClient = useQueryClient()
   const [tab, setTab] = useState('services')
   const [toast, setToast] = useState(null)
 
-  const [services, setServices] = useState([])
-  const [orders, setOrders] = useState([])
-  const [customers, setCustomers] = useState([])
-  const [admins, setAdmins] = useState([])
+  // --- Queries ---
+  const { data: services = [] } = useServicesQuery()
+  const { data: orders = [] } = useAllOrdersQuery()
+  const { data: customers = [] } = useAllCustomersQuery()
+  const { data: admins = [] } = useAdminsQuery()
 
   const [qSvc, setQSvc] = useState('')
   const [qOrd, setQOrd] = useState('')
@@ -40,36 +49,118 @@ export default function AdminDashboardPage() {
     window.setTimeout(() => setToast(null), 3200)
   }
 
-  const loadServices = useCallback(async () => {
-    const { ok, data } = await apiFetch('/api/get_services')
-    if (ok && Array.isArray(data)) setServices(data)
-    else if (ok && data?.services) setServices(data.services)
-  }, [])
+  // --- Mutations ---
 
-  const loadOrders = useCallback(async () => {
-    const { ok, data } = await apiFetch('/api/get_all_orders')
-    if (ok && Array.isArray(data)) setOrders(data)
-    else if (ok && data?.orders) setOrders(data.orders)
-  }, [])
+  const saveServiceMutation = useMutation({
+    mutationFn: async (form) => {
+      const fd = new FormData()
+      if (form.id) fd.append('id', String(form.id))
+      fd.append('title', form.title)
+      fd.append('description', form.description)
+      fd.append('category', form.category)
+      fd.append('icon', form.icon)
+      fd.append(
+        'features',
+        JSON.stringify(
+          form.features
+            .filter((f) => f.name || f.description)
+            .map((f) => ({ name: f.name, description: f.description })),
+        ),
+      )
+      if (form.image) fd.append('image', form.image)
 
-  const loadCustomers = useCallback(async () => {
-    const { ok, data } = await apiFetch('/api/get_all_users')
-    if (ok && Array.isArray(data)) setCustomers(data)
-    else if (ok && data?.users) setCustomers(data.users)
-  }, [])
+      const method = form.id ? 'PUT' : 'POST'
+      const path = form.id ? '/api/update_services' : '/api/add_service'
+      const res = await fetch(path, { method, credentials: 'include', body: fd })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.message || 'Save failed')
+      }
+    },
+    onSuccess: () => {
+      showToast('Service saved')
+      setSvcModal(null)
+      queryClient.invalidateQueries({ queryKey: ['services'] })
+    },
+    onError: (err) => showToast(err.message, false),
+  })
 
-  const loadAdmins = useCallback(async () => {
-    const { ok, data } = await apiFetch('/api/get_admins')
-    if (ok && Array.isArray(data)) setAdmins(data)
-    else if (ok && data?.admins) setAdmins(data.admins)
-  }, [])
+  const deleteServiceMutation = useMutation({
+    mutationFn: async (id) => {
+      const { ok, data } = await apiFetch('/api/delete_services', {
+        method: 'DELETE',
+        json: { id },
+      })
+      if (!ok) throw new Error(data?.message || 'Delete failed')
+    },
+    onSuccess: () => {
+      showToast('Service deleted')
+      queryClient.invalidateQueries({ queryKey: ['services'] })
+    },
+    onError: (err) => showToast(err.message, false),
+  })
 
-  useEffect(() => {
-    loadServices()
-    loadOrders()
-    loadCustomers()
-    loadAdmins()
-  }, [loadServices, loadOrders, loadCustomers, loadAdmins])
+  const updateOrderStatusMutation = useMutation({
+    mutationFn: async ({ id, status }) => {
+      const { ok, data } = await apiFetch('/api/update_order_status', {
+        method: 'PUT',
+        json: { id, status },
+      })
+      if (!ok) throw new Error(data?.message || 'Update failed')
+    },
+    onSuccess: () => {
+      showToast('Status updated')
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+    },
+    onError: (err) => showToast(err.message, false),
+  })
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: async (id) => {
+      const { ok, data } = await apiFetch('/api/delete_order', {
+        method: 'DELETE',
+        json: { id, isAdmin: true },
+      })
+      if (!ok) throw new Error(data?.message || 'Delete failed')
+    },
+    onSuccess: () => {
+      showToast('Order deleted')
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+    },
+    onError: (err) => showToast(err.message, false),
+  })
+
+  const deleteCustomerMutation = useMutation({
+    mutationFn: async (id) => {
+      const { ok, data } = await apiFetch('/api/delete_user', {
+        method: 'DELETE',
+        json: { id },
+      })
+      if (!ok) throw new Error(data?.message || 'Delete failed')
+    },
+    onSuccess: () => {
+      showToast('Customer deleted')
+      queryClient.invalidateQueries({ queryKey: ['admin-customers'] })
+    },
+    onError: (err) => showToast(err.message, false),
+  })
+
+  const addAdminMutation = useMutation({
+    mutationFn: async (form) => {
+      const { ok, data } = await apiFetch('/api/add_admin', {
+        method: 'POST',
+        json: form,
+      })
+      if (!ok) throw new Error(data?.message || 'Could not create admin')
+    },
+    onSuccess: () => {
+      showToast('Admin created')
+      setAdminModal(false)
+      setAdminForm({ name: '', email: '', password: '' })
+      queryClient.invalidateQueries({ queryKey: ['admin-admins'] })
+    },
+    onError: (err) => showToast(err.message, false),
+  })
 
   const openNewService = () => {
     setSvcForm({
@@ -105,99 +196,12 @@ export default function AdminDashboardPage() {
     setSvcModal('edit')
   }
 
-  const saveService = async () => {
-    const fd = new FormData()
-    if (svcForm.id) fd.append('id', String(svcForm.id))
-    fd.append('title', svcForm.title)
-    fd.append('description', svcForm.description)
-    fd.append('category', svcForm.category)
-    fd.append('icon', svcForm.icon)
-    fd.append(
-      'features',
-      JSON.stringify(
-        svcForm.features
-          .filter((f) => f.name || f.description)
-          .map((f) => ({ name: f.name, description: f.description })),
-      ),
-    )
-    if (svcForm.image) fd.append('image', svcForm.image)
-
-    const method = svcForm.id ? 'PUT' : 'POST'
-    const path = svcForm.id ? '/api/update_services' : '/api/add_service'
-    const res = await fetch(path, { method, credentials: 'include', body: fd })
-    const text = await res.text()
-    const errPayload = (() => {
-      try {
-        return text ? JSON.parse(text) : null
-      } catch {
-        return null
-      }
-    })()
-    if (res.ok) {
-      showToast('Service saved')
-      setSvcModal(null)
-      loadServices()
-    } else {
-      showToast(errPayload?.message || 'Save failed', false)
-    }
-  }
-
-  const deleteService = async (id) => {
-    const { ok } = await apiFetch('/api/delete_services', {
-      method: 'DELETE',
-      json: { id },
-    })
-    if (ok) {
-      showToast('Service deleted')
-      loadServices()
-    } else showToast('Delete failed', false)
-  }
-
-  const updateOrderStatus = async (id, status) => {
-    const { ok } = await apiFetch('/api/update_order_status', {
-      method: 'PUT',
-      json: { id, status },
-    })
-    if (ok) {
-      showToast('Status updated')
-      loadOrders()
-    } else showToast('Update failed', false)
-  }
-
-  const deleteOrder = async (id) => {
-    const { ok } = await apiFetch('/api/delete_order', {
-      method: 'DELETE',
-      json: { id, isAdmin: true },
-    })
-    if (ok) {
-      showToast('Order deleted')
-      loadOrders()
-    } else showToast('Delete failed', false)
-  }
-
-  const deleteCustomer = async (id) => {
-    const { ok } = await apiFetch('/api/delete_user', {
-      method: 'DELETE',
-      json: { id },
-    })
-    if (ok) {
-      showToast('Customer deleted')
-      loadCustomers()
-    } else showToast('Delete failed', false)
-  }
-
-  const addAdmin = async () => {
-    const { ok } = await apiFetch('/api/add_admin', {
-      method: 'POST',
-      json: adminForm,
-    })
-    if (ok) {
-      showToast('Admin created')
-      setAdminModal(false)
-      setAdminForm({ name: '', email: '', password: '' })
-      loadAdmins()
-    } else showToast('Could not create admin', false)
-  }
+  const saveService = () => saveServiceMutation.mutate(svcForm)
+  const deleteService = (id) => deleteServiceMutation.mutate(id)
+  const updateOrderStatus = (id, status) => updateOrderStatusMutation.mutate({ id, status })
+  const deleteOrder = (id) => deleteOrderMutation.mutate(id)
+  const deleteCustomer = (id) => deleteCustomerMutation.mutate(id)
+  const addAdmin = () => addAdminMutation.mutate(adminForm)
 
   const filterSvc = services.filter((s) =>
     [s.title, s.category, s.description].some((x) =>

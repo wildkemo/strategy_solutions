@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { apiFetch } from '../../lib/api'
+import { useServicesQuery } from '../../lib/queries'
 import { servicePath } from '../../lib/slug'
 import { serviceImageUrl } from '../../lib/services'
 import { Footer } from '../../components/Footer'
@@ -11,24 +11,9 @@ import styles from './Services.module.css'
 export default function ServicesPage() {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
-  const [list, setList] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { data: list = [], isLoading } = useServicesQuery()
   const [authModal, setAuthModal] = useState(false)
   const cardRef = useRef(null)
-
-  useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      const { ok, data } = await apiFetch('/api/get_services')
-      if (cancelled) return
-      if (ok && Array.isArray(data)) setList(data)
-      else if (ok && data?.services) setList(data.services)
-      setLoading(false)
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   const onCardMove = useCallback((e) => {
     const el = e.currentTarget
@@ -56,7 +41,7 @@ export default function ServicesPage() {
           </p>
         </header>
 
-        {loading ? (
+        {isLoading ? (
           <p className={styles.muted}>Loading services…</p>
         ) : (
           <div className={styles.grid} ref={cardRef}>
