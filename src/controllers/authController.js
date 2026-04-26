@@ -2,6 +2,14 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import prisma from '../utils/prisma.js';
+import { 
+  SignupRequestDto, 
+  SignupResponseDto, 
+  LoginRequestDto, 
+  LoginResponseDto, 
+  SessionResponseDto 
+} from '../dtos/AuthDto.js';
+import { MessageDto } from '../dtos/CommonDto.js';
 
 // --- Helpers ---
 
@@ -44,11 +52,14 @@ const clearAuthCookies = (res) => {
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, password, phone, companyName } = req.body;
+    const signupData = new SignupRequestDto(req.body);
+    const { isValid, errors } = signupData.validate();
 
-    if (!name || !email || !password || !phone) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (!isValid) {
+      return res.status(400).json({ error: 'Validation failed', details: errors });
     }
+
+    const { name, email, password, phone, companyName } = signupData;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -79,8 +90,7 @@ export const signup = async (req, res) => {
 
     setAuthCookies(res, accessToken, refreshTokenStr);
 
-    const { password: _, ...userWithoutPassword } = user;
-    res.status(201).json({ message: 'User created', user: userWithoutPassword });
+    res.status(201).json(new SignupResponseDto(user));
   } catch (error) {
     console.error('Signup error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -89,11 +99,14 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const loginData = new LoginRequestDto(req.body);
+    const { isValid, errors } = loginData.validate();
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password required' });
+    if (!isValid) {
+      return res.status(400).json({ error: 'Validation failed', details: errors });
     }
+
+    const { email, password } = loginData;
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
@@ -118,8 +131,7 @@ export const login = async (req, res) => {
 
     setAuthCookies(res, accessToken, refreshTokenStr);
 
-    const { password: _, ...userWithoutPassword } = user;
-    res.json({ message: 'Login successful', user: userWithoutPassword, isAdmin: user.role === 'ADMIN' });
+    res.json(new LoginResponseDto(user, user.role === 'ADMIN'));
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -135,7 +147,7 @@ export const logout = async (req, res) => {
     }
 
     clearAuthCookies(res);
-    res.json({ message: 'Logged out' });
+    res.json(new MessageDto('Logged out'));
   } catch (error) {
     console.error('Logout error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -171,7 +183,7 @@ export const refreshToken = async (req, res) => {
     });
 
     setAuthCookies(res, newAccessToken, newRefreshTokenStr);
-    res.json({ message: 'Token refreshed' });
+    res.json(new MessageDto('Token refreshed'));
   } catch (error) {
     console.error('Refresh token error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -191,8 +203,7 @@ export const session = async (req, res) => {
 
     if (!user) return res.status(401).json({ error: 'User not found' });
 
-    const { password: _, ...userWithoutPassword } = user;
-    res.json({ user: userWithoutPassword, isAdmin: user.role === 'ADMIN' });
+    res.json(new SessionResponseDto(user, user.role === 'ADMIN'));
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
       // Client should hit /refresh_token
