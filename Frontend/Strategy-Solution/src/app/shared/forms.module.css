@@ -133,6 +133,52 @@
   padding: 2rem;
 }
 
+.loginBrandMark {
+  width: min(96%, 640px);
+  max-width: 100%;
+  object-fit: contain;
+  animation: loginLogoFloat 4.2s ease-in-out infinite;
+  transition:
+    transform 0.28s ease,
+    filter 0.28s ease;
+}
+
+.splitArt:hover .loginBrandMark {
+  transform: scale(1.03);
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.18));
+}
+
+@keyframes loginLogoFloat {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.loginLogoWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 44%;
+  margin-left: 1rem;
+}
+
+.loginContentRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.loginFormPane {
+  flex: 1;
+  min-width: 0;
+}
+
 .splitArt h2 {
   margin: 0;
   font-size: 1.75rem;
@@ -146,5 +192,16 @@
 
   .splitArt {
     display: none;
+  }
+
+  .loginContentRow {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .loginLogoWrap {
+    margin-left: 0;
+    margin-bottom: 1rem;
+    flex: 0 0 auto;
   }
 }

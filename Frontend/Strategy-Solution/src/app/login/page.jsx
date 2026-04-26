@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import loginBrandImage from '../../assets/WhatsApp_Image_2025-06-08_at_20.37.40_9716fb98-removebg-preview.png'
 import forms from '../shared/forms.module.css'
 
 export default function LoginPage() {
@@ -25,9 +26,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className={forms.split}>
-      <div className={forms.splitForm}>
-        <div className={forms.card} style={{ maxWidth: 400 }}>
+    <div className={forms.split} style={{ background: 'var(--color-surface)' }}>
+      <div className={forms.splitForm} style={{ background: 'var(--color-surface)' }}>
+        <div className={forms.card} style={{ maxWidth: 620, padding: '2.65rem 2.4rem' }}>
           <h1>Sign in</h1>
           <p className={forms.sub}>Welcome back. Enter your credentials.</p>
           {error ? <p className={forms.error}>{error}</p> : null}
@@ -67,13 +68,8 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-      <div className={forms.splitArt} aria-hidden>
-        <div>
-          <h2>Strategy Solutions</h2>
-          <p style={{ marginTop: '1rem', opacity: 0.95 }}>
-            Clarity, alignment, and momentum for your next chapter.
-          </p>
-        </div>
+      <div className={forms.splitArt} style={{ background: 'var(--color-surface)' }} aria-hidden>
+        <img src={loginBrandImage} alt="" className={forms.loginBrandMark} />
       </div>
     </div>
   )

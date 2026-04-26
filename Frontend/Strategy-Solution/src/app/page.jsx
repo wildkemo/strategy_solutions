@@ -73,8 +73,9 @@ export default function HomePage() {
           Empowering businesses with innovative strategies and solutions
           </h1>
           <p className={styles.heroSub}>
-            From boardroom vision to on-the-ground execution, we help teams
-            prioritize, align, and deliver with clarity.
+            We provide cutting-edge IT consulting, cloud computing, and
+            cybersecurity services to help your business thrive in the digital
+            age.
           </p>
           <Link to="/services" className={styles.cta}>
             Explore Our Services

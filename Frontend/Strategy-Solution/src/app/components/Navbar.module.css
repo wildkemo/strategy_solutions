@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.65rem 1.25rem;
+  padding: 0.65rem 60px;
   background: color-mix(in srgb, var(--color-surface) 86%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -396,5 +396,11 @@
 
   .hamburger {
     display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .header {
+    padding: 0.65rem 1rem;
   }
 }
