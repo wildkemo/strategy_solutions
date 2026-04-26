@@ -1,0 +1,374 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 1.25rem;
+  background: color-mix(in srgb, var(--color-surface) 86%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.02rem;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.logo:hover {
+  text-decoration: none;
+  color: var(--color-primary-deep);
+}
+
+.desktopNav {
+  display: none;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.desktopNav a {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.desktopNav a:hover,
+.desktopNav a.active {
+  color: var(--color-primary-deep);
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.authLinks {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.linkBtn {
+  padding: 0.4rem 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.signUp {
+  padding: 0.45rem 1rem;
+  background: var(--btn-solid-bg);
+  color: var(--btn-solid-fg) !important;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  text-decoration: none !important;
+  font-weight: 600;
+}
+
+.signUp:hover {
+  opacity: 0.92;
+}
+
+.avatarBtn {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--color-primary), var(--btn-solid-bg));
+  color: var(--btn-solid-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.hamburger {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: var(--color-text);
+  border-radius: 1px;
+}
+
+.hamburger::before {
+  top: 12px;
+  box-shadow: 0 7px 0 var(--color-text);
+}
+
+.hamburger::after {
+  bottom: 12px;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: var(--overlay-backdrop);
+  border: none;
+  cursor: pointer;
+}
+
+.mobileDrawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(320px, 88vw);
+  z-index: 160;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-hover);
+  padding: 1rem;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.mobileHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.mobileNav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobileNav a {
+  color: var(--color-text);
+  text-decoration: none;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.closeX {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+
+.closeX::before,
+.closeX::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  right: 6px;
+  height: 2px;
+  background: var(--color-text);
+}
+
+.closeX::before {
+  transform: rotate(45deg);
+}
+
+.closeX::after {
+  transform: rotate(-45deg);
+}
+
+.userPanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(360px, 92vw);
+  z-index: 160;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-hover);
+  padding: 1.25rem;
+  overflow: auto;
+  animation: slideIn 0.2s ease-out;
+}
+
+.panelHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.email {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-top: 0.25rem;
+}
+
+.panelBlock {
+  margin-bottom: 1rem;
+}
+
+.panelLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin: 0 0 0.35rem;
+}
+
+.verifyLink {
+  color: var(--color-primary-deep);
+  font-weight: 600;
+}
+
+.orderPreview {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+
+.panelActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.panelBtn,
+.panelBtnAdmin,
+.panelBtnDanger,
+.panelBtnGhost {
+  display: block;
+  text-align: center;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-muted);
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.panelBtnAdmin {
+  background: var(--color-primary-muted);
+  border-color: var(--color-border-strong);
+  color: var(--color-primary);
+}
+
+.panelBtnDanger {
+  border-color: var(--color-error);
+  color: var(--color-error);
+  background: var(--color-error-soft);
+}
+
+.panelBtnGhost {
+  background: transparent;
+}
+
+.btnPrimary,
+.btnGhost,
+.btnDanger {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.btnPrimary {
+  background: var(--btn-solid-bg);
+  color: var(--btn-solid-fg);
+}
+
+.btnGhost {
+  background: var(--color-bg-muted);
+  color: var(--color-text);
+}
+
+.btnDanger {
+  background: var(--color-error);
+  color: var(--btn-solid-fg);
+}
+
+.otpInput {
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-input-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 1rem;
+}
+
+.errText {
+  color: var(--color-error);
+  font-size: 0.88rem;
+}
+
+@media (min-width: 900px) {
+  .desktopNav {
+    display: flex;
+  }
+
+  .authLinks {
+    display: flex;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}

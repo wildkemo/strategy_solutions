@@ -1,0 +1,115 @@
+.page {
+  background: var(--color-bg);
+}
+
+.hero {
+  min-height: 38vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 3rem 1.5rem 2.5rem;
+  background:
+    linear-gradient(90deg, var(--hero-overlay), var(--hero-overlay-mid)),
+    url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1600&q=80')
+      center/cover no-repeat;
+  color: var(--color-white);
+}
+
+.heroInner {
+  max-width: 640px;
+}
+
+.hero h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.65rem, 3vw, 2.25rem);
+}
+
+.hero p {
+  margin: 0;
+  opacity: 0.92;
+  line-height: 1.6;
+}
+
+.cards {
+  max-width: 1000px;
+  margin: -2rem auto 0;
+  padding: 0 1.25rem 2rem;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--color-border);
+}
+
+.iconTile {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--btn-solid-bg);
+  color: var(--btn-solid-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.card h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+
+.card p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.mapSection {
+  padding: 0 1.25rem 2.5rem;
+}
+
+.mapWrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  height: 360px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.ctaBox {
+  max-width: 640px;
+  margin: 0 auto 3rem;
+  padding: 2rem 1.5rem;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+
+.ctaBox h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.35rem;
+}
+
+.ctaBox p {
+  margin: 0 0 1.25rem;
+  color: var(--color-text-muted);
+}
+
+.cta {
+  display: inline-block;
+  padding: 0.7rem 1.5rem;
+  background: var(--btn-solid-bg);
+  color: var(--btn-solid-fg) !important;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none !important;
+}

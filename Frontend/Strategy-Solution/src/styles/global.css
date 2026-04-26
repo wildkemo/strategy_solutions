@@ -1,0 +1,182 @@
+/* Strategy Solutions — design tokens (light + dark) */
+
+:root {
+  color-scheme: light;
+
+  --font-sans:
+    'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    sans-serif;
+
+  /* Surfaces */
+  --color-bg: #f4f6f8;
+  --color-bg-muted: #eef1f4;
+  --color-bg-warm: #f6f5f2;
+  --color-bg-beige: #f0eeea;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+
+  /* Text */
+  --color-text: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted: #64748b;
+
+  /* Brand — restrained slate-blue */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-muted: rgba(37, 99, 235, 0.12);
+  --color-primary-fg: #ffffff;
+  --color-accent-soft: #e0e7ff;
+
+  /* Status */
+  --color-success: #059669;
+  --color-success-soft: rgba(5, 150, 105, 0.12);
+  --color-error: #dc2626;
+  --color-error-soft: rgba(220, 38, 38, 0.1);
+
+  /* Lines & shadows */
+  --color-border: rgba(15, 23, 42, 0.09);
+  --color-border-strong: rgba(15, 23, 42, 0.14);
+  --color-input-border: rgba(15, 23, 42, 0.12);
+  --shadow-color: 220 40% 40%;
+
+  --shadow-sm: 0 1px 2px hsl(var(--shadow-color) / 0.06);
+  --shadow-soft: 0 4px 20px hsl(var(--shadow-color) / 0.07);
+  --shadow-hover: 0 12px 40px hsl(var(--shadow-color) / 0.12);
+
+  /* Marketing / hero */
+  --hero-overlay: rgba(15, 23, 42, 0.78);
+  --hero-overlay-mid: rgba(15, 23, 42, 0.4);
+  --image-placeholder-start: #e8eef5;
+  --image-placeholder-end: #dce4f0;
+  --spotlight: rgba(37, 99, 235, 0.12);
+
+  /* Marketing gradients */
+  --gradient-cta-start: #1d4ed8;
+  --gradient-cta-end: #1e3a8a;
+  --auth-gradient-start: rgba(29, 78, 216, 0.9);
+  --auth-gradient-end: rgba(4, 120, 87, 0.72);
+
+  /* Misc */
+  --overlay-backdrop: rgba(15, 23, 42, 0.45);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+
+  /* Solid actions (accessible in both themes) */
+  --btn-solid-bg: var(--color-primary-hover);
+  --btn-solid-fg: #ffffff;
+
+  /* Legacy alias */
+  --color-primary-deep: var(--color-primary-hover);
+  --color-white: #ffffff;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #0b0d11;
+  --color-bg-muted: #12151c;
+  --color-bg-warm: #0e1014;
+  --color-bg-beige: #101218;
+  --color-surface: #141820;
+  --color-surface-raised: #1a1f2a;
+
+  --color-text: #e8eaef;
+  --color-text-secondary: #c4c9d4;
+  --color-text-muted: #8b92a3;
+
+  --color-primary: #60a5fa;
+  --color-primary-hover: #93c5fd;
+  --color-primary-muted: rgba(96, 165, 250, 0.15);
+  --color-primary-fg: #0b0d11;
+  --color-accent-soft: rgba(96, 165, 250, 0.12);
+
+  --color-success: #34d399;
+  --color-success-soft: rgba(52, 211, 153, 0.14);
+  --color-error: #f87171;
+  --color-error-soft: rgba(248, 113, 113, 0.12);
+
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.14);
+  --color-input-border: rgba(255, 255, 255, 0.12);
+  --shadow-color: 220 20% 4%;
+
+  --hero-overlay: rgba(5, 8, 14, 0.82);
+  --hero-overlay-mid: rgba(5, 8, 14, 0.55);
+  --image-placeholder-start: #1a2230;
+  --image-placeholder-end: #141a24;
+  --spotlight: rgba(96, 165, 250, 0.14);
+
+  --gradient-cta-start: #2563eb;
+  --gradient-cta-end: #1d4ed8;
+  --auth-gradient-start: rgba(37, 99, 235, 0.82);
+  --auth-gradient-end: rgba(16, 185, 129, 0.45);
+
+  --overlay-backdrop: rgba(0, 0, 0, 0.65);
+
+  --btn-solid-bg: #3b82f6;
+  --btn-solid-fg: #ffffff;
+
+  --color-primary-deep: var(--color-primary);
+  --color-white: #ffffff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  letter-spacing: -0.011em;
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.22s ease,
+    color 0.22s ease;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+::selection {
+  background: var(--color-primary-muted);
+  color: var(--color-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
