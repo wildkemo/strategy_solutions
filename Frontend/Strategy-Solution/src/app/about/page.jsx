@@ -1,18 +1,19 @@
 import { Footer } from '../components/Footer'
+import aboutTeamImage from '../../assets/Gemini_Generated_Image_lyolodlyolodlyol.png'
 import styles from './page.module.css'
 
 const values = [
   {
-    title: 'Integrity',
-    text: 'We tell you what we see, not what is easiest to hear, and we stand behind our recommendations.',
+    title: 'Client-Centric Approach',
+    text: "We prioritize our clients' needs and strive to exceed their expectations.",
   },
   {
-    title: 'Partnership',
-    text: 'Your wins are ours. We work alongside your leaders rather than handing down prescriptions.',
+    title: 'Commitment to Quality',
+    text: 'We uphold the highest standards of quality in all our services.',
   },
   {
-    title: 'Impact',
-    text: 'We measure success by adoption, outcomes, and the durability of change—not deliverable counts.',
+    title: 'Continuous Improvement',
+    text: 'We embrace innovation and constantly seek ways to enhance our offerings.',
   },
 ]
 
@@ -21,49 +22,60 @@ export default function AboutPage() {
     <div className={styles.page}>
       <section className={styles.intro}>
         <div className={styles.narrow}>
-          <h1>About Strategy Solutions</h1>
+          <h1>About Us</h1>
           <p className={styles.lead}>
-            We are a strategy and transformation practice focused on pragmatic
-            execution. Our teams blend industry experience with structured
-            problem solving to help you move from intent to results.
+            Strategy Solution is a leading IT talent outsourcing and consultancy
+            firm in Egypt, with over two decades of experience. We are
+            dedicated to excellence, client satisfaction, and the growth of
+            Egyptian IT professionals.
           </p>
         </div>
       </section>
 
       <section className={styles.section}>
         <div className={styles.narrow}>
-          <h2>Who we are</h2>
+          <h2>Who We Are</h2>
           <p>
-            Founded by operators and advisors who have led complex programs
-            across continents, Strategy Solutions exists to close the gap
-            between planning decks and daily operations. We believe strategy
-            only matters when people understand it, own it, and can act on it.
+            With a rich history spanning over 20 years, Strategy Solution has
+            established itself as a trusted partner for businesses seeking
+            top-tier IT talent and strategic consultancy. Our deep understanding
+            of the Egyptian market, combined with our global expertise, allows
+            us to deliver tailored solutions that drive success. We are a team
+            of seasoned professionals committed to bridging the gap between
+            exceptional IT talent and organizations striving for digital
+            transformation.
           </p>
-          <div
-            className={styles.imageFrame}
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80')",
-            }}
+        </div>
+      </section>
+
+      <section className={styles.aboutImageSection}>
+        <div className={styles.narrow}>
+          <img
+            src={aboutTeamImage}
+            alt="Strategy Solution team collaborating in a meeting"
+            className={styles.aboutImage}
           />
         </div>
       </section>
 
       <section className={styles.sectionAlt}>
         <div className={styles.narrow}>
-          <h2>Our mission</h2>
+          <h2>Our Mission</h2>
           <p>
-            To equip organizations with clarity, alignment, and momentum—so they
-            can adapt confidently in markets that never stand still. We help
-            you prioritize ruthlessly, invest wisely, and build cultures that
-            learn faster than the competition.
+            Our mission is to empower businesses with the right IT talent and
+            strategic insights to achieve their goals. We are committed to
+            fostering a culture of innovation, collaboration, and continuous
+            improvement, ensuring that our clients receive the highest quality
+            service and support. We aim to be the catalyst for growth,
+            connecting organizations with the skilled professionals they need to
+            thrive in today's dynamic digital landscape.
           </p>
         </div>
       </section>
 
       <section className={styles.section}>
         <div className={styles.narrow}>
-          <h2>Our values</h2>
+          <h2>Our Values</h2>
           <div className={styles.valueGrid}>
             {values.map((v) => (
               <article key={v.title} className={styles.valueCard}>
@@ -76,26 +88,16 @@ export default function AboutPage() {
       </section>
 
       <section className={styles.legacy}>
-        <div
-          className={styles.legacyBg}
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&q=80')",
-          }}
-        >
-          <div className={styles.legacyBadge}>
-            <span className={styles.badgeNum}>20+</span>
-            <span className={styles.badgeText}>years of combined leadership experience</span>
-          </div>
-        </div>
         <div className={styles.narrow}>
-          <h2>Our legacy</h2>
+          <h2>Our Legacy</h2>
           <p>
-            From regional champions to global enterprises, our clients trust us
-            with their most sensitive initiatives—post-merger integration,
-            digital roadmaps, cost transformation, and leadership transitions.
-            We carry that trust by showing up prepared, staying curious, and
-            leaving your teams stronger than we found them.
+            Over the past two decades, Strategy Solution has played a pivotal
+            role in shaping the IT landscape in Egypt. We have successfully
+            partnered with numerous organizations, helping them realize complex
+            projects and achieve sustainable growth. Driven by our unwavering
+            commitment to trust, integrity, and relentless excellence, we are
+            proud to have contributed to the development of countless IT
+            professionals and the success of businesses across various sectors.
           </p>
         </div>
       </section>

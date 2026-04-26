@@ -4,49 +4,37 @@ import styles from './page.module.css'
 
 const serviceCards = [
   {
-    title: 'Strategy & Planning',
-    desc: 'Align leadership goals with actionable roadmaps and measurable outcomes.',
+    title: 'Cloud Computing',
+    desc: 'Scalable and secure cloud solutions to optimize your infrastructure and reduce costs.',
     icon: (
       <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden>
         <path
           fill="currentColor"
-          d="M4 19h16v2H4v-2zm4-4h8v2H8v-2zm-2-4h12v2H6v-2zm4-4h4v2h-4V7zm-2-4h8v2H8V3z"
+          d="M19 18H7a4 4 0 010-8 5.5 5.5 0 0110.7-1.8A3.5 3.5 0 1119 18zm0-2a1.5 1.5 0 100-3h-2l-.2-1.2A3.5 3.5 0 0013.3 9a3.5 3.5 0 00-3.3 2.3L9.6 12H7a2 2 0 100 4h12z"
         />
       </svg>
     ),
   },
   {
-    title: 'Operations Excellence',
-    desc: 'Streamline processes, reduce waste, and improve delivery across teams.',
+    title: 'Cybersecurity',
+    desc: 'Robust cybersecurity measures to protect your data and ensure business continuity.',
     icon: (
       <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden>
         <path
           fill="currentColor"
-          d="M12 2L4 7v10l8 5 8-5V7l-8-5zm0 2.18l6 3.75v7.14l-6 3.75-6-3.75V7.93l6-3.75z"
+          d="M12 2l7 3v6c0 5-3.4 9.7-7 11-3.6-1.3-7-6-7-11V5l7-3zm0 2.2L7 6v5c0 3.9 2.5 7.6 5 8.8 2.5-1.2 5-4.9 5-8.8V6l-5-1.8z"
         />
       </svg>
     ),
   },
   {
-    title: 'Digital Transformation',
-    desc: 'Modernize systems and data practices to scale securely and efficiently.',
+    title: 'IT Consulting',
+    desc: 'Expert IT consulting to align your technology with your business goals.',
     icon: (
       <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden>
         <path
           fill="currentColor"
-          d="M12 2a7 7 0 017 7h-2a5 5 0 10-5 5v2a7 7 0 01-7-7h2a5 5 0 105-5V2h2z"
-        />
-      </svg>
-    ),
-  },
-  {
-    title: 'Change Management',
-    desc: 'Support people through change with training, comms, and adoption metrics.',
-    icon: (
-      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden>
-        <path
-          fill="currentColor"
-          d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"
+          d="M19.4 13a7.7 7.7 0 000-2l2-1.6-2-3.4-2.4 1a8.5 8.5 0 00-1.7-1L15 3h-4l-.3 2a8.5 8.5 0 00-1.7 1l-2.4-1-2 3.4 2 1.6a7.7 7.7 0 000 2l-2 1.6 2 3.4 2.4-1a8.5 8.5 0 001.7 1l.3 2h4l.3-2a8.5 8.5 0 001.7-1l2.4 1 2-3.4-2-1.6zM12 15.2A3.2 3.2 0 1112 8.8a3.2 3.2 0 010 6.4z"
         />
       </svg>
     ),
@@ -104,9 +92,10 @@ export default function HomePage() {
 
       <section className={styles.section}>
         <div className={styles.wrap}>
-          <h2 className={styles.sectionTitleCenter}>Core services</h2>
+          <span className={styles.sectionEyebrow}>What we offer</span>
+          <h2 className={styles.sectionTitleCenter}>Our Core Services</h2>
           <p className={styles.sectionSub}>
-            Practical expertise across the lifecycle of strategy and delivery.
+            We offer a comprehensive suite of services designed to meet the evolving needs of modern businesses.
           </p>
           <div className={styles.serviceGrid}>
             {serviceCards.map((s) => (

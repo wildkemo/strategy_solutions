@@ -20,12 +20,12 @@
   --color-text-secondary: #334155;
   --color-text-muted: #64748b;
 
-  /* Brand — restrained slate-blue */
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-primary-muted: rgba(37, 99, 235, 0.12);
+  /* Brand — muted elegant teal-slate */
+  --color-primary: #2f6f73;
+  --color-primary-hover: #285e62;
+  --color-primary-muted: rgba(47, 111, 115, 0.12);
   --color-primary-fg: #ffffff;
-  --color-accent-soft: #e0e7ff;
+  --color-accent-soft: #dce9ea;
 
   /* Status */
   --color-success: #059669;
@@ -48,13 +48,13 @@
   --hero-overlay-mid: rgba(15, 23, 42, 0.4);
   --image-placeholder-start: #e8eef5;
   --image-placeholder-end: #dce4f0;
-  --spotlight: rgba(37, 99, 235, 0.12);
+  --spotlight: rgba(47, 111, 115, 0.11);
 
   /* Marketing gradients */
-  --gradient-cta-start: #1d4ed8;
-  --gradient-cta-end: #1e3a8a;
-  --auth-gradient-start: rgba(29, 78, 216, 0.9);
-  --auth-gradient-end: rgba(4, 120, 87, 0.72);
+  --gradient-cta-start: #2e666a;
+  --gradient-cta-end: #1f3f43;
+  --auth-gradient-start: rgba(40, 94, 98, 0.9);
+  --auth-gradient-end: rgba(24, 82, 77, 0.72);
 
   /* Misc */
   --overlay-backdrop: rgba(15, 23, 42, 0.45);
@@ -86,11 +86,11 @@ html[data-theme='dark'] {
   --color-text-secondary: #c4c9d4;
   --color-text-muted: #8b92a3;
 
-  --color-primary: #60a5fa;
-  --color-primary-hover: #93c5fd;
-  --color-primary-muted: rgba(96, 165, 250, 0.15);
+  --color-primary: #7ec2c7;
+  --color-primary-hover: #98d4d8;
+  --color-primary-muted: rgba(126, 194, 199, 0.15);
   --color-primary-fg: #0b0d11;
-  --color-accent-soft: rgba(96, 165, 250, 0.12);
+  --color-accent-soft: rgba(126, 194, 199, 0.12);
 
   --color-success: #34d399;
   --color-success-soft: rgba(52, 211, 153, 0.14);
@@ -106,16 +106,16 @@ html[data-theme='dark'] {
   --hero-overlay-mid: rgba(5, 8, 14, 0.55);
   --image-placeholder-start: #1a2230;
   --image-placeholder-end: #141a24;
-  --spotlight: rgba(96, 165, 250, 0.14);
+  --spotlight: rgba(126, 194, 199, 0.14);
 
-  --gradient-cta-start: #2563eb;
-  --gradient-cta-end: #1d4ed8;
-  --auth-gradient-start: rgba(37, 99, 235, 0.82);
-  --auth-gradient-end: rgba(16, 185, 129, 0.45);
+  --gradient-cta-start: #3d7f84;
+  --gradient-cta-end: #285e62;
+  --auth-gradient-start: rgba(61, 127, 132, 0.82);
+  --auth-gradient-end: rgba(50, 108, 95, 0.45);
 
   --overlay-backdrop: rgba(0, 0, 0, 0.65);
 
-  --btn-solid-bg: #3b82f6;
+  --btn-solid-bg: #4c8f94;
   --btn-solid-fg: #ffffff;
 
   --color-primary-deep: var(--color-primary);

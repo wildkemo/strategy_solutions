@@ -5,6 +5,13 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import './index.css'
 import App from './App.jsx'
+import brandLogo from './assets/SS-logo-small-removebg-preview.png'
+
+const faviconEl = document.querySelector("link[rel='icon']")
+if (faviconEl) {
+  faviconEl.href = brandLogo
+  faviconEl.type = 'image/png'
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { apiFetch } from '../../lib/api'
 import { Modal } from './Modal'
 import { ThemeToggle } from './ThemeToggle'
+import brandLogo from '../../assets/SS-logo-small-removebg-preview.png'
 import styles from './Navbar.module.css'
 
 function NavLinks({ onNavigate, showRequest }) {
@@ -126,7 +127,12 @@ export function Navbar() {
     <>
       <header className={styles.header}>
         <Link to="/" className={styles.logo}>
-          Strategy Solutions
+          <img
+            src={brandLogo}
+            alt="Strategy Solutions"
+            className={styles.logoMark}
+          />
+          {/* <span className={styles.logoText}>Strategy Solutions</span> */}
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Main">

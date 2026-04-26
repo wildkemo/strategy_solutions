@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import vortexLogo from '../../assets/Vortex6_logo-removebg-preview.png'
 import styles from './Footer.module.css'
 
 export function Footer({ variant = 'full' }) {
@@ -16,14 +17,25 @@ export function Footer({ variant = 'full' }) {
 
   return (
     <footer className={styles.footer}>
-      <div className={styles.links}>
-        <Link to="/contact">Contact</Link>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
+      <div className={styles.left}>
+        <div className={styles.links}>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+        </div>
+        <p className={styles.copy}>
+          &copy; {new Date().getFullYear()} Strategy Solutions. All rights reserved.
+        </p>
       </div>
-      <div className={styles.credit}>
-        <span className={styles.vortex}>Developed by Vortex</span>
-      </div>
+
+      <a
+        href="https://vortex-systems.tech/"
+        target="_blank"
+        rel="noreferrer"
+        className={styles.brandCard}
+      >
+        <img src={vortexLogo} alt="Vortex" className={styles.brandLogo} />
+        <span className={styles.brandText}>Developed by Vortex</span>
+      </a>
     </footer>
   )
 }
