@@ -11,7 +11,7 @@ import {
   getAllUsers, 
   deleteUser 
 } from '../controllers/adminController.js';
-import { getAllOrders, updateOrderStatus, deleteOrder } from '../controllers/orderController.js';
+import { getAllOrders, updateOrderStatus, thankYouMail, doneMail } from '../controllers/orderController.js';
 
 const router = express.Router();
 
@@ -42,7 +42,8 @@ router.delete('/delete_services', isAdmin, deleteService);
 // Order Management
 router.get('/get_all_orders', isAdmin, getAllOrders);
 router.put('/update_order_status', isAdmin, updateOrderStatus);
-router.delete('/delete_order', isAdmin, deleteOrder);
+router.post('/thank_you-mail', isAdmin, thankYouMail);
+router.post('/done_mail', isAdmin, doneMail);
 
 // Customer Management
 router.get('/get_all_users', isAdmin, getAllUsers);

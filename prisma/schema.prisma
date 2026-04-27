@@ -47,6 +47,7 @@ model Order {
   userId             Int
   service            Service  @relation(fields: [serviceId], references: [id])
   user               User     @relation(fields: [userId], references: [id])
+  otps               Otp[]
 
   @@map("orders")
 }
@@ -54,10 +55,13 @@ model Order {
 model Otp {
   id        Int      @id @default(autoincrement())
   otp       String
+  purpose   String   @default("ACTIVATION")
   createdAt DateTime @default(now())
   expiresAt DateTime
   userId    Int
+  orderId   Int?
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("otps")
 }

@@ -49,7 +49,9 @@ export default function RequestServicePage() {
       setOrderId(data.request_id ?? data.order_id)
       setOtpModal(true)
     } else {
-      setError(data?.message || 'Could not submit request')
+      setError(
+        data?.message || data?.error || 'Could not submit request',
+      )
     }
   }
 
@@ -66,7 +68,7 @@ export default function RequestServicePage() {
       setSuccessModal(true)
       setOtp('')
     } else {
-      setOtpErr(data?.message || 'Invalid OTP')
+      setOtpErr(data?.message || data?.error || 'Invalid OTP')
     }
   }
 
@@ -140,7 +142,13 @@ export default function RequestServicePage() {
             <button type="button" className={forms.submit} style={{ width: 'auto' }} onClick={() => setOtpModal(false)} disabled={busy}>
               Cancel
             </button>
-            <button type="button" className={forms.submit} style={{ width: 'auto' }} onClick={verify} disabled={busy || otp.length < 4}>
+            <button
+              type="button"
+              className={forms.submit}
+              style={{ width: 'auto' }}
+              onClick={verify}
+              disabled={busy || !/^\d{6}$/.test(otp.trim())}
+            >
               Verify
             </button>
           </>
@@ -148,7 +156,15 @@ export default function RequestServicePage() {
       >
         <p>Enter the code we sent to your email.</p>
         {otpErr ? <p className={forms.error}>{otpErr}</p> : null}
-        <input className={forms.input} style={{ marginTop: '0.75rem' }} value={otp} onChange={(e) => setOtp(e.target.value)} />
+        <input
+          className={forms.input}
+          style={{ marginTop: '0.75rem' }}
+          value={otp}
+          onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+          inputMode="numeric"
+          placeholder="6-digit code"
+          autoComplete="one-time-code"
+        />
       </Modal>
 
       <Modal

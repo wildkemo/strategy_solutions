@@ -18,8 +18,7 @@ import BlankCustomerPage from './pages/BlankCustomer/BlankCustomer'
 import ErrorTestPage from './pages/ErrorTest/ErrorTest'
 
 function GuestOnly({ children }) {
-  const { user, loading, isAdmin, authBypass } = useAuth()
-  if (authBypass) return children
+  const { user, loading, isAdmin } = useAuth()
   if (loading) {
     return (
       <div

@@ -1,42 +1,190 @@
+import bcrypt from 'bcrypt';
+import prisma from '../utils/prisma.js';
+
+const clearAuthCookies = (res) => {
+  const opts = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  };
+  res.clearCookie('access_token', opts);
+  res.clearCookie('refresh_token', opts);
+};
+
+const OTP_PURPOSES = {
+  ACTIVATION: 'ACTIVATION',
+  DELETE_ACCOUNT: 'DELETE_ACCOUNT',
+};
+
+function resolveUserId(req) {
+  const raw = req.user?.userId ?? req.user?.id ?? req.user?.sub;
+  const id = typeof raw === 'string' ? parseInt(raw, 10) : Number(raw);
+  return Number.isFinite(id) ? id : null;
+}
+
 /**
- * User Controller
- * 
- * Handlers for:
- * 
- * 1. Register (Initiate)
- *    - Method: POST
- *    - Path: /api/register
- *    - Body: { name, email }
- *    - Description: Validates registration data and sends an OTP to initiate process.
- * 
- * 2. Create Customer (Finalize)
- *    - Method: POST
- *    - Path: /api/insert_new_customer
- *    - Body: { name, email, phone, company_name, password }
- *    - Description: Creates a new record in the customers table.
- * 
- * 3. Update User Info
- *    - Method: PATCH
- *    - Path: /api/update_user_info
- *    - Body: { name, phone, password (optional), company_name, currentPassword }
- *    - Description: Updates the profile of the currently logged-in customer.
- * 
- * 4. Get All Users
- *    - Method: GET
- *    - Path: /api/get_all_users
- *    - Security: Admin Only
- *    - Description: Returns a list of all registered customers.
- * 
- * 5. Delete User
- *    - Method: DELETE
- *    - Path: /api/delete_user
- *    - Security: Admin Only
- *    - Body: { id, email (optional) }
- *    - Description: Deletes a customer record and associated orders.
- * 
- * 6. Delete Account (Self)
- *    - Method: DELETE
- *    - Path: /api/delete_account
- *    - Body: { otp, purpose }
- *    - Description: Allows a logged-in user to delete their own account after OTP verification.
+ * PATCH /api/update_user_info
+ * Body: { name?, phone?, password?, company_name?, currentPassword } (currentPassword required)
  */
+export const updateUserInfo = async (req, res) => {
+  try {
+    const userId = resolveUserId(req);
+    if (userId == null) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { name, phone, password, company_name: companyName, currentPassword } = req.body;
+
+    if (!currentPassword || typeof currentPassword !== 'string') {
+      return res.status(400).json({ error: 'currentPassword is required' });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const passwordOk = await bcrypt.compare(currentPassword, user.password);
+    if (!passwordOk) {
+      return res.status(403).json({ error: 'Wrong current password' });
+    }
+
+    if (user.role === 'ADMIN') {
+      const data = {};
+      if (name !== undefined) {
+        if (typeof name !== 'string' || !name.trim()) {
+          return res.status(400).json({ error: 'Invalid name' });
+        }
+        data.name = name.trim();
+      }
+      if (password !== undefined && password !== '') {
+        if (typeof password !== 'string' || password.length < 6) {
+          return res.status(400).json({ error: 'Password must be at least 6 characters' });
+        }
+        data.password = await bcrypt.hash(password, 10);
+      }
+      if (Object.keys(data).length === 0) {
+        return res.status(400).json({ error: 'No fields to update' });
+      }
+      await prisma.user.update({
+        where: { id: userId },
+        data,
+      });
+      return res.status(200).json({ status: 'success' });
+    }
+
+    const data = {};
+
+    if (name !== undefined) {
+      if (typeof name !== 'string' || !name.trim()) {
+        return res.status(400).json({ error: 'Invalid name' });
+      }
+      data.name = name.trim();
+    }
+
+    if (phone !== undefined) {
+      if (typeof phone !== 'string' || !phone.trim()) {
+        return res.status(400).json({ error: 'Invalid phone' });
+      }
+      const nextPhone = phone.trim();
+      const phoneTaken = await prisma.user.findFirst({
+        where: {
+          phone: nextPhone,
+          NOT: { id: userId },
+        },
+      });
+      if (phoneTaken) {
+        return res.status(409).json({ error: 'Phone number already in use' });
+      }
+      data.phone = nextPhone;
+    }
+
+    if (companyName !== undefined) {
+      if (typeof companyName !== 'string' || !companyName.trim()) {
+        return res.status(400).json({ error: 'Invalid company_name' });
+      }
+      data.companyName = companyName.trim();
+    }
+
+    if (password !== undefined && password !== '') {
+      if (typeof password !== 'string' || password.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters' });
+      }
+      data.password = await bcrypt.hash(password, 10);
+    }
+
+    if (Object.keys(data).length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    await prisma.user.update({
+      where: { id: userId },
+      data,
+    });
+
+    return res.status(200).json({ status: 'success' });
+  } catch (error) {
+    console.error('updateUserInfo error:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+/**
+ * DELETE /api/delete_account
+ * Body: { otp, purpose } — purpose must match OTP (e.g. DELETE_ACCOUNT)
+ */
+export const deleteAccount = async (req, res) => {
+  try {
+    const userId = resolveUserId(req);
+    if (userId == null) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { otp, purpose } = req.body;
+
+    if (!otp || typeof otp !== 'string' || !/^\d{6}$/.test(otp.trim())) {
+      return res.status(400).json({ error: 'Invalid or incorrect OTP or OTP expired' });
+    }
+
+    const purposeNorm =
+      typeof purpose === 'string' && purpose.trim().toUpperCase() === OTP_PURPOSES.DELETE_ACCOUNT
+        ? OTP_PURPOSES.DELETE_ACCOUNT
+        : null;
+
+    if (!purposeNorm) {
+      return res.status(400).json({ error: 'purpose must be DELETE_ACCOUNT' });
+    }
+
+    const otpRecord = await prisma.otp.findFirst({
+      where: {
+        userId,
+        otp: otp.trim(),
+        purpose: OTP_PURPOSES.DELETE_ACCOUNT,
+        expiresAt: { gt: new Date() },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!otpRecord) {
+      return res.status(400).json({ error: 'Invalid or incorrect OTP or OTP expired' });
+    }
+
+    await prisma.otp.delete({ where: { id: otpRecord.id } }).catch(() => {});
+
+    await prisma.refreshToken.deleteMany({ where: { userId } }).catch(() => {});
+
+    await prisma.user.delete({ where: { id: userId } });
+
+    clearAuthCookies(res);
+    return res.status(200).json({
+      status: 'success',
+      message: 'Account deleted successfully.',
+    });
+  } catch (error) {
+    console.error('deleteAccount error:', error);
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};

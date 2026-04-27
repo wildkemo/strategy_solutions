@@ -2,10 +2,8 @@ import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export function RequireAuth({ children, adminOnly }) {
-  const { user, loading, isAdmin, authBypass } = useAuth()
+  const { user, loading, isAdmin } = useAuth()
   const location = useLocation()
-
-  if (authBypass) return children
 
   if (loading) {
     return (

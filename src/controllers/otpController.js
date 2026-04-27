@@ -1,65 +1,102 @@
 import nodemailer from 'nodemailer';
-import jwt from 'jsonwebtoken';
 import prisma from '../utils/prisma.js';
 import { OtpResponseDto, ValidateOtpRequestDto } from '../dtos/OtpDto.js';
 
 /**
  * OTP Controller
+ * createOtp / validateOtp run behind checkAuth — use req.user.userId (no second JWT verify).
  */
 
-// Configure Nodemailer transporter
-// Note: In production, these should be environment variables.
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // Or your preferred service
+  service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
 
+function resolveUserId(req) {
+  const raw = req.user?.userId ?? req.user?.id ?? req.user?.sub;
+  const id = typeof raw === 'string' ? parseInt(raw, 10) : Number(raw);
+  return Number.isFinite(id) ? id : null;
+}
+
 export const createOtp = async (req, res) => {
+  let createdOtpId = null;
   try {
-    const accessToken = req.cookies.access_token;
-    if (!accessToken) {
+    const userId = resolveUserId(req);
+    if (userId == null) {
       return res.status(401).json({ error: 'Authentication required' });
     }
-
-    const payload = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET || 'access_secret_fallback');
-    const userId = payload.userId;
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Generate 6-digit OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const rawPurpose = (req.body?.purpose || 'ACTIVATION').toString().trim().toUpperCase();
+    const purpose = rawPurpose === 'DELETE_ACCOUNT' ? 'DELETE_ACCOUNT' : 'ACTIVATION';
 
-    // Store in DB
-    await prisma.otp.create({
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    const row = await prisma.otp.create({
       data: {
         otp: otpCode,
         userId: userId,
         expiresAt: expiresAt,
+        purpose,
       },
     });
+    createdOtpId = row.id;
 
-    // Send Email
+    const isDelete = purpose === 'DELETE_ACCOUNT';
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: user.email,
-      subject: 'Your Verification Code',
-      text: `Your 6-digit verification code is: ${otpCode}. It expires in 10 minutes.`,
+      subject: isDelete ? 'Confirm account deletion' : 'Your Verification Code',
+      text: isDelete
+        ? `You requested to permanently delete your Strategy Solutions account. Your 6-digit code is: ${otpCode}. It expires in 10 minutes. If you did not request this, ignore this email and secure your account.`
+        : `Your 6-digit verification code is: ${otpCode}. It expires in 10 minutes.`,
     };
 
-    await transporter.sendMail(mailOptions);
+    const emailConfigured = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+    if (emailConfigured) {
+      try {
+        await transporter.sendMail(mailOptions);
+      } catch (mailErr) {
+        console.error('sendMail failed:', mailErr);
+        await prisma.otp.delete({ where: { id: createdOtpId } }).catch(() => {});
+        return res.status(503).json({
+          error:
+            'Could not send verification email. Check EMAIL_USER / EMAIL_PASS, or try again later.',
+        });
+      }
+    } else {
+      console.warn(
+        '[OTP] EMAIL_USER / EMAIL_PASS not set — email not sent. OTP (dev only) for',
+        user.email,
+        ':',
+        otpCode,
+      );
+      if (process.env.OTP_DEV_RETURN_CODE === 'true') {
+        return res.status(200).json({
+          message: 'OTP generated (email disabled). Use code from server logs or response.',
+          ...(process.env.NODE_ENV !== 'production' ? { devOnlyOtp: otpCode } : {}),
+        });
+      }
+      await prisma.otp.delete({ where: { id: createdOtpId } }).catch(() => {});
+      return res.status(503).json({
+        error:
+          'Email is not configured on the server. Set EMAIL_USER and EMAIL_PASS, or for local testing set OTP_DEV_RETURN_CODE=true (never in production).',
+      });
+    }
 
     res.status(200).json(new OtpResponseDto('OTP sent to your email'));
   } catch (error) {
     console.error('Create OTP error:', error);
-    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Invalid or expired session' });
+    if (createdOtpId) {
+      await prisma.otp.delete({ where: { id: createdOtpId } }).catch(() => {});
     }
     res.status(500).json({ error: 'Internal server error' });
   }
@@ -76,20 +113,17 @@ export const validateOtp = async (req, res) => {
 
     const { otp } = validateData;
 
-    const accessToken = req.cookies.access_token;
-    if (!accessToken) {
+    const userId = resolveUserId(req);
+    if (userId == null) {
       return res.status(401).json({ error: 'Authentication required' });
     }
 
-    const payload = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET || 'access_secret_fallback');
-    const userId = payload.userId;
-
-    // Find the latest OTP for this user
     const otpRecord = await prisma.otp.findFirst({
       where: {
         userId: userId,
         otp: otp,
         expiresAt: { gt: new Date() },
+        purpose: 'ACTIVATION',
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -98,13 +132,11 @@ export const validateOtp = async (req, res) => {
       return res.status(400).json({ error: 'Invalid or expired OTP' });
     }
 
-    // Update user to activated
     await prisma.user.update({
       where: { id: userId },
       data: { isActivated: true },
     });
 
-    // Delete the used OTP record
     await prisma.otp.delete({
       where: { id: otpRecord.id },
     });
@@ -112,9 +144,6 @@ export const validateOtp = async (req, res) => {
     res.status(200).json(new OtpResponseDto('Account activated successfully'));
   } catch (error) {
     console.error('Validate OTP error:', error);
-    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
-      return res.status(401).json({ error: 'Invalid or expired session' });
-    }
     res.status(500).json({ error: 'Internal server error' });
   }
 };

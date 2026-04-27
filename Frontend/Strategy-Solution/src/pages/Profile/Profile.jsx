@@ -6,11 +6,23 @@ import { Modal } from '../../components/Modal'
 import forms from '../../styles/forms.module.css'
 import styles from './Profile.module.css'
 
+function apiErrorMessage(data) {
+  if (!data) return 'Something went wrong'
+  if (typeof data.message === 'string') return data.message
+  if (typeof data.error === 'string') return data.error
+  if (Array.isArray(data.details)) return data.details.join(', ')
+  return 'Something went wrong'
+}
+
+const DELETE_PURPOSE = 'DELETE_ACCOUNT'
+
 export default function ProfilePage() {
   const { user, refreshUser, isAdmin, logout } = useAuth()
   const navigate = useNavigate()
   const [name, setName] = useState(user?.name || '')
-  const [company, setCompany] = useState(user?.company_name || '')
+  const [company, setCompany] = useState(
+    user?.companyName || user?.company_name || '',
+  )
   const [phone, setPhone] = useState(user?.phone || '')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
@@ -25,11 +37,12 @@ export default function ProfilePage() {
   const [deleteOtp, setDeleteOtp] = useState('')
   const [deleteBusy, setDeleteBusy] = useState(false)
   const [deleteError, setDeleteError] = useState('')
+  const [devOtpHint, setDevOtpHint] = useState('')
 
   useEffect(() => {
     if (!user) return
     setName(user.name || '')
-    setCompany(user.company_name || '')
+    setCompany(user.companyName || user.company_name || '')
     setPhone(user.phone || '')
   }, [user])
 
@@ -41,13 +54,14 @@ export default function ProfilePage() {
       return
     }
     setBusy(true)
-    const body = {
-      name,
-      currentPassword,
-      company_name: company,
-      phone,
+
+    const body = { name, currentPassword }
+    if (!isAdmin) {
+      body.company_name = company
+      body.phone = phone
     }
     if (newPassword) body.password = newPassword
+
     const { ok, data, status } = await apiFetch('/api/update_user_info', {
       method: 'PATCH',
       json: body,
@@ -71,24 +85,35 @@ export default function ProfilePage() {
     } else if (status === 403) {
       setErrOpen(true)
     } else {
-      setError(data?.message || 'Update failed')
+      setError(apiErrorMessage(data))
     }
   }
 
   const openDeleteFlow = async () => {
+    setError('')
     setDeleteError('')
-    setDeleteStep('otp')
+    setDeleteOtp('')
+    setDevOtpHint('')
     setDeleteBusy(true)
-    const { ok, data } = await apiFetch('/api/send_otp', {
+    const { ok, data } = await apiFetch('/api/otp/create', {
       method: 'POST',
-      json: { purpose: 'Delete Account' },
+      json: { purpose: DELETE_PURPOSE },
     })
     setDeleteBusy(false)
-    if (!ok) setDeleteError(data?.message || 'Could not send OTP')
+    if (!ok) {
+      setError(apiErrorMessage(data))
+      return
+    }
+    if (data?.devOnlyOtp) {
+      setDevOtpHint(
+        `Local dev: use code ${data.devOnlyOtp} (email not sent).`,
+      )
+    }
+    setDeleteStep('otp')
   }
 
   const goToConfirmDelete = () => {
-    if (deleteOtp.length < 4) return
+    if (!/^\d{6}$/.test(deleteOtp.trim())) return
     setDeleteError('')
     setDeleteStep('confirm')
   }
@@ -98,7 +123,7 @@ export default function ProfilePage() {
     setDeleteError('')
     const { ok, data } = await apiFetch('/api/delete_account', {
       method: 'DELETE',
-      json: { otp: deleteOtp, purpose: 'Delete Account' },
+      json: { otp: deleteOtp.trim(), purpose: DELETE_PURPOSE },
     })
     setDeleteBusy(false)
     if (ok) {
@@ -108,7 +133,7 @@ export default function ProfilePage() {
       navigate('/')
     } else {
       setDeleteStep('otp')
-      setDeleteError(data?.message || 'Could not delete account')
+      setDeleteError(apiErrorMessage(data))
     }
   }
 
@@ -123,6 +148,7 @@ export default function ProfilePage() {
             Go to Admin Dashboard
           </Link>
         ) : null}
+
         <form onSubmit={onSubmit}>
           <div className={forms.field}>
             <label htmlFor="p-name">Name</label>
@@ -143,6 +169,7 @@ export default function ProfilePage() {
                   className={forms.input}
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
+                  required
                 />
               </div>
               <div className={forms.field}>
@@ -152,6 +179,7 @@ export default function ProfilePage() {
                   className={forms.input}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  required
                 />
               </div>
             </>
@@ -204,8 +232,9 @@ export default function ProfilePage() {
             type="button"
             className={styles.dangerBtn}
             onClick={openDeleteFlow}
+            disabled={deleteBusy}
           >
-            Delete Account
+            {deleteBusy ? 'Sending code…' : 'Delete Account'}
           </button>
         </div>
       </div>
@@ -240,20 +269,26 @@ export default function ProfilePage() {
               type="button"
               className={styles.primaryBtn}
               onClick={goToConfirmDelete}
-              disabled={deleteBusy || deleteOtp.length < 4}
+              disabled={deleteBusy || !/^\d{6}$/.test(deleteOtp.trim())}
             >
               Continue
             </button>
           </>
         }
       >
-        <p>Enter the OTP sent to your email.</p>
+        <p>
+          We sent a 6-digit code to your email. Enter it below to continue.
+        </p>
+        {devOtpHint ? (
+          <p className={styles.devHint}>{devOtpHint}</p>
+        ) : null}
         {deleteError ? <p className={styles.errText}>{deleteError}</p> : null}
         <input
           className={styles.otpInput}
           value={deleteOtp}
-          onChange={(e) => setDeleteOtp(e.target.value)}
+          onChange={(e) => setDeleteOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
           placeholder="6-digit code"
+          inputMode="numeric"
           autoComplete="one-time-code"
         />
       </Modal>
@@ -278,7 +313,7 @@ export default function ProfilePage() {
               onClick={finalizeDelete}
               disabled={deleteBusy}
             >
-              Permanently delete
+              {deleteBusy ? 'Deleting…' : 'Permanently delete'}
             </button>
           </>
         }

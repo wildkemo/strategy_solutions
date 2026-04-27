@@ -1,8 +1,9 @@
 import express from 'express';
+import { updateUserInfo, deleteAccount } from '../controllers/userController.js';
+
 const router = express.Router();
 
-/**
- * User Routes (To be implemented)
- */
+router.patch('/update_user_info', updateUserInfo);
+router.delete('/delete_account', deleteAccount);
 
 export default router;

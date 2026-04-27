@@ -6,7 +6,7 @@ import { Modal } from '../../components/Modal'
 import forms from '../../styles/forms.module.css'
 
 export default function RegisterPage() {
-  const { login, refreshUser } = useAuth()
+  const { refreshUser } = useAuth()
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
