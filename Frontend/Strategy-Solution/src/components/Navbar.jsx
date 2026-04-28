@@ -7,6 +7,15 @@ import { ThemeToggle } from './ThemeToggle'
 import brandLogo from '../assets/SS-logo-small-removebg-preview.png'
 import styles from './Navbar.module.css'
 
+function orderStatusClass(status) {
+  const s = (status || '').toLowerCase()
+  if (s.includes('done') || s.includes('complete')) return styles.statusDone
+  if (s.includes('reject')) return styles.statusRejected
+  if (s.includes('pending')) return styles.statusPending
+  if (s.includes('active')) return styles.statusActive
+  return styles.statusMuted
+}
+
 function NavLinks({ onNavigate, showRequest }) {
   return (
     <>
@@ -61,6 +70,10 @@ export function Navbar() {
   const { data: allOrders = [] } = useUserOrdersQuery()
 
   const recentOrders = allOrders.slice(0, 3)
+  const activeOrders = allOrders.filter((order) => {
+    const status = (order.status || '').toLowerCase()
+    return status.includes('pending') || status.includes('active')
+  }).length
 
   const [logoutOpen, setLogoutOpen] = useState(false)
 
@@ -140,10 +153,7 @@ export function Navbar() {
               />
             </div>
             <nav className={styles.mobileNav} aria-label="Mobile">
-              <NavLinks
-                showRequest={!!user && !isAdmin}
-                onNavigate={closeMobile}
-              />
+              <NavLinks onNavigate={closeMobile} />
               {!user ? (
                 <>
                   <Link to="/login" onClick={closeMobile}>
@@ -168,11 +178,8 @@ export function Navbar() {
             onClick={() => setPanelOpen(false)}
           />
           <aside className={styles.userPanel}>
-            <div className={styles.panelHead}>
-              <div>
-                <strong>{user.name || 'Account'}</strong>
-                <div className={styles.email}>{user.email}</div>
-              </div>
+            <div className={styles.panelCloseRow}>
+              <span className={styles.panelEyebrow}>Account</span>
               <button
                 type="button"
                 className={styles.closeX}
@@ -180,34 +187,90 @@ export function Navbar() {
                 aria-label="Close"
               />
             </div>
+            
+            <div className={styles.panelHero}>
+              <div className={styles.panelUserSection}>
+                <div className={styles.panelAvatarLarge}>
+                  {(user.name || user.email || '?').charAt(0).toUpperCase()}
+                </div>
+                <div className={styles.panelUserInfo}>
+                  <div className={styles.panelUserTopRow}>
+                    <strong>{user.name || 'Account'}</strong>
+                    <span className={styles.roleBadge}>{isAdmin ? 'Admin' : 'Client'}</span>
+                  </div>
+                  <div className={styles.email}>{user.email}</div>
+                </div>
+              </div>
 
-            {!isAdmin && recentOrders.length > 0 ? (
+              <div className={styles.panelStats}>
+                {isAdmin ? (
+                  <>
+                    <div className={styles.panelStatCard}>
+                      <span>Access</span>
+                      <strong>Full control</strong>
+                    </div>
+                    <div className={styles.panelStatCard}>
+                      <span>Workspace</span>
+                      <strong>Admin tools</strong>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className={styles.panelStatCard}>
+                      <span>Total orders</span>
+                      <strong>{allOrders.length}</strong>
+                    </div>
+                    <div className={styles.panelStatCard}>
+                      <span>Open now</span>
+                      <strong>{activeOrders}</strong>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {!isAdmin && (
               <div className={styles.panelBlock}>
                 <p className={styles.panelLabel}>Recent orders</p>
-                <ul className={styles.orderPreview}>
-                  {recentOrders.map((o) => (
-                    <li key={o.id}>
-                      #{o.id} · {o.service_type || 'Service'}
-                    </li>
-                  ))}
-                </ul>
+                {recentOrders.length > 0 ? (
+                  <ul className={styles.orderPreview}>
+                    {recentOrders.map((o) => (
+                      <li key={o.id} className={styles.orderItem}>
+                        <div className={styles.orderItemTop}>
+                          <span className={styles.orderId}>Order #{o.id}</span>
+                          <span className={`${styles.orderStatus} ${orderStatusClass(o.status)}`}>
+                            {o.status || 'Unknown'}
+                          </span>
+                        </div>
+                        <span className={styles.orderSvc}>{o.service_type || 'Service request'}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className={styles.emptyText}>No recent orders</p>
+                )}
               </div>
-            ) : null}
+            )}
 
             <div className={styles.panelActions}>
-              <Link
-                to="/my-orders"
-                onClick={() => setPanelOpen(false)}
-                className={styles.panelBtn}
-              >
-                View All Orders
-              </Link>
+              <p className={styles.panelLabel}>Shortcuts</p>
+              {!isAdmin && (
+                <Link
+                  to="/my-orders"
+                  onClick={() => setPanelOpen(false)}
+                  className={styles.panelBtn}
+                >
+                  <span>View all orders</span>
+                  <small>Track requests and updates</small>
+                </Link>
+              )}
               <Link
                 to="/profile"
                 onClick={() => setPanelOpen(false)}
                 className={styles.panelBtn}
               >
-                Manage Profile
+                <span>Manage profile</span>
+                <small>Update account details</small>
               </Link>
               {isAdmin ? (
                 <Link
@@ -215,16 +278,20 @@ export function Navbar() {
                   onClick={() => setPanelOpen(false)}
                   className={styles.panelBtnAdmin}
                 >
-                  Admin Dashboard
+                  <span>Admin dashboard</span>
+                  <small>Services, orders, customers</small>
                 </Link>
               ) : null}
-              <button
-                type="button"
-                className={styles.panelBtnGhost}
-                onClick={() => setLogoutOpen(true)}
-              >
-                Logout
-              </button>
+              <div className={styles.panelFooter}>
+                <button
+                  type="button"
+                  className={styles.panelBtnLogout}
+                  onClick={() => setLogoutOpen(true)}
+                >
+                  <span>Logout</span>
+                  <small>End this session</small>
+                </button>
+              </div>
             </div>
           </aside>
         </>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
 import { apiFetch } from '../../lib/api'
 import { Modal } from '../../components/Modal'
@@ -15,7 +16,6 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
-  const [busy, setBusy] = useState(false)
   const [otpOpen, setOtpOpen] = useState(false)
   const [otp, setOtp] = useState('')
   const [existsOpen, setExistsOpen] = useState(false)
@@ -32,66 +32,84 @@ export default function RegisterPage() {
     return true
   }
 
-  const onSubmit = async (e) => {
+  const registerMutation = useMutation({
+    mutationFn: async () => {
+      // 1. Signup the user
+      const signupRes = await apiFetch('/api/signup', {
+        method: 'POST',
+        json: { name, email, companyName: company, phone, password },
+      })
+
+      if (signupRes.status === 409) {
+        throw new Error('CONFLICT:' + (signupRes.data?.error || 'Account already exists'))
+      }
+
+      if (!signupRes.ok) {
+        throw new Error(signupRes.data?.error || signupRes.data?.details?.join(', ') || 'Registration failed')
+      }
+
+      // 2. Request OTP (access token cookie is already set by signup)
+      const otpRes = await apiFetch('/api/otp/create', {
+        method: 'POST'
+      })
+
+      if (!otpRes.ok) {
+        throw new Error(otpRes.data?.error || 'Could not send OTP. Please try logging in to verify your account.')
+      }
+
+      return otpRes
+    },
+    onSuccess: () => {
+      setOtpOpen(true)
+    },
+    onError: (err) => {
+      const msg = err.message
+      if (msg.startsWith('CONFLICT:')) {
+        setError(msg.replace('CONFLICT:', ''))
+        setExistsOpen(true)
+      } else {
+        setError(msg)
+      }
+    },
+  })
+
+  const finalizeMutation = useMutation({
+    mutationFn: async () => {
+      // 3. Validate OTP
+      const v = await apiFetch('/api/otp/validate', {
+        method: 'POST',
+        json: { otp },
+      })
+
+      if (!v.ok) {
+        throw new Error(v.data?.error || v.data?.details?.join(', ') || 'Invalid or expired OTP')
+      }
+      return v
+    },
+    onSuccess: async () => {
+      // 4. Success!
+      setOtpOpen(false)
+      await refreshUser()
+      navigate('/services', { replace: true })
+    },
+    onError: (err) => {
+      setError(err.message)
+    },
+  })
+
+  const onSubmit = (e) => {
     e.preventDefault()
     setError('')
     if (!validate()) return
-    setBusy(true)
-    
-    // 1. Signup the user
-    const signupRes = await apiFetch('/api/signup', {
-      method: 'POST',
-      json: { name, email, companyName: company, phone, password },
-    })
-
-    if (signupRes.status === 409) {
-      setBusy(false)
-      setError(signupRes.data?.error || 'Account already exists')
-      setExistsOpen(true)
-      return
-    }
-
-    if (!signupRes.ok) {
-      setBusy(false)
-      setError(signupRes.data?.error || signupRes.data?.details?.join(', ') || 'Registration failed')
-      return
-    }
-
-    // 2. Request OTP (access token cookie is already set by signup)
-    const otpRes = await apiFetch('/api/otp/create', {
-      method: 'POST'
-    })
-
-    setBusy(false)
-    if (otpRes.ok) {
-      setOtpOpen(true)
-    } else {
-      setError(otpRes.data?.error || 'Could not send OTP. Please try logging in to verify your account.')
-    }
+    registerMutation.mutate()
   }
 
-  const finalize = async () => {
-    setBusy(true)
+  const finalize = () => {
     setError('')
-    
-    // 3. Validate OTP
-    const v = await apiFetch('/api/otp/validate', {
-      method: 'POST',
-      json: { otp },
-    })
-
-    if (!v.ok) {
-      setBusy(false)
-      setError(v.data?.error || v.data?.details?.join(', ') || 'Invalid or expired OTP')
-      return
-    }
-
-    // 4. Success!
-    setBusy(false)
-    setOtpOpen(false)
-    await refreshUser()
-    navigate('/services', { replace: true })
+    finalizeMutation.mutate()
   }
+
+  const busy = registerMutation.isPending || finalizeMutation.isPending
 
   return (
     <div className={forms.pageCenter}>

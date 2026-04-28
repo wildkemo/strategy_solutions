@@ -137,15 +137,27 @@
 
 .splitArt {
   background:
-    linear-gradient(135deg, var(--auth-gradient-start), var(--auth-gradient-end)),
+    radial-gradient(circle at 30% 70%, rgba(255,255,255,0.1) 0%, transparent 50%),
+    linear-gradient(135deg, var(--auth-gradient-start), var(--auth-gradient-end), var(--color-primary-hover)),
     url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80')
       center/cover no-repeat;
+  background-blend-mode: overlay;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-white);
   text-align: center;
   padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.splitArt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0,0,0,0.3) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .loginBrandMark {

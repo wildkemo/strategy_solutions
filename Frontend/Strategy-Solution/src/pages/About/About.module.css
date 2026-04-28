@@ -1,150 +1,252 @@
 .page {
-  background: var(--color-surface);
+  background: var(--color-bg);
   color: var(--color-text);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Decorative Orbs */
+.orb1, .orb2 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.orb1 {
+  top: 0;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, var(--color-primary-muted), transparent 70%);
+  animation: floatOrb 20s ease-in-out infinite alternate;
+}
+
+.orb2 {
+  bottom: 20%;
+  right: -10%;
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle, rgba(17, 194, 155, 0.08), transparent 70%);
+  animation: floatOrb 15s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatOrb {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(5%, 10%) scale(1.1); }
 }
 
 .intro {
-  padding: 3rem 1.5rem 2rem;
-  background: var(--color-surface);
+  padding: 4rem 1.5rem 2rem;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-primary-muted) 30%, transparent), transparent);
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .intro h1 {
   margin: 0 0 1rem;
-  font-size: clamp(1.75rem, 3.5vw, 2.35rem);
-  color: var(--color-text);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--color-primary-deep) 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--color-primary-deep);
 }
 
 .lead {
-  font-size: 1.12rem;
-  color: var(--color-text);
-  line-height: 1.65;
-  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin: 0 auto;
+  max-width: 650px;
 }
 
 .narrow {
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .section {
-  padding: 3rem 1.5rem;
-  background: var(--color-surface);
+  padding: 4rem 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .sectionAlt {
   composes: section;
-  background: var(--color-surface);
+  background: linear-gradient(180deg, var(--color-bg-muted) 0%, var(--color-surface) 100%);
+  position: relative;
+}
+
+.sectionAlt::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  border-radius: 999px;
+  opacity: 0.4;
 }
 
 .section h2,
 .sectionAlt h2 {
-  margin: 0 0 1rem;
-  font-size: 1.65rem;
-  color: var(--color-text);
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  color: var(--color-primary-deep);
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .section p,
 .sectionAlt p {
-  color: var(--color-text);
-  line-height: 1.7;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
   margin: 0 0 1rem;
+  font-size: 1.05rem;
 }
 
 .aboutImageSection {
-  padding: 0 1.5rem 2rem;
-  background: var(--color-surface);
+  padding: 0 1.5rem 3rem;
+  position: relative;
+  z-index: 1;
 }
 
 .aboutImage {
   width: 100%;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background: var(--color-surface);
-  box-shadow: var(--shadow-soft);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
   object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.imageFrame {
-  margin-top: 2rem;
-  border-radius: var(--radius-lg);
-  min-height: 280px;
-  background-size: cover;
-  background-position: center;
-  box-shadow: var(--shadow-soft);
+.aboutImageSection:hover .aboutImage {
+  transform: scale(1.02);
+  box-shadow: 0 25px 50px var(--color-primary-muted);
 }
 
 .valueGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.25rem;
-  margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 .valueCard {
-  background: var(--color-surface);
-  padding: 1.5rem;
-  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.75rem;
+  border-radius: var(--radius-xl);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.valueCard:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-hover), 0 0 24px var(--color-primary-muted);
+  border-color: var(--color-primary);
 }
 
 .valueCard h3 {
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.75rem;
   color: var(--color-text);
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
 .valueCard p {
   margin: 0;
   font-size: 0.95rem;
-  color: var(--color-text);
+  color: var(--color-text-muted);
+  line-height: 1.6;
 }
 
 .legacy {
-  padding-bottom: 3rem;
-  background: var(--color-surface);
+  padding-bottom: 4rem;
+  position: relative;
+  z-index: 1;
 }
 
 .legacy .narrow {
   padding: 0 1.5rem;
 }
 
-.legacyBg {
-  position: relative;
-  min-height: 320px;
-  background-size: cover;
-  background-position: center;
-  margin-bottom: 2rem;
-}
-
 .legacyBadge {
   position: absolute;
-  left: 1.5rem;
-  bottom: 1.5rem;
-  max-width: 280px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: 1.25rem 1.5rem;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-hover);
+  left: 2rem;
+  bottom: 2rem;
+  max-width: 320px;
+  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 1.5rem 2rem;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: modalScaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+@keyframes modalScaleIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .badgeNum {
   display: block;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  color: var(--color-text);
   line-height: 1;
+  background: linear-gradient(135deg, var(--color-primary-deep) 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--color-primary-deep);
+  margin-bottom: 0.25rem;
 }
 
 .badgeText {
-  font-size: 0.9rem;
-  color: var(--color-text);
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.staggerIn > * {
+  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  opacity: 0;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 600px) {
   .legacyBadge {
     left: 1rem;
     right: 1rem;
+    bottom: 1rem;
     max-width: none;
+    padding: 1.25rem;
   }
 }

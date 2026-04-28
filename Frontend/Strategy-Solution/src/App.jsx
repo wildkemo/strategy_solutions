@@ -7,7 +7,6 @@ import AboutPage from './pages/About/About'
 import ContactPage from './pages/Contact/Contact'
 import ServicesPage from './pages/Services/Services'
 import ServiceDetailPage from './pages/ServiceDetail/ServiceDetail'
-import RequestServicePage from './pages/RequestService/RequestService'
 import LoginPage from './pages/Login/Login'
 import RegisterPage from './pages/Register/Register'
 import ForgotPasswordPage from './pages/ForgotPassword/ForgotPassword'
@@ -49,14 +48,6 @@ export default function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/services/:slug" element={<ServiceDetailPage />} />
-        <Route
-          path="/request-service"
-          element={
-            <RequireAuth>
-              <RequestServicePage />
-            </RequireAuth>
-          }
-        />
         <Route
           path="/profile"
           element={

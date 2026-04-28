@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
 import loginBrandImage from '../../assets/WhatsApp_Image_2025-06-08_at_20.37.40_9716fb98-removebg-preview.png'
 import forms from '../../styles/forms.module.css'
@@ -10,20 +11,28 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [busy, setBusy] = useState(false)
 
-  const onSubmit = async (e) => {
+  const loginMutation = useMutation({
+    mutationFn: async () => {
+      const res = await login(email, password)
+      if (!res.ok) throw new Error(res.message || 'Login failed')
+      return res
+    },
+    onSuccess: (res) => {
+      navigate(res.isAdmin ? '/admin_dashboard' : '/services', { replace: true })
+    },
+    onError: (err) => {
+      setError(err.message)
+    },
+  })
+
+  const onSubmit = (e) => {
     e.preventDefault()
     setError('')
-    setBusy(true)
-    const res = await login(email, password)
-    setBusy(false)
-    if (res.ok) {
-      navigate(res.isAdmin ? '/admin_dashboard' : '/services', { replace: true })
-    } else {
-      setError(res.message || 'Login failed')
-    }
+    loginMutation.mutate()
   }
+
+  const busy = loginMutation.isPending
 
   return (
     <div className={forms.split} style={{ background: 'var(--color-surface)' }}>

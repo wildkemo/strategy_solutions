@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
 import { useServicesQuery } from '../../lib/queries'
 import { apiFetch } from '../../lib/api'
@@ -35,12 +36,12 @@ function normalizeFeature(f, i) {
 export default function ServiceDetailPage() {
   const { slug } = useParams()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { isAuthenticated } = useAuth()
   const { data: list = [], isLoading } = useServicesQuery()
   const [signInModal, setSignInModal] = useState(false)
   const [successModal, setSuccessModal] = useState(false)
   const [error, setError] = useState('')
-  const [busy, setBusy] = useState(false)
 
   const service = useMemo(() => {
     const id = parseServiceIdFromSlug(slug)
@@ -58,28 +59,39 @@ export default function ServiceDetailPage() {
 
   const img = service ? serviceImageUrl(service) : null
 
-  const startRequest = async () => {
+  const requestMutation = useMutation({
+    mutationFn: async () => {
+      const { ok, data } = await apiFetch('/api/request_service', {
+        method: 'POST',
+        json: {
+          service_type: service.id,
+          service_description: `Request for: ${service.title || 'service'}`,
+        },
+      })
+      if (!ok) throw new Error(data?.message || 'Could not start request')
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-orders'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
+      setSuccessModal(true)
+    },
+    onError: (err) => {
+      setError(err.message)
+    },
+  })
+
+  const startRequest = () => {
     if (!isAuthenticated) {
       setSignInModal(true)
       return
     }
     if (!service) return
     setError('')
-    setBusy(true)
-    const { ok, data } = await apiFetch('/api/request_service', {
-      method: 'POST',
-      json: {
-        service_type: service.id,
-        service_description: `Request for: ${service.title || 'service'}`,
-      },
-    })
-    setBusy(false)
-    if (ok) {
-      setSuccessModal(true)
-    } else {
-      setError(data?.message || 'Could not start request')
-    }
+    requestMutation.mutate()
   }
+
+  const busy = requestMutation.isPending
 
   if (isLoading) {
     return (
@@ -102,8 +114,11 @@ export default function ServiceDetailPage() {
 
   return (
     <div className={styles.page}>
+      <div className={styles.orb1} aria-hidden></div>
+      <div className={styles.orb2} aria-hidden></div>
+
       <div className={styles.inner}>
-        <article className={styles.heroCard}>
+        <article className={`${styles.heroCard} animate-slide-up`}>
           <div
             className={styles.heroImage}
             style={img ? { backgroundImage: `url(${img})` } : undefined}
@@ -112,18 +127,21 @@ export default function ServiceDetailPage() {
             {service.category?.name && (
               <span className={styles.categoryBadge}>{service.category.name}</span>
             )}
-            <h1>{service.title}</h1>
+            <h1 className={styles.textGradient}>{service.title}</h1>
             <p className={styles.desc}>{service.description}</p>
           </div>
         </article>
 
         {features.length > 0 ? (
           <section className={styles.features}>
-            <h2>Key features</h2>
-            <div className={styles.featureGrid}>
+            <h2 className={styles.sectionTitle}>Key features</h2>
+            <div className={`${styles.featureGrid} ${styles.staggerIn}`}>
               {features.map((f, i) => (
-                <div key={`${f.name}-${i}`} className={styles.featureCard}>
-                  <div className={styles.fIcon}>{FEATURE_ICONS[i % FEATURE_ICONS.length]}</div>
+                <div key={`${f.name}-${i}`} className={styles.featureCard} style={{ animationDelay: `${i * 0.15}s` }}>
+                  <div className={styles.fIconWrap}>
+                    <div className={styles.fIconGlow}></div>
+                    <div className={styles.fIcon}>{FEATURE_ICONS[i % FEATURE_ICONS.length]}</div>
+                  </div>
                   <h3>{f.name}</h3>
                   <p>{f.description}</p>
                 </div>
@@ -132,7 +150,7 @@ export default function ServiceDetailPage() {
           </section>
         ) : null}
 
-        <div className={styles.actions}>
+        <div className={`${styles.actions} animate-slide-up`} style={{ animationDelay: '0.4s' }}>
           <Link to="/services" className={styles.secondaryBtn}>
             View all services
           </Link>

@@ -20,7 +20,8 @@ export default function MyOrdersPage() {
   const { data: orders = [], isLoading } = useUserOrdersQuery()
   const [search, setSearch] = useState('')
   const [deleteId, setDeleteId] = useState(null)
-  const [viewOrder, setViewOrder] = useState(null)
+  const [viewOrderId, setViewOrderId] = useState(null)
+  const [deleteError, setDeleteError] = useState('')
 
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
@@ -33,7 +34,11 @@ export default function MyOrdersPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-orders'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
       setDeleteId(null)
+    },
+    onError: (err) => {
+      setDeleteError(err.message)
     },
   })
 
@@ -48,8 +53,14 @@ export default function MyOrdersPage() {
     )
   }, [orders, search])
 
+  const viewOrder = useMemo(() => {
+    if (!viewOrderId) return null
+    return orders.find(o => o.id === viewOrderId) || null
+  }, [orders, viewOrderId])
+
   const confirmDelete = async () => {
     if (deleteId == null) return
+    setDeleteError('')
     deleteMutation.mutate(deleteId)
   }
 
@@ -57,7 +68,10 @@ export default function MyOrdersPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.inner}>
+      <div className={styles.orb1} aria-hidden></div>
+      <div className={styles.orb2} aria-hidden></div>
+
+      <div className={`${styles.inner} animate-slide-up`}>
         <h1 className={styles.title}>My orders</h1>
         <div className={styles.searchWrap}>
           <input
@@ -121,14 +135,17 @@ export default function MyOrdersPage() {
                       <button
                         type="button"
                         className={styles.viewBtn}
-                        onClick={() => setViewOrder(o)}
+                        onClick={() => setViewOrderId(o.id)}
                       >
                         View
                       </button>
                       <button
                         type="button"
                         className={styles.dangerBtn}
-                        onClick={() => setDeleteId(o.id)}
+                        onClick={() => {
+                          setDeleteId(o.id)
+                          setDeleteError('')
+                        }}
                       >
                         Delete
                       </button>
@@ -143,11 +160,11 @@ export default function MyOrdersPage() {
       <Footer variant="minimal" />
 
       <Modal
-        open={viewOrder != null}
+        open={viewOrderId != null}
         title={`Order #${viewOrder?.id}`}
-        onClose={() => setViewOrder(null)}
+        onClose={() => setViewOrderId(null)}
         actions={
-          <button type="button" className={styles.ghost} onClick={() => setViewOrder(null)}>
+          <button type="button" className={styles.ghost} onClick={() => setViewOrderId(null)}>
             Close
           </button>
         }
@@ -192,6 +209,11 @@ export default function MyOrdersPage() {
         }
       >
         <p>This removes the order if it is still pending.</p>
+        {deleteError && (
+          <p style={{ color: 'var(--color-error)', marginTop: '1rem', fontSize: '0.9rem' }}>
+            {deleteError}
+          </p>
+        )}
       </Modal>
     </div>
   )

@@ -40,16 +40,35 @@ export async function apiFetch(path, options = {}) {
     })
   }
 
-  let res = await doFetch()
-  let text = await res.text()
-  let data = parseBody(text)
+  let res
+  let text
+  let data
+  try {
+    res = await doFetch()
+    text = await res.text()
+    data = parseBody(text)
+  } catch (error) {
+    return {
+      ok: false,
+      status: 500,
+      data: { message: error.message || 'Network error' },
+    }
+  }
 
   if (isTokenExpiredResponse(res.status, data)) {
     const refreshed = await tryRefreshSession()
     if (refreshed) {
-      res = await doFetch()
-      text = await res.text()
-      data = parseBody(text)
+      try {
+        res = await doFetch()
+        text = await res.text()
+        data = parseBody(text)
+      } catch (error) {
+        return {
+          ok: false,
+          status: 500,
+          data: { message: error.message || 'Network error after refresh' },
+        }
+      }
     }
   }
 

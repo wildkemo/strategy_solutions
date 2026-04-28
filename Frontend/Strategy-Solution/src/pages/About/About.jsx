@@ -20,6 +20,9 @@ const values = [
 export default function AboutPage() {
   return (
     <div className={styles.page}>
+      <div className={styles.orb1} aria-hidden></div>
+      <div className={styles.orb2} aria-hidden></div>
+
       <section className={styles.intro}>
         <div className={styles.narrow}>
           <h1>About Us</h1>
@@ -32,7 +35,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className={styles.section}>
+      <section className={`${styles.section} animate-slide-up`}>
         <div className={styles.narrow}>
           <h2>Who We Are</h2>
           <p>
@@ -48,13 +51,17 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className={styles.aboutImageSection}>
-        <div className={styles.narrow}>
+      <section className={`${styles.aboutImageSection} animate-slide-up`}>
+        <div className={styles.narrow} style={{ position: 'relative' }}>
           <img
             src={aboutTeamImage}
             alt="Strategy Solution team collaborating in a meeting"
             className={styles.aboutImage}
           />
+          <div className={styles.legacyBadge}>
+            <span className={styles.badgeNum}>20+</span>
+            <span className={styles.badgeText}>Years of transforming ideas into digital reality</span>
+          </div>
         </div>
       </section>
 
@@ -76,9 +83,9 @@ export default function AboutPage() {
       <section className={styles.section}>
         <div className={styles.narrow}>
           <h2>Our Values</h2>
-          <div className={styles.valueGrid}>
-            {values.map((v) => (
-              <article key={v.title} className={styles.valueCard}>
+          <div className={`${styles.valueGrid} ${styles.staggerIn}`}>
+            {values.map((v, idx) => (
+              <article key={v.title} className={styles.valueCard} style={{ animationDelay: `${idx * 0.15}s` }}>
                 <h3>{v.title}</h3>
                 <p>{v.text}</p>
               </article>

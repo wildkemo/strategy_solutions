@@ -1,33 +1,93 @@
 .pageWrap {
   background: var(--color-bg) !important;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Decorative Orbs */
+.orb1, .orb2 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.orb1 {
+  top: 0;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, var(--color-primary-muted), transparent 70%);
+  animation: floatOrb 20s ease-in-out infinite alternate;
+}
+
+.orb2 {
+  bottom: 20%;
+  right: -10%;
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle, rgba(17, 194, 155, 0.08), transparent 70%);
+  animation: floatOrb 15s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatOrb {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(5%, 10%) scale(1.1); }
 }
 
 .card {
-  border-top: 3px solid var(--color-primary);
+  border-top: 4px solid var(--color-primary);
   position: relative;
+  z-index: 1;
+  background: color-mix(in srgb, var(--color-surface) 90%, transparent) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-xl) !important;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.06) !important;
+  animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card h1 {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--color-primary-deep) 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--color-primary-deep);
+  margin-bottom: 0.5rem !important;
 }
 
 .badgeVerified, .badgeUnverified {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.25rem 0.6rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   margin-left: 0.75rem;
   vertical-align: middle;
+  border: 1px solid currentColor;
 }
 
 .badgeVerified {
-  background: var(--color-success-soft);
+  background: linear-gradient(135deg, var(--color-success-soft), transparent);
   color: var(--color-success);
 }
 
 .badgeUnverified {
-  background: var(--color-error-soft);
+  background: linear-gradient(135deg, var(--color-error-soft), transparent);
   color: var(--color-error);
 }
 
@@ -38,50 +98,60 @@
 
 .adminDash {
   display: inline-block;
-  margin-bottom: 1rem;
-  padding: 0.45rem 0.9rem;
-  border-radius: var(--radius-sm);
-  background: var(--color-primary-muted);
-  color: var(--color-primary-deep) !important;
-  font-weight: 600;
-  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--color-primary-muted), transparent);
+  color: var(--color-primary) !important;
+  font-weight: 700;
+  font-size: 0.95rem;
   text-decoration: none !important;
+  border: 1px solid var(--color-primary-muted);
+  transition: all 0.3s ease;
+}
+
+.adminDash:hover {
+  background: var(--color-primary-muted);
+  transform: translateY(-2px);
 }
 
 .dangerZone {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
   border-top: 1px solid var(--color-border);
 }
 
 .dangerTitle {
   color: var(--color-error);
-  font-size: 1.15rem;
-  margin-bottom: 0.5rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .dangerText {
   color: var(--color-text-muted);
-  font-size: 0.9rem;
-  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
 }
 
 .dangerBtn {
   display: inline-block;
-  padding: 0.65rem 1.25rem;
+  padding: 0.85rem 1.5rem;
   background: var(--color-error);
   color: var(--color-white);
   border: none;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  font-size: 0.95rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
 }
 
-.dangerBtn:hover {
-  opacity: 0.9;
+.dangerBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.3);
 }
 
 .dangerBtn:disabled {
@@ -90,56 +160,79 @@
 }
 
 .ghostBtn {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   background: var(--color-bg-muted);
   color: var(--color-text);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.ghostBtn:hover {
+  background: var(--color-border);
 }
 
 .primaryBtn {
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: var(--radius-sm);
   background: var(--btn-solid-bg);
   color: var(--btn-solid-fg);
   border: none;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 .otpInput {
   width: 100%;
-  margin-top: 0.75rem;
-  padding: 0.65rem 0.75rem;
-  border-radius: var(--radius-sm);
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-input-border);
   background: var(--color-surface);
   color: var(--color-text);
-  font-size: 1rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.otpInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-primary-muted);
 }
 
 .errText {
   color: var(--color-error);
-  font-size: 0.88rem;
-  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
 }
 
 .devHint {
-  margin: 0.75rem 0 0;
-  padding: 0.65rem 0.75rem;
-  border-radius: var(--radius-sm);
+  margin: 1rem 0 0;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
   background: var(--color-primary-muted);
   color: var(--color-text);
-  font-size: 0.88rem;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .sectionHeader {
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 800;
   color: var(--color-text);
-  margin: 1.5rem 0 1rem;
+  margin: 2rem 0 1.25rem;
   border-bottom: 1px solid var(--color-border);
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
+  letter-spacing: -0.01em;
 }

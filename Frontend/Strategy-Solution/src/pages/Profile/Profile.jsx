@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
 import { apiFetch } from '../../lib/api'
 import { Modal } from '../../components/Modal'
@@ -17,6 +18,7 @@ function apiErrorMessage(data) {
 export default function ProfilePage() {
   const { user, refreshUser, isAdmin, logout } = useAuth()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [name, setName] = useState(user?.name || '')
   const [company, setCompany] = useState(
     user?.companyName || user?.company_name || '',
@@ -26,15 +28,12 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState('')
-  const [busy, setBusy] = useState(false)
   const [successOpen, setSuccessOpen] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
   const [errOpen, setErrOpen] = useState(false)
 
   const [deleteStep, setDeleteStep] = useState(null)
   const [deleteOtp, setDeleteOtp] = useState('')
-  const [deleteBusy, setDeleteBusy] = useState(false)
-  const [deleteError, setDeleteError] = useState('')
   const [devOtpHint, setDevOtpHint] = useState('')
 
   useEffect(() => {
@@ -44,28 +43,29 @@ export default function ProfilePage() {
     setPhone(user.phone || '')
   }, [user])
 
-  const onSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    if (newPassword && newPassword !== confirm) {
-      setError('New passwords do not match')
-      return
-    }
-    setBusy(true)
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      if (newPassword && newPassword !== confirm) {
+        throw new Error('New passwords do not match')
+      }
+      const body = { name, currentPassword }
+      if (!isAdmin) {
+        body.company_name = company
+        body.phone = phone
+      }
+      if (newPassword) body.password = newPassword
 
-    const body = { name, currentPassword }
-    if (!isAdmin) {
-      body.company_name = company
-      body.phone = phone
-    }
-    if (newPassword) body.password = newPassword
-
-    const { ok, data, status } = await apiFetch('/api/update_user_info', {
-      method: 'PATCH',
-      json: body,
-    })
-    setBusy(false)
-    if (ok) {
+      const { ok, data, status } = await apiFetch('/api/update_user_info', {
+        method: 'PATCH',
+        json: body,
+      })
+      if (!ok) {
+        if (status === 403) throw new Error('AUTH_ERR:Incorrect password')
+        throw new Error(apiErrorMessage(data))
+      }
+      return data
+    },
+    onSuccess: async () => {
       await refreshUser()
       const parts = []
       if (name) parts.push('name')
@@ -80,62 +80,90 @@ export default function ProfilePage() {
       setNewPassword('')
       setConfirm('')
       setCurrentPassword('')
-    } else if (status === 403) {
-      setErrOpen(true)
-    } else {
-      setError(apiErrorMessage(data))
-    }
-  }
+    },
+    onError: (err) => {
+      if (err.message === 'AUTH_ERR:Incorrect password') {
+        setErrOpen(true)
+      } else {
+        setError(err.message)
+      }
+    },
+  })
 
-  const openDeleteFlow = async () => {
-    setError('')
-    setDeleteError('')
-    setDeleteOtp('')
-    setDevOtpHint('')
-    setDeleteBusy(true)
-    const { ok, data } = await apiFetch('/api/otp/create', {
-      method: 'POST',
-    })
-    setDeleteBusy(false)
-    if (!ok) {
-      setError(apiErrorMessage(data))
-      return
-    }
-    if (data?.devOnlyOtp) {
-      setDevOtpHint(
-        `Local dev: use code ${data.devOnlyOtp} (email not sent).`,
-      )
-    }
-    setDeleteStep('otp')
-  }
+  const createOtpMutation = useMutation({
+    mutationFn: async () => {
+      const { ok, data } = await apiFetch('/api/otp/create', {
+        method: 'POST',
+      })
+      if (!ok) throw new Error(apiErrorMessage(data))
+      return data
+    },
+    onSuccess: (data) => {
+      if (data?.devOnlyOtp) {
+        setDevOtpHint(`Local dev: use code ${data.devOnlyOtp} (email not sent).`)
+      } else {
+        setDevOtpHint('')
+      }
+      setDeleteStep('otp')
+    },
+    onError: (err) => {
+      setError(err.message)
+    },
+  })
 
-  const goToConfirmDelete = () => {
-    if (!/^\d{6}$/.test(deleteOtp.trim())) return
-    setDeleteError('')
-    setDeleteStep('confirm')
-  }
-
-  const finalizeDelete = async () => {
-    setDeleteBusy(true)
-    setDeleteError('')
-    const { ok, data } = await apiFetch('/api/delete_account', {
-      method: 'DELETE',
-      json: { otp: deleteOtp.trim() },
-    })
-    setDeleteBusy(false)
-    if (ok) {
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      const { ok, data } = await apiFetch('/api/delete_account', {
+        method: 'DELETE',
+        json: { otp: deleteOtp.trim() },
+      })
+      if (!ok) throw new Error(apiErrorMessage(data))
+      return data
+    },
+    onSuccess: async () => {
+      queryClient.clear()
       await logout()
       setDeleteStep(null)
       setDeleteOtp('')
       navigate('/')
-    } else {
+    },
+    onError: (err) => {
       setDeleteStep('otp')
-      setDeleteError(apiErrorMessage(data))
-    }
+      setError(err.message)
+    },
+  })
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+    setError('')
+    updateMutation.mutate()
   }
+
+  const openDeleteFlow = () => {
+    setError('')
+    setDeleteOtp('')
+    setDevOtpHint('')
+    createOtpMutation.mutate()
+  }
+
+  const goToConfirmDelete = () => {
+    if (!/^\d{6}$/.test(deleteOtp.trim())) return
+    setError('')
+    setDeleteStep('confirm')
+  }
+
+  const finalizeDelete = () => {
+    setError('')
+    deleteMutation.mutate()
+  }
+
+  const busy = updateMutation.isPending
+  const deleteBusy = createOtpMutation.isPending || deleteMutation.isPending
 
   return (
     <div className={`${forms.pageCenter} ${styles.pageWrap}`}>
+      <div className={styles.orb1} aria-hidden></div>
+      <div className={styles.orb2} aria-hidden></div>
       <div className={`${forms.card} ${styles.card}`}>
         <h1>Your profile</h1>
         <p className={forms.sub}>Keep your account details up to date.</p>
@@ -293,7 +321,7 @@ export default function ProfilePage() {
         {devOtpHint ? (
           <p className={styles.devHint}>{devOtpHint}</p>
         ) : null}
-        {deleteError ? <p className={styles.errText}>{deleteError}</p> : null}
+        {error ? <p className={styles.errText}>{error}</p> : null}
         <input
           className={styles.otpInput}
           value={deleteOtp}
