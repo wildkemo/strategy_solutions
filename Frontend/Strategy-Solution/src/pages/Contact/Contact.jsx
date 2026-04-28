@@ -29,7 +29,7 @@ export default function ContactPage() {
             </svg>
           </div>
           <h2>Email</h2>
-          <p>hello@strategysolutions.example</p>
+          <p>amr.elshimy@strategy-solution.com</p>
         </div>
         <div className={styles.card} style={{ animationDelay: '0.2s' }}>
           <div className={styles.iconTile} aria-hidden>
@@ -41,7 +41,7 @@ export default function ContactPage() {
             </svg>
           </div>
           <h2>Address</h2>
-          <p>100 Market Street, Suite 400, San Francisco, CA</p>
+          <p>Capital Mall, Unit 27, 5th Settlement</p>
         </div>
         <div className={styles.card} style={{ animationDelay: '0.3s' }}>
           <div className={styles.iconTile} aria-hidden>
@@ -53,7 +53,7 @@ export default function ContactPage() {
             </svg>
           </div>
           <h2>Phone</h2>
-          <p>+1 (555) 010-2030</p>
+          <p>20 123 456 7890</p>
         </div>
       </section>
 
@@ -61,7 +61,7 @@ export default function ContactPage() {
         <div className={styles.mapWrap}>
           <iframe
             title="Office location"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.019032779877!2d-122.4018726846813!3d37.78792597975754!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085807d7b5b7b5b%3A0x7b5b7b5b7b5b7b5b!2sMarket%20St%2C%20San%20Francisco%2C%20CA!5e0!3m2!1sen!2sus!4v1"
+            src="https://www.google.com/maps/embed/v1/place?q=Egypt%20%2C%20new%20cairo%20%2C%205th%20settlement%20court%20%2C%20al%20nasr%20mall&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"
             width="100%"
             height="100%"
             style={{ border: 0 }}

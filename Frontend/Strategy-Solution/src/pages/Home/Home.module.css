@@ -299,6 +299,33 @@
   transform: scale(1.08);
 }
 
+.coreServiceVisual {
+  aspect-ratio: 16/10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--color-primary) 35%, transparent), transparent 40%),
+    linear-gradient(135deg, var(--color-bg-muted), var(--color-surface));
+  color: var(--color-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.coreServiceVisual span {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  box-shadow: 0 15px 35px var(--color-primary-muted);
+  font-size: 2rem;
+  font-weight: 800;
+}
+
 .cardOverlay {
   position: absolute;
   inset: 0;

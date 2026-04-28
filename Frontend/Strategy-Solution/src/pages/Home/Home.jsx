@@ -1,16 +1,27 @@
 import { Link } from 'react-router-dom'
-import { useServicesQuery, useCategoriesQuery } from '../../lib/queries'
-import { serviceImageUrl } from '../../lib/services'
-import { servicePath } from '../../lib/slug'
+import { useCategoriesQuery } from '../../lib/queries'
 import { Footer } from '../../components/Footer'
 import heroImage from '../../assets/bb2af275-e7f6-4e3e-acc4-3f60fd7341d1.png'
 import styles from './Home.module.css'
 
+const coreServices = [
+  {
+    title: 'Cloud Computing',
+    description: 'Scalable cloud infrastructure and migration support for modern business operations.',
+  },
+  {
+    title: 'Security',
+    description: 'Cybersecurity services that help protect systems, data, and digital workflows.',
+  },
+  {
+    title: 'IT Consulting',
+    description: 'Strategic technology guidance to align IT decisions with business goals.',
+  },
+]
+
 export default function HomePage() {
-  const { data: services = [], isLoading: servicesLoading } = useServicesQuery()
   const { data: categories = [] } = useCategoriesQuery()
 
-  const featuredServices = services.slice(0, 3)
   const featuredCategories = categories.slice(0, 4)
 
   return (
@@ -65,34 +76,22 @@ export default function HomePage() {
             <p className={styles.sectionSub}>Tailored technology solutions designed for modern, agile enterprises.</p>
           </div>
           
-          {servicesLoading ? (
-            <div className={styles.loadingCenter}>Loading services...</div>
-          ) : (
-            <div className={`${styles.serviceGrid} ${styles.staggerIn}`}>
-              {featuredServices.length > 0 ? (
-                featuredServices.map((s, idx) => (
-                  <Link key={s.id} to={`/services/${servicePath(s)}`} className={styles.serviceCard} style={{ animationDelay: `${idx * 0.15}s` }}>
-                    <div className={styles.cardImageWrap}>
-                      <div 
-                        className={styles.serviceImgPreview} 
-                        style={{ backgroundImage: `url(${serviceImageUrl(s)})` }}
-                      />
-                      <div className={styles.cardOverlay}></div>
-                    </div>
-                    <div className={styles.cardContent}>
-                      <h3>{s.title}</h3>
-                      <p>{(s.description || '').slice(0, 110)}...</p>
-                      <span className={styles.cardLink}>
-                        Learn more <span className={styles.cardArrow}>→</span>
-                      </span>
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                <p className={styles.loadingCenter}>No services available at the moment.</p>
-              )}
-            </div>
-          )}
+          <div className={`${styles.serviceGrid} ${styles.staggerIn}`}>
+            {coreServices.map((service, idx) => (
+              <Link key={service.title} to="/services" className={styles.serviceCard} style={{ animationDelay: `${idx * 0.15}s` }}>
+                <div className={styles.coreServiceVisual}>
+                  <span>{service.title.charAt(0)}</span>
+                </div>
+                <div className={styles.cardContent}>
+                  <h3>{service.title}</h3>
+                  <p>{service.description}</p>
+                  <span className={styles.cardLink}>
+                    Learn more <span className={styles.cardArrow}>→</span>
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

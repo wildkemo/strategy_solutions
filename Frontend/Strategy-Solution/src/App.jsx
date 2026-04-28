@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import { AppLayout } from './layouts/AppLayout'
 import { RequireAuth } from './components/RequireAuth'
@@ -39,82 +40,95 @@ function GuestOnly({ children }) {
   return children
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [pathname])
+
+  return null
+}
+
 export default function App() {
   return (
-    <Routes>
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/services" element={<ServicesPage />} />
-        <Route path="/services/:slug" element={<ServiceDetailPage />} />
-        <Route
-          path="/profile"
-          element={
-            <RequireAuth>
-              <ProfilePage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/my-orders"
-          element={
-            <RequireAuth>
-              <MyOrdersPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/admin_dashboard"
-          element={
-            <RequireAuth adminOnly>
-              <AdminDashboardPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/blank_customer"
-          element={
-            <RequireAuth>
-              <BlankCustomerPage />
-            </RequireAuth>
-          }
-        />
-        <Route path="/error_test_page" element={<ErrorTestPage />} />
-      </Route>
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/services/:slug" element={<ServiceDetailPage />} />
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/my-orders"
+            element={
+              <RequireAuth>
+                <MyOrdersPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/admin_dashboard"
+            element={
+              <RequireAuth adminOnly>
+                <AdminDashboardPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/blank_customer"
+            element={
+              <RequireAuth>
+                <BlankCustomerPage />
+              </RequireAuth>
+            }
+          />
+          <Route path="/error_test_page" element={<ErrorTestPage />} />
+        </Route>
 
-      <Route
-        path="/login"
-        element={
-          <AppLayout />
-        }
-      >
         <Route
-          index
+          path="/login"
           element={
-            <GuestOnly>
-              <LoginPage />
-            </GuestOnly>
+            <AppLayout />
           }
-        />
-      </Route>
+        >
+          <Route
+            index
+            element={
+              <GuestOnly>
+                <LoginPage />
+              </GuestOnly>
+            }
+          />
+        </Route>
 
-      <Route path="/register" element={<AppLayout />}>
-        <Route
-          index
-          element={
-            <GuestOnly>
-              <RegisterPage />
-            </GuestOnly>
-          }
-        />
-      </Route>
+        <Route path="/register" element={<AppLayout />}>
+          <Route
+            index
+            element={
+              <GuestOnly>
+                <RegisterPage />
+              </GuestOnly>
+            }
+          />
+        </Route>
 
-      <Route path="/forgot-password" element={<AppLayout />}>
-        <Route index element={<ForgotPasswordPage />} />
-      </Route>
+        <Route path="/forgot-password" element={<AppLayout />}>
+          <Route index element={<ForgotPasswordPage />} />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   )
 }
