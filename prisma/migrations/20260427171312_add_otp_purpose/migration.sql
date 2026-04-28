@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "otps" ADD COLUMN     "purpose" TEXT NOT NULL DEFAULT 'ACTIVATION';

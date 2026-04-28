@@ -13,7 +13,7 @@ model User {
   password      String
   role          Role           @default(CUSTOMER)
   phone         String
-  companyName   String         @default("N/A (Admin User)")
+  companyName   String         @default("N/A")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   isActivated   Boolean        @default(false)
@@ -45,8 +45,8 @@ model Order {
   serviceDescription String
   serviceId          Int
   userId             Int
-  service            Service  @relation(fields: [serviceId], references: [id])
-  user               User     @relation(fields: [userId], references: [id])
+  service            Service  @relation(fields: [serviceId], references: [id], onDelete: NoAction)
+  user               User     @relation(fields: [userId], references: [id], onDelete: NoAction)
 
   @@map("orders")
 }
@@ -54,7 +54,6 @@ model Order {
 model Otp {
   id        Int      @id @default(autoincrement())
   otp       String
-  purpose   String   @default("ACTIVATION")
   createdAt DateTime @default(now())
   expiresAt DateTime
   userId    Int
@@ -69,9 +68,10 @@ model Service {
   description String
   features    String
   image       String
-  categoryId  Int
   orders      Order[]
-  category    Category @relation(fields: [categoryId], references: [id])
+
+  categoryId  Int
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: NoAction)
 
   @@map("services")
 }

@@ -175,69 +175,6 @@ export const requestService = async (req, res) => {
   }
 };
 
-export const verifyOtp = async (req, res) => {
-  try {
-    const userId = resolveUserId(req);
-    if (userId == null) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const orderId = parseId(req.body.order_id ?? req.body.request_id);
-    const otpCode = req.body.otp?.toString().trim();
-
-    if (orderId == null || !/^\d{6}$/.test(otpCode || '')) {
-      return res.status(400).json({ message: 'otp and order_id are required' });
-    }
-
-    const order = await prisma.order.findFirst({
-      where: { id: orderId, userId },
-      include: { service: true, user: true },
-    });
-
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    const otpRecord = await prisma.otp.findFirst({
-      where: {
-        userId,
-        otp: otpCode,
-        purpose: orderOtpPurpose(orderId),
-        expiresAt: { gt: new Date() },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (!otpRecord) {
-      return res.status(410).json({ message: 'Incorrect OTP or OTP expired' });
-    }
-
-    const updated = await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        status: PENDING_STATUS,
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-      },
-      include: { service: true, user: true },
-    });
-
-    await prisma.otp.delete({ where: { id: otpRecord.id } });
-
-    await sendMail({
-      to: updated.user.email,
-      subject: 'Thank you for your service request',
-      text: `Thank you, ${updated.user.name}. We received your "${updated.service.title}" request and our team will review it shortly.`,
-    }).catch((mailErr) => {
-      console.error('Thank-you email failed:', mailErr);
-    });
-
-    return res.status(200).json({ status: 'success', order: formatOrder(updated) });
-  } catch (error) {
-    console.error('verifyOtp error:', error);
-    return res.status(500).json({ message: 'Error verifying OTP', error: error.message });
-  }
-};
-
 export const getUserOrders = async (req, res) => {
   try {
     const userId = resolveUserId(req);
@@ -254,29 +191,6 @@ export const getUserOrders = async (req, res) => {
     res.json({ orders: orders.map(formatOrder) });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching user orders', error: error.message });
-  }
-};
-
-export const getPendingOtpOrders = async (req, res) => {
-  try {
-    const userId = resolveUserId(req);
-    if (userId == null) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const pendingOrders = await prisma.order.findMany({
-      where: {
-        userId,
-        status: ORDER_OTP_STATUS,
-        expiresAt: { gt: new Date() },
-      },
-      include: { service: true, user: true },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    res.json({ status: 'success', pendingOrders: pendingOrders.map(formatOrder) });
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching pending OTP orders', error: error.message });
   }
 };
 
