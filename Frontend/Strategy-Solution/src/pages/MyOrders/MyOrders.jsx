@@ -81,7 +81,6 @@ export default function MyOrdersPage() {
                   <th>ID</th>
                   <th>Service</th>
                   <th>Status</th>
-                  <th>Verification</th>
                   <th>Date</th>
                   <th>Actions</th>
                 </tr>
@@ -96,7 +95,6 @@ export default function MyOrdersPage() {
                         {o.status || '—'}
                       </span>
                     </td>
-                    <td>{o.otp ? 'OTP pending' : '—'}</td>
                     <td>
                       {o.created_at
                         ? new Date(o.created_at).toLocaleDateString()

@@ -1,8 +1,6 @@
 import nodemailer from 'nodemailer';
 import prisma from '../utils/prisma.js';
 
-const ORDER_OTP_PREFIX = 'ORDER_VERIFY';
-const ORDER_OTP_STATUS = 'Pending OTP';
 const PENDING_STATUS = 'Pending';
 const ACTIVE_STATUS = 'Active';
 const DONE_STATUS = 'Done';
@@ -24,10 +22,6 @@ function resolveUserId(req) {
 function parseId(value) {
   const id = typeof value === 'string' ? parseInt(value, 10) : Number(value);
   return Number.isFinite(id) ? id : null;
-}
-
-function orderOtpPurpose(orderId) {
-  return `${ORDER_OTP_PREFIX}:${orderId}`;
 }
 
 function formatOrder(order) {
@@ -78,9 +72,6 @@ async function findServiceByType(serviceType) {
 }
 
 export const requestService = async (req, res) => {
-  let createdOrderId = null;
-  let createdOtpId = null;
-
   try {
     const userId = resolveUserId(req);
     if (userId == null) {
@@ -107,70 +98,51 @@ export const requestService = async (req, res) => {
       return res.status(404).json({ message: 'Service not found' });
     }
 
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    // Check for existing non-completed order for this service
+    const existingOrder = await prisma.order.findFirst({
+      where: {
+        userId,
+        serviceId: service.id,
+        status: {
+          in: [PENDING_STATUS, ACTIVE_STATUS],
+        },
+      },
+    });
 
+    if (existingOrder) {
+      return res.status(400).json({
+        message: `You already have an ${existingOrder.status.toLowerCase()} request for this service. Please wait for it to be completed.`,
+      });
+    }
+
+    // Directly create in PENDING_STATUS (skipping OTP verification)
     const order = await prisma.order.create({
       data: {
-        status: ORDER_OTP_STATUS,
-        expiresAt: otpExpiresAt,
+        status: PENDING_STATUS,
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days default
         serviceDescription,
         serviceId: service.id,
         userId,
       },
       include: { service: true, user: true },
     });
-    createdOrderId = order.id;
 
-    const otp = await prisma.otp.create({
-      data: {
-        otp: otpCode,
-        purpose: orderOtpPurpose(order.id),
-        expiresAt: otpExpiresAt,
-        userId,
-      },
+    // Send immediate confirmation email
+    await sendMail({
+      to: user.email,
+      subject: 'Service request received',
+      text: `Hello ${user.name},\n\nWe received your request for "${service.title}". Our team will review it and get back to you shortly.\n\nThank you for choosing Strategy Solutions.`,
+    }).catch((mailErr) => {
+      console.error('Initial order email failed:', mailErr);
     });
-    createdOtpId = otp.id;
-
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('[Order OTP] Email not configured. OTP for order', order.id, ':', otpCode);
-
-      if (process.env.OTP_DEV_RETURN_CODE !== 'true') {
-        await prisma.otp.delete({ where: { id: createdOtpId } }).catch(() => {});
-        await prisma.order.delete({ where: { id: createdOrderId } }).catch(() => {});
-        return res.status(503).json({
-          message:
-            'Email is not configured on the server. Set EMAIL_USER and EMAIL_PASS, or for local testing set OTP_DEV_RETURN_CODE=true.',
-        });
-      }
-    } else {
-      try {
-        await sendMail({
-          to: user.email,
-          subject: 'Confirm your service request',
-          text: `Your OTP for the "${service.title}" service request is: ${otpCode}. It expires in 10 minutes.`,
-        });
-      } catch (mailErr) {
-        console.error('Order OTP email failed:', mailErr);
-        await prisma.otp.delete({ where: { id: createdOtpId } }).catch(() => {});
-        await prisma.order.delete({ where: { id: createdOrderId } }).catch(() => {});
-        return res.status(503).json({ message: 'Could not send OTP email. Please try again later.' });
-      }
-    }
 
     return res.status(201).json({
-      status: 'otp_sent',
-      request_id: order.id,
+      status: 'success',
       order_id: order.id,
-      message: 'Order placed, OTP sent.',
-      ...(process.env.OTP_DEV_RETURN_CODE === 'true' && process.env.NODE_ENV !== 'production'
-        ? { devOnlyOtp: otpCode }
-        : {}),
+      message: 'Service request submitted successfully.',
     });
   } catch (error) {
     console.error('requestService error:', error);
-    if (createdOtpId) await prisma.otp.delete({ where: { id: createdOtpId } }).catch(() => {});
-    if (createdOrderId) await prisma.order.delete({ where: { id: createdOrderId } }).catch(() => {});
     return res.status(500).json({ message: 'Error requesting service', error: error.message });
   }
 };
@@ -338,12 +310,11 @@ export const deleteOrder = async (req, res) => {
     const adminDelete = isAdmin === true && req.user?.role === 'ADMIN';
     if (!adminDelete) {
       if (order.userId !== userId) return res.status(403).json({ message: 'Unauthorized' });
-      if (![PENDING_STATUS, ORDER_OTP_STATUS].includes(order.status)) {
+      if (order.status !== PENDING_STATUS) {
         return res.status(400).json({ message: 'Can only delete pending orders' });
       }
     }
 
-    await prisma.otp.deleteMany({ where: { userId: order.userId, purpose: orderOtpPurpose(order.id) } });
     await prisma.order.delete({ where: { id: orderId } });
 
     res.json({ status: 'success', message: 'order deleted successfully' });

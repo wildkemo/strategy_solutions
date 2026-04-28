@@ -34,9 +34,6 @@ export const createOtp = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const rawPurpose = (req.body?.purpose || 'ACTIVATION').toString().trim().toUpperCase();
-    const purpose = rawPurpose === 'DELETE_ACCOUNT' ? 'DELETE_ACCOUNT' : 'ACTIVATION';
-
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
@@ -45,19 +42,15 @@ export const createOtp = async (req, res) => {
         otp: otpCode,
         userId: userId,
         expiresAt: expiresAt,
-        purpose,
       },
     });
     createdOtpId = row.id;
 
-    const isDelete = purpose === 'DELETE_ACCOUNT';
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: user.email,
-      subject: isDelete ? 'Confirm account deletion' : 'Your Verification Code',
-      text: isDelete
-        ? `You requested to permanently delete your Strategy Solutions account. Your 6-digit code is: ${otpCode}. It expires in 10 minutes. If you did not request this, ignore this email and secure your account.`
-        : `Your 6-digit verification code is: ${otpCode}. It expires in 10 minutes.`,
+      subject: 'Your Verification Code',
+      text: `Your 6-digit verification code is: ${otpCode}. It expires in 10 minutes.`,
     };
 
     const emailConfigured = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
@@ -123,7 +116,6 @@ export const validateOtp = async (req, res) => {
         userId: userId,
         otp: otp,
         expiresAt: { gt: new Date() },
-        NOT: { purpose: 'DELETE_ACCOUNT' },
       },
       orderBy: { createdAt: 'desc' },
     });

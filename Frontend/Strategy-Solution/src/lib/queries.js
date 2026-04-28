@@ -42,18 +42,6 @@ export function useUserOrdersQuery() {
   })
 }
 
-export function usePendingOrdersQuery(enabled = true) {
-  return useQuery({
-    queryKey: ['pending-otp-orders'],
-    queryFn: async () => {
-      const { ok, data } = await apiFetch('/api/get_pending_otp_orders')
-      if (!ok) throw new Error(data?.message || 'Failed to fetch pending orders')
-      return data?.pendingOrders || []
-    },
-    enabled,
-  })
-}
-
 /**
  * --- Admin Queries ---
  */

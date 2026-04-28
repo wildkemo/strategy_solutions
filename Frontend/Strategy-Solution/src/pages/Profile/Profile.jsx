@@ -14,8 +14,6 @@ function apiErrorMessage(data) {
   return 'Something went wrong'
 }
 
-const DELETE_PURPOSE = 'DELETE_ACCOUNT'
-
 export default function ProfilePage() {
   const { user, refreshUser, isAdmin, logout } = useAuth()
   const navigate = useNavigate()
@@ -97,7 +95,6 @@ export default function ProfilePage() {
     setDeleteBusy(true)
     const { ok, data } = await apiFetch('/api/otp/create', {
       method: 'POST',
-      json: { purpose: DELETE_PURPOSE },
     })
     setDeleteBusy(false)
     if (!ok) {
@@ -123,7 +120,7 @@ export default function ProfilePage() {
     setDeleteError('')
     const { ok, data } = await apiFetch('/api/delete_account', {
       method: 'DELETE',
-      json: { otp: deleteOtp.trim(), purpose: DELETE_PURPOSE },
+      json: { otp: deleteOtp.trim() },
     })
     setDeleteBusy(false)
     if (ok) {

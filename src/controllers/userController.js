@@ -11,11 +11,6 @@ const clearAuthCookies = (res) => {
   res.clearCookie('refresh_token', opts);
 };
 
-const OTP_PURPOSES = {
-  ACTIVATION: 'ACTIVATION',
-  DELETE_ACCOUNT: 'DELETE_ACCOUNT',
-};
-
 function resolveUserId(req) {
   const raw = req.user?.userId ?? req.user?.id ?? req.user?.sub;
   const id = typeof raw === 'string' ? parseInt(raw, 10) : Number(raw);
@@ -140,26 +135,16 @@ export const deleteAccount = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { otp, purpose } = req.body;
+    const { otp } = req.body;
 
     if (!otp || typeof otp !== 'string' || !/^\d{6}$/.test(otp.trim())) {
       return res.status(400).json({ error: 'Invalid or incorrect OTP or OTP expired' });
-    }
-
-    const purposeNorm =
-      typeof purpose === 'string' && purpose.trim().toUpperCase() === OTP_PURPOSES.DELETE_ACCOUNT
-        ? OTP_PURPOSES.DELETE_ACCOUNT
-        : null;
-
-    if (!purposeNorm) {
-      return res.status(400).json({ error: 'purpose must be DELETE_ACCOUNT' });
     }
 
     const otpRecord = await prisma.otp.findFirst({
       where: {
         userId,
         otp: otp.trim(),
-        purpose: OTP_PURPOSES.DELETE_ACCOUNT,
         expiresAt: { gt: new Date() },
       },
       orderBy: { createdAt: 'desc' },

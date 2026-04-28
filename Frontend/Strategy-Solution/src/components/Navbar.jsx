@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { useUserOrdersQuery, usePendingOrdersQuery } from '../lib/queries'
+import { useUserOrdersQuery } from '../lib/queries'
 import { Modal } from './Modal'
 import { ThemeToggle } from './ThemeToggle'
 import brandLogo from '../assets/SS-logo-small-removebg-preview.png'
@@ -58,11 +58,8 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [panelOpen, setPanelOpen] = useState(false)
 
-  const isCustomer = !!user && !isAdmin
-  const { data: allPending = [] } = usePendingOrdersQuery(isCustomer)
   const { data: allOrders = [] } = useUserOrdersQuery()
 
-  const pendingOrders = allPending.slice(0, 3)
   const recentOrders = allOrders.slice(0, 3)
 
   const [logoutOpen, setLogoutOpen] = useState(false)
@@ -183,19 +180,6 @@ export function Navbar() {
                 aria-label="Close"
               />
             </div>
-
-            {!isAdmin && pendingOrders.length > 0 ? (
-              <div className={styles.panelBlock}>
-                <p className={styles.panelLabel}>Pending verification</p>
-                <Link
-                  to="/my-orders"
-                  className={styles.verifyLink}
-                  onClick={() => setPanelOpen(false)}
-                >
-                  Verify OTP for {pendingOrders.length} order(s)
-                </Link>
-              </div>
-            ) : null}
 
             {!isAdmin && recentOrders.length > 0 ? (
               <div className={styles.panelBlock}>

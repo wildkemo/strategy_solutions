@@ -274,20 +274,10 @@ This document provides a comprehensive overview of all API routes and middleware
 - **Path:** `/api/request_service`
 - **Method:** `POST`
 - **Body:** `{ service_type, service_description }`
-- **Description:** Creates a service request in 'Pending' status and sends an OTP to the user for confirmation.
+- **Description:** Creates a service request in 'Pending' status and sends a confirmation email to the user.
 - **Responses:**
-  - `201 Created`: Returns `status: 'otp_sent', request_id: id, message: 'Order placed, OTP sent.'`.
+  - `201 Created`: Returns `status: 'success', order_id: id, message: 'Service request submitted successfully.'`.
   - `401 Unauthorized`: Not logged in.
-
-### Verify Order OTP
-
-- **Path:** `/api/verify_otp`
-- **Method:** `POST`
-- **Body:** `{ otp, order_id, ... }`
-- **Description:** Verifies the OTP for a pending service request. If successful, sets status to 'Pending' (but confirmed) and sends a "Thank You" email.
-- **Responses:**
-  - `200 Success`: Returns `status: 'success'`.
-  - `401/410 Errors`: Incorrect OTP or OTP expired.
 
 ### Get User Orders
 
@@ -296,14 +286,6 @@ This document provides a comprehensive overview of all API routes and middleware
 - **Description:** Retrieves all service requests associated with the currently logged-in user's email.
 - **Responses:**
   - `200 Success`: Returns `{ orders: [...] }`.
-
-### Get Pending OTP Orders
-
-- **Path:** `/api/get_pending_otp_orders`
-- **Method:** `GET`
-- **Description:** Retrieves service requests for the user that are awaiting OTP verification.
-- **Responses:**
-  - `200 Success`: Returns `{ status: 'success', pendingOrders: [...] }`.
 
 ### Get All Orders
 

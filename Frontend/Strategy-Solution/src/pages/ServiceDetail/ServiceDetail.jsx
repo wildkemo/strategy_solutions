@@ -38,12 +38,9 @@ export default function ServiceDetailPage() {
   const { isAuthenticated } = useAuth()
   const { data: list = [], isLoading } = useServicesQuery()
   const [signInModal, setSignInModal] = useState(false)
-  const [otpModal, setOtpModal] = useState(false)
   const [successModal, setSuccessModal] = useState(false)
-  const [otp, setOtp] = useState('')
-  const [orderId, setOrderId] = useState(null)
-  const [otpError, setOtpError] = useState('')
-  const [otpBusy, setOtpBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
 
   const service = useMemo(() => {
     const id = parseServiceIdFromSlug(slug)
@@ -67,8 +64,8 @@ export default function ServiceDetailPage() {
       return
     }
     if (!service) return
-    setOtpError('')
-    setOtpBusy(true)
+    setError('')
+    setBusy(true)
     const { ok, data } = await apiFetch('/api/request_service', {
       method: 'POST',
       json: {
@@ -76,30 +73,11 @@ export default function ServiceDetailPage() {
         service_description: `Request for: ${service.title || 'service'}`,
       },
     })
-    setOtpBusy(false)
-    if (ok && (data?.status === 'otp_sent' || data?.request_id)) {
-      setOrderId(data.request_id ?? data.order_id)
-      setOtpModal(true)
-    } else {
-      setOtpError(data?.message || 'Could not start request')
-      setOtpModal(true)
-    }
-  }
-
-  const verifyOtp = async () => {
-    setOtpBusy(true)
-    setOtpError('')
-    const { ok, data } = await apiFetch('/api/verify_otp', {
-      method: 'POST',
-      json: { otp, order_id: orderId },
-    })
-    setOtpBusy(false)
+    setBusy(false)
     if (ok) {
-      setOtpModal(false)
       setSuccessModal(true)
-      setOtp('')
     } else {
-      setOtpError(data?.message || 'Invalid or expired OTP')
+      setError(data?.message || 'Could not start request')
     }
   }
 
@@ -159,13 +137,13 @@ export default function ServiceDetailPage() {
             type="button"
             className={styles.primaryBtn}
             onClick={startRequest}
-            disabled={otpBusy}
+            disabled={busy}
           >
-            Request this service
+            {busy ? 'Requesting…' : 'Request this service'}
           </button>
         </div>
-        {otpError && !otpModal ? (
-          <p className={styles.err}>{otpError}</p>
+        {error ? (
+          <p className={styles.err}>{error}</p>
         ) : null}
       </div>
 
@@ -190,34 +168,8 @@ export default function ServiceDetailPage() {
       </Modal>
 
       <Modal
-        open={otpModal}
-        title="Verify OTP"
-        onClose={() => !otpBusy && setOtpModal(false)}
-        actions={
-          <>
-            <button type="button" className={styles.ghostBtn} onClick={() => setOtpModal(false)} disabled={otpBusy}>
-              Cancel
-            </button>
-            <button type="button" className={styles.primaryBtn} onClick={verifyOtp} disabled={otpBusy || otp.length < 4}>
-              Verify
-            </button>
-          </>
-        }
-      >
-        <p>Enter the code sent to your email to confirm this request.</p>
-        {otpError ? <p className={styles.err}>{otpError}</p> : null}
-        <input
-          className={styles.input}
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          placeholder="6-digit code"
-          autoComplete="one-time-code"
-        />
-      </Modal>
-
-      <Modal
         open={successModal}
-        title="Thank you"
+        title="Request received"
         onClose={() => {
           setSuccessModal(false)
           navigate('/my-orders')
@@ -235,7 +187,7 @@ export default function ServiceDetailPage() {
           </button>
         }
       >
-        <p>Your request was verified successfully.</p>
+        <p>Your request was submitted successfully. You can track it under My Orders.</p>
       </Modal>
     </div>
   )

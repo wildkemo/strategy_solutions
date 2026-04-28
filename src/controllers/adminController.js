@@ -45,7 +45,7 @@ export const getAdmins = async (req, res) => {
   try {
     const admins = await prisma.user.findMany({
       where: { role: 'ADMIN' },
-      select: { id: true, name: true, email: true },
+      select: { id: true, name: true, email: true, phone: true },
     });
     res.json(admins);
   } catch (error) {
@@ -54,7 +54,7 @@ export const getAdmins = async (req, res) => {
 };
 
 export const addAdmin = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const admin = await prisma.user.create({
@@ -63,11 +63,11 @@ export const addAdmin = async (req, res) => {
         email,
         password: hashedPassword,
         role: 'ADMIN',
-        phone: 'N/A', // Assuming phone is required in schema, setting default
+        phone: phone,
         isActivated: true,
       },
     });
-    res.json({ message: 'Admin created successfully', admin: { id: admin.id, name: admin.name, email: admin.email } });
+    res.json({ message: 'Admin created successfully', admin: { id: admin.id, name: admin.name, email: admin.email, phone: admin.phone } });
   } catch (error) {
     res.status(500).json({ message: 'Error creating admin', error: error.message });
   }
@@ -148,6 +148,47 @@ export const deleteService = async (req, res) => {
     res.json({ message: 'Service deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting service', error: error.message });
+  }
+};
+
+// Category Management
+export const addCategory = async (req, res) => {
+  const { name } = req.body;
+  try {
+    const category = await prisma.category.create({
+      data: { name },
+    });
+    res.json({ message: 'Category added successfully', category });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding category', error: error.message });
+  }
+};
+
+export const updateCategory = async (req, res) => {
+  const { id, name } = req.body;
+  try {
+    const category = await prisma.category.update({
+      where: { id: parseInt(id) },
+      data: { name },
+    });
+    res.json({ message: 'Category updated successfully', category });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating category', error: error.message });
+  }
+};
+
+export const deleteCategory = async (req, res) => {
+  const { id } = req.body;
+  try {
+    await prisma.category.delete({
+      where: { id: parseInt(id) },
+    });
+    res.json({ message: 'Category deleted successfully' });
+  } catch (error) {
+    if (error.code === 'P2003') {
+      return res.status(400).json({ message: 'Cannot delete category with associated services' });
+    }
+    res.status(500).json({ message: 'Error deleting category', error: error.message });
   }
 };
 

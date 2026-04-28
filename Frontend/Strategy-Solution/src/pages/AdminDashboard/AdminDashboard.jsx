@@ -29,6 +29,7 @@ export default function AdminDashboardPage() {
   const [qSvc, setQSvc] = useState('')
   const [qOrd, setQOrd] = useState('')
   const [qCust, setQCust] = useState('')
+  const [qCat, setQCat] = useState('')
 
   const [svcModal, setSvcModal] = useState(null)
   const [deleteConfirmSvc, setDeleteConfirmSvc] = useState(null)
@@ -41,8 +42,11 @@ export default function AdminDashboardPage() {
     image: null,
   })
 
+  const [catModal, setCatModal] = useState(null)
+  const [catForm, setCatForm] = useState({ id: null, name: '' })
+
   const [adminModal, setAdminModal] = useState(false)
-  const [adminForm, setAdminForm] = useState({ name: '', email: '', password: '' })
+  const [adminForm, setAdminForm] = useState({ name: '', email: '', password: '', phone: '' })
 
   const [custOrders, setCustOrders] = useState(null)
 
@@ -110,6 +114,37 @@ export default function AdminDashboardPage() {
     onError: (err) => showToast(err.message, false),
   })
 
+  const saveCategoryMutation = useMutation({
+    mutationFn: async (form) => {
+      const { ok, data } = await apiFetch(form.id ? '/api/update_category' : '/api/add_category', {
+        method: form.id ? 'PUT' : 'POST',
+        json: form,
+      })
+      if (!ok) throw new Error(data?.message || 'Save failed')
+    },
+    onSuccess: () => {
+      showToast('Category saved')
+      setCatModal(null)
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+    onError: (err) => showToast(err.message, false),
+  })
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (id) => {
+      const { ok, data } = await apiFetch('/api/delete_category', {
+        method: 'DELETE',
+        json: { id },
+      })
+      if (!ok) throw new Error(data?.message || 'Delete failed')
+    },
+    onSuccess: () => {
+      showToast('Category deleted')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+    onError: (err) => showToast(err.message, false),
+  })
+
   const updateOrderStatusMutation = useMutation({
     mutationFn: async ({ id, status }) => {
       const { ok, data } = await apiFetch('/api/update_order_status', {
@@ -166,7 +201,7 @@ export default function AdminDashboardPage() {
     onSuccess: () => {
       showToast('Admin created')
       setAdminModal(false)
-      setAdminForm({ name: '', email: '', password: '' })
+      setAdminForm({ name: '', email: '', password: '', phone: '' })
       queryClient.invalidateQueries({ queryKey: ['admin-admins'] })
     },
     onError: (err) => showToast(err.message, false),
@@ -204,8 +239,20 @@ export default function AdminDashboardPage() {
     setSvcModal('edit')
   }
 
+  const openNewCategory = () => {
+    setCatForm({ id: null, name: '' })
+    setCatModal('edit')
+  }
+
+  const openEditCategory = (c) => {
+    setCatForm({ id: c.id, name: c.name })
+    setCatModal('edit')
+  }
+
   const saveService = () => saveServiceMutation.mutate(svcForm)
   const deleteService = (id) => deleteServiceMutation.mutate(id)
+  const saveCategory = () => saveCategoryMutation.mutate(catForm)
+  const deleteCategory = (id) => deleteCategoryMutation.mutate(id)
   const updateOrderStatus = (id, status) => updateOrderStatusMutation.mutate({ id, status })
   const deleteOrder = (id) => deleteOrderMutation.mutate(id)
   const deleteCustomer = (id) => deleteCustomerMutation.mutate(id)
@@ -215,6 +262,10 @@ export default function AdminDashboardPage() {
     [s.title, s.category?.name, s.description].some((x) =>
       (x || '').toLowerCase().includes(qSvc.toLowerCase()),
     ),
+  )
+
+  const filterCat = categories.filter((c) =>
+    (c.name || '').toLowerCase().includes(qCat.toLowerCase()),
   )
 
   const filterOrd = orders.filter((o) =>
@@ -242,7 +293,7 @@ export default function AdminDashboardPage() {
       <div className={styles.head}>
         <h1>Admin dashboard</h1>
         <div className={styles.tabs}>
-          {['services', 'orders', 'customers', 'admins'].map((t) => (
+          {['services', 'categories', 'orders', 'customers', 'admins'].map((t) => (
             <button
               key={t}
               type="button"
@@ -251,11 +302,13 @@ export default function AdminDashboardPage() {
             >
               {t === 'services'
                 ? 'Service management'
-                : t === 'orders'
-                  ? 'Orders'
-                  : t === 'customers'
-                    ? 'Customers'
-                    : 'Admins'}
+                : t === 'categories'
+                  ? 'Categories'
+                  : t === 'orders'
+                    ? 'Orders'
+                    : t === 'customers'
+                      ? 'Customers'
+                      : 'Admins'}
             </button>
           ))}
         </div>
@@ -296,6 +349,50 @@ export default function AdminDashboardPage() {
                         Edit
                       </button>
                       <button type="button" className={styles.rowBtnDanger} onClick={() => setDeleteConfirmSvc(s)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+
+      {tab === 'categories' ? (
+        <section className={styles.section}>
+          <div className={styles.bar}>
+            <div className={styles.searchPill}>
+              <input
+                placeholder="Search categories…"
+                value={qCat}
+                onChange={(e) => setQCat(e.target.value)}
+              />
+            </div>
+            <button type="button" className={styles.addBtn} onClick={openNewCategory}>
+              Add category
+            </button>
+          </div>
+          <div className={styles.tableCard}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filterCat.map((c) => (
+                  <tr key={c.id}>
+                    <td>{c.id}</td>
+                    <td>{c.name}</td>
+                    <td>
+                      <button type="button" className={styles.rowBtn} onClick={() => openEditCategory(c)}>
+                        Edit
+                      </button>
+                      <button type="button" className={styles.rowBtnDanger} onClick={() => deleteCategory(c.id)}>
                         Delete
                       </button>
                     </td>
@@ -454,6 +551,7 @@ export default function AdminDashboardPage() {
                   <th>ID</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Phone</th>
                 </tr>
               </thead>
               <tbody>
@@ -462,6 +560,7 @@ export default function AdminDashboardPage() {
                     <td>{a.id}</td>
                     <td>{a.name}</td>
                     <td>{a.email}</td>
+                    <td>{a.phone || '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -575,6 +674,32 @@ export default function AdminDashboardPage() {
       </Modal>
 
       <Modal
+        open={catModal === 'edit'}
+        title={catForm.id ? 'Edit category' : 'Add category'}
+        onClose={() => setCatModal(null)}
+        actions={
+          <>
+            <button type="button" className={styles.rowBtn} onClick={() => setCatModal(null)}>
+              Cancel
+            </button>
+            <button type="button" className={styles.addBtn} onClick={saveCategory}>
+              Save
+            </button>
+          </>
+        }
+      >
+        <div className={styles.formGrid}>
+          <label className={styles.full}>
+            Name
+            <input
+              value={catForm.name}
+              onChange={(e) => setCatForm((f) => ({ ...f, name: e.target.value }))}
+            />
+          </label>
+        </div>
+      </Modal>
+
+      <Modal
         open={adminModal}
         title="New admin"
         onClose={() => setAdminModal(false)}
@@ -603,6 +728,14 @@ export default function AdminDashboardPage() {
               type="email"
               value={adminForm.email}
               onChange={(e) => setAdminForm((f) => ({ ...f, email: e.target.value }))}
+            />
+          </label>
+          <label>
+            Phone
+            <input
+              type="tel"
+              value={adminForm.phone}
+              onChange={(e) => setAdminForm((f) => ({ ...f, phone: e.target.value }))}
             />
           </label>
           <label className={styles.full}>

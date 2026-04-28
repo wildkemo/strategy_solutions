@@ -7,10 +7,16 @@ import {
   addService, 
   updateService, 
   deleteService, 
+  addCategory,
+  updateCategory,
+  deleteCategory,
   upload, 
   getAllUsers, 
   deleteUser 
 } from '../controllers/adminController.js';
+import {
+  getCategories
+} from '../controllers/serviceController.js';
 import {
   getAllOrders,
   updateOrderStatus,
@@ -43,6 +49,12 @@ router.post('/add_admin', isAdmin, addAdmin);
 router.post('/add_service', isAdmin, handleMulterError(upload.single('image')), addService);
 router.put('/update_services', isAdmin, handleMulterError(upload.single('image')), updateService);
 router.delete('/delete_services', isAdmin, deleteService);
+
+// Category Management
+router.get('/get_all_categories', isAdmin, getCategories);
+router.post('/add_category', isAdmin, addCategory);
+router.put('/update_category', isAdmin, updateCategory);
+router.delete('/delete_category', isAdmin, deleteCategory);
 
 // Order Management
 router.get('/get_all_orders', isAdmin, getAllOrders);
