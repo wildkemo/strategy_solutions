@@ -8,14 +8,29 @@ const coreServices = [
   {
     title: 'Cloud Computing',
     description: 'Scalable cloud infrastructure and migration support for modern business operations.',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M7.5 18.5A5.5 5.5 0 0 1 7 7.52a7 7 0 0 1 13.21 3.09A4.01 4.01 0 0 1 19 18.5H7.5Zm0-2H19a2 2 0 0 0 .34-3.97l-1.08-.18-.12-1.09A5 5 0 0 0 8.65 9.4l-.44.98-1.07-.12A3.5 3.5 0 0 0 7.5 16.5Z" />
+      </svg>
+    ),
   },
   {
     title: 'Security',
     description: 'Cybersecurity services that help protect systems, data, and digital workflows.',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M12 22a10.77 10.77 0 0 1-6.48-4.12A12.2 12.2 0 0 1 3 10.39V5l9-3 9 3v5.39a12.2 12.2 0 0 1-2.52 7.49A10.77 10.77 0 0 1 12 22Zm0-2.13a8.72 8.72 0 0 0 4.9-3.23A10.25 10.25 0 0 0 19 10.39V6.44l-7-2.33-7 2.33v3.95a10.25 10.25 0 0 0 2.1 6.25 8.72 8.72 0 0 0 4.9 3.23Zm-1.06-5.3-3.18-3.18 1.41-1.41 1.77 1.76 4.24-4.24 1.42 1.42-5.66 5.65Z" />
+      </svg>
+    ),
   },
   {
     title: 'IT Consulting',
     description: 'Strategic technology guidance to align IT decisions with business goals.',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4Zm2 0h2V4h-2v2Zm8 5.5V8H5v3.5h5v-1h4v1h5Zm-7 1a1 1 0 0 1-1-1v4h2v-4a1 1 0 0 1-1 1Zm7 1h-5V16h-4v-2.5H5V18h14v-4.5Z" />
+      </svg>
+    ),
   },
 ]
 
@@ -79,10 +94,8 @@ export default function HomePage() {
           <div className={`${styles.serviceGrid} ${styles.staggerIn}`}>
             {coreServices.map((service, idx) => (
               <Link key={service.title} to="/services" className={styles.serviceCard} style={{ animationDelay: `${idx * 0.15}s` }}>
-                <div className={styles.coreServiceVisual}>
-                  <span>{service.title.charAt(0)}</span>
-                </div>
                 <div className={styles.cardContent}>
+                  <div className={styles.coreServiceIcon}>{service.icon}</div>
                   <h3>{service.title}</h3>
                   <p>{service.description}</p>
                   <span className={styles.cardLink}>
