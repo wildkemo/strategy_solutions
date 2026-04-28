@@ -1,0 +1,6 @@
+node_modules
+Frontend/Strategy-Solution/node_modules
+Frontend/Strategy-Solution/dist
+uploads
+.git
+.env

@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
 import routes from './src/routes/index.js';
@@ -10,8 +11,17 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 app.use(express.json());
 app.use(cookieParser());
+
+// Serve uploaded images statically
+app.use('/api/image', express.static(uploadDir));
 
 // API Routes
 app.use(routes);
