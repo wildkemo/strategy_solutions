@@ -52,6 +52,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 4rem;
   align-items: center;
+  position: relative;
 }
 
 .heroEyebrow {
@@ -511,16 +512,55 @@
 
 @media (max-width: 900px) {
   .heroContainer {
-    grid-template-columns: 1fr;
+    display: flex;
+    justify-content: center;
+    min-height: 520px;
+    padding: 3rem 1.5rem;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
     text-align: center;
+  }
+
+  .heroContainer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-bg) 88%, transparent),
+      color-mix(in srgb, var(--color-bg) 76%, transparent)
+    );
+  }
+
+  .heroContent {
+    position: relative;
+    z-index: 2;
+    max-width: 640px;
   }
   
   .heroActions {
     justify-content: center;
   }
+
+  .heroVisual {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    animation: none;
+  }
+
+  .imageGlow {
+    display: none;
+  }
   
   .heroImg {
-    max-width: 400px;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    border-radius: inherit;
+    opacity: 0.75;
   }
   
   .sectionHeader {

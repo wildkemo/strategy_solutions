@@ -16,7 +16,7 @@ function orderStatusClass(status) {
   return styles.statusMuted
 }
 
-function NavLinks({ onNavigate, showRequest }) {
+function NavLinks({ onNavigate }) {
   return (
     <>
       <NavLink
@@ -48,15 +48,6 @@ function NavLinks({ onNavigate, showRequest }) {
       >
         Contact
       </NavLink>
-      {showRequest ? (
-        <NavLink
-          to="/request-service"
-          className={({ isActive }) => (isActive ? styles.active : undefined)}
-          onClick={onNavigate}
-        >
-          Request Service
-        </NavLink>
-      ) : null}
     </>
   )
 }
@@ -97,10 +88,7 @@ export function Navbar() {
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Main">
-          <NavLinks
-            showRequest={!!user && !isAdmin}
-            onNavigate={() => {}}
-          />
+          <NavLinks onNavigate={() => {}} />
         </nav>
 
         <div className={styles.right}>

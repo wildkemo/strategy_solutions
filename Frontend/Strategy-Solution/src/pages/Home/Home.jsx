@@ -34,10 +34,38 @@ const coreServices = [
 ]
 
 const industries = [
-  'Financial Services & Banking',
-  'Retail & Ecommerce',
-  'Manufacturing and Logistics',
-  'Telecommunications',
+  {
+    name: 'Financial Services & Banking',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path fill="currentColor" d="M3 10.5 12 4l9 6.5V12H3v-1.5Zm3 3.5h2v5h2v-5h4v5h2v-5h2v5h2v2H4v-2h2v-5Zm1.15-4h9.7L12 6.5 7.15 10Z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Retail & Ecommerce',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path fill="currentColor" d="M7 22a2 2 0 1 1 0-4 2 2 0 0 1 0 4Zm10 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4ZM5.3 5l1.12 8h10.93l1.65-6H7.07l-.28-2H3V3h5.5l.28 2H21l-2.75 10H4.7L3.3 5h2Z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Manufacturing and Logistics',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path fill="currentColor" d="M3 6h10v8h1.5l2-3H21v7h-2a2 2 0 1 1-4 0H9a2 2 0 1 1-4 0H3V6Zm2 2v8.27A2 2 0 0 1 8.73 16H12V8H5Zm11 5-1.33 2H19v-2h-3ZM7 19a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm10 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM7 10h3v2H7v-2Z" />
+      </svg>
+    ),
+  },
+  {
+    name: 'Telecommunications',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path fill="currentColor" d="M12 20a2 2 0 0 1-2-2h4a2 2 0 0 1-2 2Zm-4-4 1.5-7h5L16 16H8Zm3.12-9L12 3l.88 4h-1.76ZM6.64 8.64 5.22 7.22a9.6 9.6 0 0 1 13.56 0l-1.42 1.42a7.6 7.6 0 0 0-10.72 0Zm2.83 2.83-1.42-1.42a5.6 5.6 0 0 1 7.9 0l-1.42 1.42a3.6 3.6 0 0 0-5.06 0Z" />
+      </svg>
+    ),
+  },
 ]
 
 export default function HomePage() {
@@ -118,16 +146,14 @@ export default function HomePage() {
           </div>
           <div className={`${styles.industryGrid} ${styles.staggerIn}`}>
             {industries.map((industry, idx) => (
-              <div key={industry} className={styles.industryCard} style={{ animationDelay: `${idx * 0.1}s` }}>
+              <div key={industry.name} className={styles.industryCard} style={{ animationDelay: `${idx * 0.1}s` }}>
                 <div className={styles.catIconWrap}>
                   <div className={styles.catIconGlow}></div>
                   <div className={styles.catIcon}>
-                    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-                      <path fill="currentColor" d="M12 2l-5.5 9h11L12 2zm0 3.84L13.93 9h-3.86L12 5.84zM17.5 13c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zM3 13.5v9h9v-9H3zm7 7H5v-5h5v5z" />
-                    </svg>
+                    {industry.icon}
                   </div>
                 </div>
-                <h3>{industry}</h3>
+                <h3>{industry.name}</h3>
               </div>
             ))}
           </div>
