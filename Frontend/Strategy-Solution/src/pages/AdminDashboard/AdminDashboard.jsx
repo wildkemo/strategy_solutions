@@ -370,7 +370,7 @@ export default function AdminDashboardPage() {
                         value={o.status || 'Pending'}
                         onChange={(e) => updateOrderStatus(o.id, e.target.value)}
                       >
-                        {['Pending', 'Verified', 'Active', 'Done', 'Rejected'].map((st) => (
+                        {['Pending', 'Active', 'Done', 'Rejected'].map((st) => (
                           <option key={st} value={st}>
                             {st}
                           </option>

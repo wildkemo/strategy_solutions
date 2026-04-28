@@ -123,7 +123,7 @@ export const validateOtp = async (req, res) => {
         userId: userId,
         otp: otp,
         expiresAt: { gt: new Date() },
-        purpose: 'ACTIVATION',
+        NOT: { purpose: 'DELETE_ACCOUNT' },
       },
       orderBy: { createdAt: 'desc' },
     });

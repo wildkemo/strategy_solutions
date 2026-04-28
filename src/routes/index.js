@@ -31,8 +31,8 @@ router.use(checkAuth);
 
 // --- 4. Protected Routes ---
 router.use('/api', userRoutes);
-router.use('/api', adminRoutes);
 router.use('/api', orderRoutes);
+router.use('/api', adminRoutes);
 router.use('/api/otp', otpRoutes);
 
 export default router;

@@ -1,7 +1,19 @@
+import nodemailer from 'nodemailer';
 import prisma from '../utils/prisma.js';
-import { sendUserEmail } from '../utils/mail.js';
 
-const PURPOSE_ORDER = 'ORDER_VERIFY';
+const ORDER_OTP_PREFIX = 'ORDER_VERIFY';
+const ORDER_OTP_STATUS = 'Pending OTP';
+const PENDING_STATUS = 'Pending';
+const ACTIVE_STATUS = 'Active';
+const DONE_STATUS = 'Done';
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 function resolveUserId(req) {
   const raw = req.user?.userId ?? req.user?.id ?? req.user?.sub;
@@ -9,116 +21,141 @@ function resolveUserId(req) {
   return Number.isFinite(id) ? id : null;
 }
 
-function isAdminReq(req) {
-  return req.user?.role === 'ADMIN';
+function parseId(value) {
+  const id = typeof value === 'string' ? parseInt(value, 10) : Number(value);
+  return Number.isFinite(id) ? id : null;
 }
 
-async function resolveServiceByType(service_type) {
-  const raw = (service_type ?? '').toString().trim();
-  if (!raw) return null;
-  if (/^\d+$/.test(raw)) {
-    return prisma.service.findUnique({ where: { id: parseInt(raw, 10) } });
+function orderOtpPurpose(orderId) {
+  return `${ORDER_OTP_PREFIX}:${orderId}`;
+}
+
+function formatOrder(order) {
+  return {
+    id: order.id,
+    email: order.user?.email,
+    customer_name: order.user?.name,
+    service_id: order.serviceId,
+    service_type: order.service?.title,
+    service_description: order.serviceDescription,
+    status: order.status,
+    created_at: order.createdAt,
+    createdAt: order.createdAt,
+    expires_at: order.expiresAt,
+    expiresAt: order.expiresAt,
+  };
+}
+
+async function sendMail(mailOptions) {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn('[Order email] EMAIL_USER / EMAIL_PASS not set. Email skipped:', mailOptions.subject);
+    return { sent: false, skipped: true };
   }
-  return prisma.service.findFirst({
-    where: { title: { equals: raw, mode: 'insensitive' } },
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_USER,
+    ...mailOptions,
   });
+
+  return { sent: true, skipped: false };
 }
 
-function formatUserOrder(o) {
-  return {
-    id: o.id,
-    service_type: o.service?.title ?? '',
-    status: o.status,
-    otp: o.status === 'Pending',
-    created_at: o.createdAt,
-    service_description: o.serviceDescription,
-  };
+async function findServiceByType(serviceType) {
+  const trimmed = serviceType?.toString().trim();
+  if (!trimmed) return null;
+
+  const byTitle = await prisma.service.findFirst({
+    where: { title: { equals: trimmed, mode: 'insensitive' } },
+  });
+  if (byTitle) return byTitle;
+
+  const maybeId = parseId(trimmed);
+  if (maybeId != null) {
+    return prisma.service.findUnique({ where: { id: maybeId } });
+  }
+
+  return null;
 }
 
-function formatAdminOrder(o) {
-  return {
-    id: o.id,
-    email: o.user?.email ?? '',
-    service_type: o.service?.title ?? '',
-    status: o.status,
-    created_at: o.createdAt,
-    service_description: o.serviceDescription,
-    userId: o.userId,
-  };
-}
-
-/** POST /api/request_service */
 export const requestService = async (req, res) => {
+  let createdOrderId = null;
+  let createdOtpId = null;
+
   try {
     const userId = resolveUserId(req);
     if (userId == null) {
-      return res.status(401).json({ error: 'Unauthorized', message: 'Not logged in' });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { service_type, service_description } = req.body;
-    const desc = (service_description ?? '').toString().trim();
-    if (!desc) {
-      return res.status(400).json({ error: 'service_description is required', message: 'Description required' });
+    const { service_type: serviceType } = req.body;
+    const serviceDescription = req.body.service_description?.toString().trim();
+
+    if (!serviceType || !serviceDescription) {
+      return res.status(400).json({ message: 'service_type and service_description are required' });
     }
 
-    const service = await resolveServiceByType(service_type);
+    const [user, service] = await Promise.all([
+      prisma.user.findUnique({ where: { id: userId } }),
+      findServiceByType(serviceType),
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     if (!service) {
-      return res.status(400).json({ error: 'Unknown service_type', message: 'Service not found' });
+      return res.status(404).json({ message: 'Service not found' });
     }
 
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-    const orderExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-    const order = await prisma.$transaction(async (tx) => {
-      const o = await tx.order.create({
-        data: {
-          userId,
-          serviceId: service.id,
-          serviceDescription: desc,
-          status: 'Pending',
-          expiresAt: orderExpires,
-        },
-      });
-      await tx.otp.create({
-        data: {
-          otp: otpCode,
-          userId,
-          orderId: o.id,
-          purpose: PURPOSE_ORDER,
-          expiresAt: otpExpires,
-        },
-      });
-      return o;
+    const order = await prisma.order.create({
+      data: {
+        status: ORDER_OTP_STATUS,
+        expiresAt: otpExpiresAt,
+        serviceDescription,
+        serviceId: service.id,
+        userId,
+      },
+      include: { service: true, user: true },
     });
+    createdOrderId = order.id;
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    let mail;
-    try {
-      mail = await sendUserEmail({
-        to: user.email,
-        subject: 'Confirm your service request',
-        text: `Thank you for your request (${service.title}). Your 6-digit confirmation code is: ${otpCode}. It expires in 10 minutes.\n\nDescription you provided:\n${desc}`,
-      });
-    } catch (e) {
-      console.error('request_service sendMail:', e);
-      await prisma.order.delete({ where: { id: order.id } }).catch(() => {});
-      return res.status(503).json({
-        error: 'Could not send email',
-        message: 'Could not send verification email. Try again later.',
-      });
-    }
+    const otp = await prisma.otp.create({
+      data: {
+        otp: otpCode,
+        purpose: orderOtpPurpose(order.id),
+        expiresAt: otpExpiresAt,
+        userId,
+      },
+    });
+    createdOtpId = otp.id;
 
-    if (mail.skipped && process.env.OTP_DEV_RETURN_CODE !== 'true') {
-      await prisma.order.delete({ where: { id: order.id } }).catch(() => {});
-      return res.status(503).json({
-        error: 'Could not send email',
-        message: 'Email is not configured. Set EMAIL_USER / EMAIL_PASS or OTP_DEV_RETURN_CODE=true for local dev.',
-      });
-    }
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn('[Order OTP] Email not configured. OTP for order', order.id, ':', otpCode);
 
-    if (mail.skipped && process.env.OTP_DEV_RETURN_CODE === 'true') {
-      console.warn('[request_service] dev OTP for', user.email, ':', otpCode);
+      if (process.env.OTP_DEV_RETURN_CODE !== 'true') {
+        await prisma.otp.delete({ where: { id: createdOtpId } }).catch(() => {});
+        await prisma.order.delete({ where: { id: createdOrderId } }).catch(() => {});
+        return res.status(503).json({
+          message:
+            'Email is not configured on the server. Set EMAIL_USER and EMAIL_PASS, or for local testing set OTP_DEV_RETURN_CODE=true.',
+        });
+      }
+    } else {
+      try {
+        await sendMail({
+          to: user.email,
+          subject: 'Confirm your service request',
+          text: `Your OTP for the "${service.title}" service request is: ${otpCode}. It expires in 10 minutes.`,
+        });
+      } catch (mailErr) {
+        console.error('Order OTP email failed:', mailErr);
+        await prisma.otp.delete({ where: { id: createdOtpId } }).catch(() => {});
+        await prisma.order.delete({ where: { id: createdOrderId } }).catch(() => {});
+        return res.status(503).json({ message: 'Could not send OTP email. Please try again later.' });
+      }
     }
 
     return res.status(201).json({
@@ -132,24 +169,24 @@ export const requestService = async (req, res) => {
     });
   } catch (error) {
     console.error('requestService error:', error);
-    return res.status(500).json({ error: 'Internal server error', message: error.message });
+    if (createdOtpId) await prisma.otp.delete({ where: { id: createdOtpId } }).catch(() => {});
+    if (createdOrderId) await prisma.order.delete({ where: { id: createdOrderId } }).catch(() => {});
+    return res.status(500).json({ message: 'Error requesting service', error: error.message });
   }
 };
 
-/** POST /api/verify_otp */
 export const verifyOtp = async (req, res) => {
   try {
     const userId = resolveUserId(req);
     if (userId == null) {
-      return res.status(401).json({ error: 'Unauthorized', message: 'Not logged in' });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const orderIdRaw = req.body.order_id ?? req.body.orderId;
-    const orderId = parseInt(orderIdRaw, 10);
-    const otp = (req.body.otp ?? '').toString().trim();
+    const orderId = parseId(req.body.order_id ?? req.body.request_id);
+    const otpCode = req.body.otp?.toString().trim();
 
-    if (!Number.isFinite(orderId) || !/^\d{6}$/.test(otp)) {
-      return res.status(400).json({ error: 'Invalid order_id or otp', message: 'Invalid request' });
+    if (orderId == null || !/^\d{6}$/.test(otpCode || '')) {
+      return res.status(400).json({ message: 'otp and order_id are required' });
     }
 
     const order = await prisma.order.findFirst({
@@ -158,57 +195,49 @@ export const verifyOtp = async (req, res) => {
     });
 
     if (!order) {
-      return res.status(404).json({ error: 'Order not found', message: 'Order not found' });
-    }
-
-    if (order.status !== 'Pending') {
-      return res.status(400).json({ error: 'Order not awaiting OTP', message: 'Order is not pending verification' });
+      return res.status(404).json({ message: 'Order not found' });
     }
 
     const otpRecord = await prisma.otp.findFirst({
       where: {
         userId,
-        orderId,
-        otp,
-        purpose: PURPOSE_ORDER,
+        otp: otpCode,
+        purpose: orderOtpPurpose(orderId),
         expiresAt: { gt: new Date() },
       },
       orderBy: { createdAt: 'desc' },
     });
 
     if (!otpRecord) {
-      const expired = await prisma.otp.findFirst({
-        where: { userId, orderId, purpose: PURPOSE_ORDER, otp },
-        orderBy: { createdAt: 'desc' },
-      });
-      if (expired && expired.expiresAt <= new Date()) {
-        return res.status(410).json({ error: 'OTP expired', message: 'OTP expired' });
-      }
-      return res.status(400).json({ error: 'Incorrect OTP', message: 'Incorrect OTP' });
+      return res.status(410).json({ message: 'Incorrect OTP or OTP expired' });
     }
 
-    await prisma.$transaction(async (tx) => {
-      await tx.otp.delete({ where: { id: otpRecord.id } });
-      await tx.order.update({
-        where: { id: orderId },
-        data: { status: 'Verified' },
-      });
+    const updated = await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: PENDING_STATUS,
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+      include: { service: true, user: true },
     });
 
-    await sendUserEmail({
-      to: order.user.email,
-      subject: 'Thank you — request verified',
-      text: `Hello ${order.user.name},\n\nYour service request #${orderId} (${order.service.title}) has been verified. Our team will review it shortly.\n\nThank you,\nStrategy Solutions`,
+    await prisma.otp.delete({ where: { id: otpRecord.id } });
+
+    await sendMail({
+      to: updated.user.email,
+      subject: 'Thank you for your service request',
+      text: `Thank you, ${updated.user.name}. We received your "${updated.service.title}" request and our team will review it shortly.`,
+    }).catch((mailErr) => {
+      console.error('Thank-you email failed:', mailErr);
     });
 
-    return res.status(200).json({ status: 'success' });
+    return res.status(200).json({ status: 'success', order: formatOrder(updated) });
   } catch (error) {
     console.error('verifyOtp error:', error);
-    return res.status(500).json({ error: 'Internal server error', message: error.message });
+    return res.status(500).json({ message: 'Error verifying OTP', error: error.message });
   }
 };
 
-/** GET /api/get_user_orders | /api/get_orders */
 export const getUserOrders = async (req, res) => {
   try {
     const userId = resolveUserId(req);
@@ -216,20 +245,18 @@ export const getUserOrders = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const rows = await prisma.order.findMany({
+    const orders = await prisma.order.findMany({
       where: { userId },
-      include: { service: true },
+      include: { service: true, user: true },
       orderBy: { createdAt: 'desc' },
     });
 
-    return res.status(200).json({ orders: rows.map(formatUserOrder) });
+    res.json({ orders: orders.map(formatOrder) });
   } catch (error) {
-    console.error('getUserOrders error:', error);
-    return res.status(500).json({ error: 'Internal server error', message: error.message });
+    res.status(500).json({ message: 'Error fetching user orders', error: error.message });
   }
 };
 
-/** GET /api/get_pending_otp_orders */
 export const getPendingOtpOrders = async (req, res) => {
   try {
     const userId = resolveUserId(req);
@@ -237,189 +264,176 @@ export const getPendingOtpOrders = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const rows = await prisma.order.findMany({
-      where: { userId, status: 'Pending' },
-      include: { service: true },
+    const pendingOrders = await prisma.order.findMany({
+      where: {
+        userId,
+        status: ORDER_OTP_STATUS,
+        expiresAt: { gt: new Date() },
+      },
+      include: { service: true, user: true },
       orderBy: { createdAt: 'desc' },
     });
 
-    return res.status(200).json({
-      status: 'success',
-      pendingOrders: rows.map(formatUserOrder),
-    });
+    res.json({ status: 'success', pendingOrders: pendingOrders.map(formatOrder) });
   } catch (error) {
-    console.error('getPendingOtpOrders error:', error);
-    return res.status(500).json({ error: 'Internal server error', message: error.message });
+    res.status(500).json({ message: 'Error fetching pending OTP orders', error: error.message });
   }
 };
 
-/** GET /api/get_all_orders (admin middleware) */
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await prisma.order.findMany({
-      include: { user: true, service: true },
+      include: {
+        user: true,
+        service: true,
+      },
       orderBy: { createdAt: 'desc' },
     });
-    return res.status(200).json(orders.map(formatAdminOrder));
+
+    res.json(orders.map(formatOrder));
   } catch (error) {
-    console.error('getAllOrders error:', error);
-    return res.status(500).json({ message: 'Error fetching all orders', error: error.message });
+    res.status(500).json({ message: 'Error fetching all orders', error: error.message });
   }
 };
 
-/** PUT /api/update_order_status (admin middleware) */
 export const updateOrderStatus = async (req, res) => {
-  const { id, status } = req.body;
   try {
-    const orderId = parseInt(id, 10);
-    if (!Number.isFinite(orderId) || !status) {
-      return res.status(400).json({ error: 'id and status required' });
+    const orderId = parseId(req.body.id);
+    const status = req.body.status?.toString().trim();
+
+    if (orderId == null || !status) {
+      return res.status(400).json({ message: 'id and status are required' });
     }
 
-    const existing = await prisma.order.findUnique({
+    const order = await prisma.order.update({
       where: { id: orderId },
-      include: { user: true, service: true },
-    });
-    if (!existing) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
-
-    const updated = await prisma.order.update({
-      where: { id: orderId },
-      data: { status: status.toString() },
+      data: { status },
+      include: { service: true, user: true },
     });
 
-    if (status.toString().toLowerCase() === 'done') {
-      await sendUserEmail({
-        to: existing.user.email,
+    if (status.toLowerCase() === DONE_STATUS.toLowerCase()) {
+      await sendMail({
+        to: order.user.email,
         subject: 'Your order is complete',
-        text: `Hello ${existing.user.name},\n\nYour order #${orderId} (${existing.service.title}) is marked as Done. Thank you for choosing Strategy Solutions.`,
+        text: `Your "${order.service.title}" order has been marked as done. Thank you for choosing Strategy Solutions.`,
+      }).catch((mailErr) => {
+        console.error('Completion email failed:', mailErr);
       });
     }
 
-    return res.status(200).json({
+    res.json({
       status: 'success',
-      message: 'Status updated successfully',
-      order: updated,
+      message:
+        order.status.toLowerCase() === DONE_STATUS.toLowerCase()
+          ? 'Status updated and completion email sent.'
+          : 'Status updated successfully.',
+      order: formatOrder(order),
     });
   } catch (error) {
-    console.error('updateOrderStatus error:', error);
-    return res.status(500).json({ message: 'Error updating order status', error: error.message });
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    res.status(500).json({ message: 'Error updating order status', error: error.message });
   }
 };
 
-/** POST /api/thank_you-mail (admin) */
-export const thankYouMail = async (req, res) => {
+export const confirmOrderActivation = async (req, res) => {
   try {
-    const orderId = parseInt(req.body.order_id ?? req.body.orderId, 10);
-    if (!Number.isFinite(orderId)) {
-      return res.status(400).json({ error: 'order_id required' });
+    const orderId = parseId(req.body.order_id ?? req.body.id);
+    if (orderId == null) {
+      return res.status(400).json({ message: 'order_id is required' });
     }
 
-    const order = await prisma.order.findUnique({
+    const order = await prisma.order.update({
       where: { id: orderId },
-      include: { user: true, service: true },
-    });
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
-
-    await prisma.order.update({
-      where: { id: orderId },
-      data: { status: 'Active' },
+      data: { status: ACTIVE_STATUS },
+      include: { service: true, user: true },
     });
 
-    await sendUserEmail({
+    await sendMail({
       to: order.user.email,
-      subject: 'Order received — we are on it',
-      text: `Hello ${order.user.name},\n\nYour order #${orderId} (${order.service.title}) is now active. We have received your request and will keep you updated.\n\nStrategy Solutions`,
+      subject: 'Your order is now active',
+      text: `Your "${order.service.title}" order has been confirmed and is now active.`,
+    }).catch((mailErr) => {
+      console.error('Activation email failed:', mailErr);
     });
 
     return res.status(200).json({
       status: 'success',
       message: 'Order confirmed and email sent',
+      order: formatOrder(order),
     });
   } catch (error) {
-    console.error('thankYouMail error:', error);
-    return res.status(500).json({ error: 'Internal server error', message: error.message });
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    return res.status(500).json({ message: 'Error confirming order', error: error.message });
   }
 };
 
-/** POST /api/done_mail (admin) */
-export const doneMail = async (req, res) => {
+export const completeOrder = async (req, res) => {
   try {
-    const orderId = parseInt(req.body.order_id ?? req.body.orderId, 10);
-    if (!Number.isFinite(orderId)) {
-      return res.status(400).json({ error: 'order_id required' });
+    const orderId = parseId(req.body.order_id ?? req.body.id);
+    if (orderId == null) {
+      return res.status(400).json({ message: 'order_id is required' });
     }
 
-    const order = await prisma.order.findUnique({
+    const order = await prisma.order.update({
       where: { id: orderId },
-      include: { user: true, service: true },
-    });
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
-
-    await prisma.order.update({
-      where: { id: orderId },
-      data: { status: 'Done' },
+      data: { status: DONE_STATUS },
+      include: { service: true, user: true },
     });
 
-    await sendUserEmail({
+    await sendMail({
       to: order.user.email,
-      subject: 'Order completed',
-      text: `Hello ${order.user.name},\n\nYour order #${orderId} (${order.service.title}) is complete. Thank you for your business.\n\nStrategy Solutions`,
+      subject: 'Your order is complete',
+      text: `Your "${order.service.title}" order has been marked as done. Thank you for choosing Strategy Solutions.`,
+    }).catch((mailErr) => {
+      console.error('Completion email failed:', mailErr);
     });
 
     return res.status(200).json({
       status: 'success',
       message: 'Order marked as done and email sent',
+      order: formatOrder(order),
     });
   } catch (error) {
-    console.error('doneMail error:', error);
-    return res.status(500).json({ error: 'Internal server error', message: error.message });
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    return res.status(500).json({ message: 'Error completing order', error: error.message });
   }
 };
 
-/** DELETE /api/delete_order */
 export const deleteOrder = async (req, res) => {
+  const { id, isAdmin } = req.body;
   try {
+    const orderId = parseId(id);
+    if (orderId == null) {
+      return res.status(400).json({ message: 'id is required' });
+    }
+
     const userId = resolveUserId(req);
     if (userId == null) {
-      return res.status(401).json({ error: 'Unauthorized', message: 'Not logged in' });
+      return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const id = parseInt(req.body.id, 10);
-    if (!Number.isFinite(id)) {
-      return res.status(400).json({ error: 'id required', message: 'Invalid id' });
-    }
+    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
 
-    const admin = isAdminReq(req) || req.body.isAdmin === true;
-    const order = await prisma.order.findUnique({ where: { id } });
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found', message: 'Order not found' });
-    }
-
-    if (!admin) {
-      if (order.userId !== userId) {
-        return res.status(403).json({ error: 'Forbidden', message: 'Unauthorized' });
-      }
-      if (order.status !== 'Pending') {
-        return res.status(400).json({
-          error: 'Only pending orders can be deleted',
-          message: 'Can only delete pending orders',
-        });
+    const adminDelete = isAdmin === true && req.user?.role === 'ADMIN';
+    if (!adminDelete) {
+      if (order.userId !== userId) return res.status(403).json({ message: 'Unauthorized' });
+      if (![PENDING_STATUS, ORDER_OTP_STATUS].includes(order.status)) {
+        return res.status(400).json({ message: 'Can only delete pending orders' });
       }
     }
 
-    await prisma.order.delete({ where: { id } });
-    return res.status(200).json({
-      status: 'success',
-      message: 'order deleted successfully',
-    });
+    await prisma.otp.deleteMany({ where: { userId: order.userId, purpose: orderOtpPurpose(order.id) } });
+    await prisma.order.delete({ where: { id: orderId } });
+
+    res.json({ status: 'success', message: 'order deleted successfully' });
   } catch (error) {
-    console.error('deleteOrder error:', error);
-    return res.status(500).json({ message: 'Error deleting order', error: error.message });
+    res.status(500).json({ message: 'Error deleting order', error: error.message });
   }
 };

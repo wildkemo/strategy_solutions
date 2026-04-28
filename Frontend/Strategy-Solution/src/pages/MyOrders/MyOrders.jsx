@@ -27,7 +27,7 @@ export default function MyOrdersPage() {
         method: 'DELETE',
         json: { id, isAdmin: false },
       })
-      if (!ok) throw new Error(data?.message || data?.error || 'Delete failed')
+      if (!ok) throw new Error(data?.message || 'Delete failed')
       return id
     },
     onSuccess: () => {
@@ -103,17 +103,13 @@ export default function MyOrdersPage() {
                         : '—'}
                     </td>
                     <td>
-                      {o.status === 'Pending' ? (
-                        <button
-                          type="button"
-                          className={styles.dangerBtn}
-                          onClick={() => setDeleteId(o.id)}
-                        >
-                          Delete
-                        </button>
-                      ) : (
-                        <span className={styles.muted}>—</span>
-                      )}
+                      <button
+                        type="button"
+                        className={styles.dangerBtn}
+                        onClick={() => setDeleteId(o.id)}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
