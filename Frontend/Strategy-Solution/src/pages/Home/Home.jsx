@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { useCategoriesQuery } from '../../lib/queries'
 import { Footer } from '../../components/Footer'
 import heroImage from '../../assets/bb2af275-e7f6-4e3e-acc4-3f60fd7341d1.png'
 import styles from './Home.module.css'
@@ -34,11 +33,14 @@ const coreServices = [
   },
 ]
 
+const industries = [
+  'Financial Services & Banking',
+  'Retail & Ecommerce',
+  'Manufacturing and Logistics',
+  'Telecommunications',
+]
+
 export default function HomePage() {
-  const { data: categories = [] } = useCategoriesQuery()
-
-  const featuredCategories = categories.slice(0, 4)
-
   return (
     <div className={styles.page}>
       {/* Decorative Background Orbs */}
@@ -108,31 +110,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {featuredCategories.length > 0 && (
-        <section className={styles.industriesSection}>
-          <div className={styles.wrap}>
-            <div className={styles.sectionHeaderCenter}>
-              <span className={styles.sectionEyebrow}>Industries</span>
-              <h2 className={styles.sectionTitleCenter}>Sectors We Transform</h2>
-            </div>
-            <div className={`${styles.industryGrid} ${styles.staggerIn}`}>
-              {featuredCategories.map((cat, idx) => (
-                <div key={cat.id} className={styles.industryCard} style={{ animationDelay: `${idx * 0.1}s` }}>
-                  <div className={styles.catIconWrap}>
-                    <div className={styles.catIconGlow}></div>
-                    <div className={styles.catIcon}>
-                      <svg viewBox="0 0 24 24" width="24" height="24">
-                        <path fill="currentColor" d="M12 2l-5.5 9h11L12 2zm0 3.84L13.93 9h-3.86L12 5.84zM17.5 13c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zM3 13.5v9h9v-9H3zm7 7H5v-5h5v5z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <h3>{cat.name}</h3>
-                </div>
-              ))}
-            </div>
+      <section className={styles.industriesSection}>
+        <div className={styles.wrap}>
+          <div className={styles.sectionHeaderCenter}>
+            <span className={styles.sectionEyebrow}>Industries</span>
+            <h2 className={styles.sectionTitleCenter}>Sectors We Transform</h2>
           </div>
-        </section>
-      )}
+          <div className={`${styles.industryGrid} ${styles.staggerIn}`}>
+            {industries.map((industry, idx) => (
+              <div key={industry} className={styles.industryCard} style={{ animationDelay: `${idx * 0.1}s` }}>
+                <div className={styles.catIconWrap}>
+                  <div className={styles.catIconGlow}></div>
+                  <div className={styles.catIcon}>
+                    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                      <path fill="currentColor" d="M12 2l-5.5 9h11L12 2zm0 3.84L13.93 9h-3.86L12 5.84zM17.5 13c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zM3 13.5v9h9v-9H3zm7 7H5v-5h5v5z" />
+                    </svg>
+                  </div>
+                </div>
+                <h3>{industry}</h3>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       <section className={styles.ctaSection}>
         <div className={styles.ctaBanner}>

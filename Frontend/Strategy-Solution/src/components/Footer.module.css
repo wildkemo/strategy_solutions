@@ -86,7 +86,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.6rem 1rem;
+  padding: 0.8rem 1.25rem;
   background: var(--color-bg-muted);
   border: 1px solid var(--color-border);
   border-radius: 99px;
@@ -102,7 +102,7 @@
 }
 
 .vortexLogo {
-  width: 100px;
+  width: 180px;
   height: auto;
 }
 
