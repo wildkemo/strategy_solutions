@@ -174,7 +174,7 @@ export const refreshToken = async (req, res) => {
     }
 
     // Rotate tokens
-    await prisma.refreshToken.delete({ where: { id: dbToken.id } });
+    await prisma.refreshToken.deleteMany({ where: { id: dbToken.id } });
 
     const newAccessToken = generateAccessToken(dbToken.user);
     const newRefreshTokenStr = generateRefreshToken();
