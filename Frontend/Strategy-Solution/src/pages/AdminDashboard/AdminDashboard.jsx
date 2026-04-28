@@ -42,6 +42,8 @@ export default function AdminDashboardPage() {
     image: null,
   })
 
+  const [viewOrder, setViewOrder] = useState(null)
+
   const [catModal, setCatModal] = useState(null)
   const [catForm, setCatForm] = useState({ id: null, name: '' })
 
@@ -341,9 +343,9 @@ export default function AdminDashboardPage() {
               <tbody>
                 {filterSvc.map((s) => (
                   <tr key={s.id}>
-                    <td>{s.id}</td>
-                    <td>{s.title}</td>
-                    <td>{s.category?.name || '—'}</td>
+                    <td data-label="ID">{s.id}</td>
+                    <td data-label="Title">{s.title}</td>
+                    <td data-label="Category">{s.category?.name || '—'}</td>
                     <td>
                       <button type="button" className={styles.rowBtn} onClick={() => openEditService(s)}>
                         Edit
@@ -386,8 +388,8 @@ export default function AdminDashboardPage() {
               <tbody>
                 {filterCat.map((c) => (
                   <tr key={c.id}>
-                    <td>{c.id}</td>
-                    <td>{c.name}</td>
+                    <td data-label="ID">{c.id}</td>
+                    <td data-label="Name">{c.name}</td>
                     <td>
                       <button type="button" className={styles.rowBtn} onClick={() => openEditCategory(c)}>
                         Edit
@@ -458,10 +460,10 @@ export default function AdminDashboardPage() {
               <tbody>
                 {filterOrd.map((o) => (
                   <tr key={o.id}>
-                    <td>{o.id}</td>
-                    <td>{o.email}</td>
-                    <td>{o.service_type}</td>
-                    <td>
+                    <td data-label="ID">{o.id}</td>
+                    <td data-label="Customer">{o.email}</td>
+                    <td data-label="Service">{o.service_type}</td>
+                    <td data-label="Status">
                       <select
                         className={styles.statusSelect}
                         value={o.status || 'Pending'}
@@ -474,8 +476,15 @@ export default function AdminDashboardPage() {
                         ))}
                       </select>
                     </td>
-                    <td>{o.created_at ? new Date(o.created_at).toLocaleString() : '—'}</td>
+                    <td data-label="Date">{o.created_at ? new Date(o.created_at).toLocaleString() : '—'}</td>
                     <td>
+                      <button
+                        type="button"
+                        className={styles.rowBtn}
+                        onClick={() => setViewOrder(o)}
+                      >
+                        Details
+                      </button>
                       <button type="button" className={styles.rowBtnDanger} onClick={() => deleteOrder(o.id)}>
                         Delete
                       </button>
@@ -487,6 +496,42 @@ export default function AdminDashboardPage() {
           </div>
         </section>
       ) : null}
+
+      <Modal
+        open={viewOrder != null}
+        title={`Order Details #${viewOrder?.id}`}
+        onClose={() => setViewOrder(null)}
+        actions={
+          <button type="button" className={styles.rowBtn} onClick={() => setViewOrder(null)}>
+            Close
+          </button>
+        }
+      >
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Customer Email</span>
+          <div className={styles.detailValue}>{viewOrder?.email}</div>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Service Type</span>
+          <div className={styles.detailValue}>{viewOrder?.service_type}</div>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Status</span>
+          <div className={styles.detailValue}>{viewOrder?.status || 'Pending'}</div>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Submitted Date</span>
+          <div className={styles.detailValue}>
+            {viewOrder?.created_at ? new Date(viewOrder.created_at).toLocaleString() : '—'}
+          </div>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Service Description</span>
+          <div className={styles.detailValue}>
+            {viewOrder?.serviceDescription || 'No description provided.'}
+          </div>
+        </div>
+      </Modal>
 
       {tab === 'customers' ? (
         <section className={styles.section}>
@@ -507,16 +552,22 @@ export default function AdminDashboardPage() {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Company</th>
+                  <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filterCust.map((c) => (
                   <tr key={c.id}>
-                    <td>{c.id}</td>
-                    <td>{c.name}</td>
-                    <td>{c.email}</td>
-                    <td>{c.company_name}</td>
+                    <td data-label="ID">{c.id}</td>
+                    <td data-label="Name">{c.name}</td>
+                    <td data-label="Email">{c.email}</td>
+                    <td data-label="Company">{c.company_name}</td>
+                    <td data-label="Status">
+                      <span className={c.isActivated ? styles.badgeSuccess : styles.badgeMuted}>
+                        {c.isActivated ? 'Active' : 'Unverified'}
+                      </span>
+                    </td>
                     <td>
                       <button
                         type="button"
@@ -552,15 +603,21 @@ export default function AdminDashboardPage() {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Phone</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {admins.map((a) => (
                   <tr key={a.id}>
-                    <td>{a.id}</td>
-                    <td>{a.name}</td>
-                    <td>{a.email}</td>
-                    <td>{a.phone || '—'}</td>
+                    <td data-label="ID">{a.id}</td>
+                    <td data-label="Name">{a.name}</td>
+                    <td data-label="Email">{a.email}</td>
+                    <td data-label="Phone">{a.phone || '—'}</td>
+                    <td data-label="Status">
+                      <span className={a.isActivated ? styles.badgeSuccess : styles.badgeMuted}>
+                        {a.isActivated ? 'Active' : 'Unverified'}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>

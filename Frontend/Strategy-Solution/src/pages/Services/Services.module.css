@@ -15,10 +15,59 @@
 }
 
 .header p {
-  margin: 0 0 2rem;
+  margin: 0 0 1.5rem;
   color: var(--color-text-muted);
   max-width: 640px;
   line-height: 1.6;
+}
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.categories::-webkit-scrollbar {
+  height: 4px;
+}
+
+.categories::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: 999px;
+}
+
+.chip {
+  padding: 0.45rem 1.15rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.chipActive {
+  composes: chip;
+  background: var(--color-primary);
+  color: var(--btn-solid-fg);
+  border-color: var(--color-primary);
+}
+
+.chipActive:hover {
+  color: var(--btn-solid-fg);
+  opacity: 0.9;
 }
 
 .muted {
@@ -34,7 +83,7 @@
 .card {
   display: block;
   background-color: var(--color-surface);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-soft);
   text-decoration: none !important;
@@ -46,14 +95,13 @@
     var(--spotlight),
     transparent 40%
   );
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: var(--shadow-hover), 0 0 20px var(--color-primary-muted);
+  border-color: var(--color-primary-muted);
 }
 
 .cardImage {

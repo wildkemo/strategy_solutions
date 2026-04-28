@@ -1,7 +1,7 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { useServicesQuery } from '../../lib/queries'
+import { useServicesQuery, useCategoriesQuery } from '../../lib/queries'
 import { servicePath } from '../../lib/slug'
 import { serviceImageUrl } from '../../lib/services'
 import { Footer } from '../../components/Footer'
@@ -12,8 +12,15 @@ export default function ServicesPage() {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const { data: list = [], isLoading } = useServicesQuery()
+  const { data: categories = [] } = useCategoriesQuery()
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null)
   const [authModal, setAuthModal] = useState(false)
   const cardRef = useRef(null)
+
+  const filteredServices = useMemo(() => {
+    if (!selectedCategoryId) return list
+    return list.filter((s) => s.categoryId === selectedCategoryId)
+  }, [list, selectedCategoryId])
 
   const onCardMove = useCallback((e) => {
     const el = e.currentTarget
@@ -41,16 +48,38 @@ export default function ServicesPage() {
           </p>
         </header>
 
+        {categories.length > 0 && (
+          <div className={styles.categories}>
+            <button
+              type="button"
+              className={!selectedCategoryId ? styles.chipActive : styles.chip}
+              onClick={() => setSelectedCategoryId(null)}
+            >
+              All
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                className={selectedCategoryId === cat.id ? styles.chipActive : styles.chip}
+                onClick={() => setSelectedCategoryId(cat.id)}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        )}
+
         {isLoading ? (
           <p className={styles.muted}>Loading services…</p>
         ) : (
-          <div className={styles.grid} ref={cardRef}>
-            {list.length === 0 ? (
+          <div className={`${styles.grid} animate-slide-up`} ref={cardRef}>
+            {filteredServices.length === 0 ? (
               <p className={styles.muted}>
-                No services are published yet. Please check back soon.
+                No services found for this category.
               </p>
             ) : (
-              list.map((s) => {
+              filteredServices.map((s) => {
                 const img = serviceImageUrl(s)
                 const slug = servicePath(s)
                 const desc = (s.description || '').slice(0, 140)

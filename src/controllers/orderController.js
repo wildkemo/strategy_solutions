@@ -29,9 +29,13 @@ function formatOrder(order) {
     id: order.id,
     email: order.user?.email,
     customer_name: order.user?.name,
+    customer_company: order.user?.companyName,
+    customer_phone: order.user?.phone,
     service_id: order.serviceId,
     service_type: order.service?.title,
+    service_category: order.service?.category?.name,
     service_description: order.serviceDescription,
+    serviceDescription: order.serviceDescription,
     status: order.status,
     created_at: order.createdAt,
     createdAt: order.createdAt,
@@ -119,12 +123,11 @@ export const requestService = async (req, res) => {
     const order = await prisma.order.create({
       data: {
         status: PENDING_STATUS,
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days default
         serviceDescription,
         serviceId: service.id,
         userId,
       },
-      include: { service: true, user: true },
+      include: { service: { include: { category: true } }, user: true },
     });
 
     // Send immediate confirmation email
@@ -156,7 +159,7 @@ export const getUserOrders = async (req, res) => {
 
     const orders = await prisma.order.findMany({
       where: { userId },
-      include: { service: true, user: true },
+      include: { service: { include: { category: true } }, user: true },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -171,7 +174,7 @@ export const getAllOrders = async (req, res) => {
     const orders = await prisma.order.findMany({
       include: {
         user: true,
-        service: true,
+        service: { include: { category: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -194,7 +197,7 @@ export const updateOrderStatus = async (req, res) => {
     const order = await prisma.order.update({
       where: { id: orderId },
       data: { status },
-      include: { service: true, user: true },
+      include: { service: { include: { category: true } }, user: true },
     });
 
     if (status.toLowerCase() === DONE_STATUS.toLowerCase()) {
@@ -233,7 +236,7 @@ export const confirmOrderActivation = async (req, res) => {
     const order = await prisma.order.update({
       where: { id: orderId },
       data: { status: ACTIVE_STATUS },
-      include: { service: true, user: true },
+      include: { service: { include: { category: true } }, user: true },
     });
 
     await sendMail({
@@ -267,7 +270,7 @@ export const completeOrder = async (req, res) => {
     const order = await prisma.order.update({
       where: { id: orderId },
       data: { status: DONE_STATUS },
-      include: { service: true, user: true },
+      include: { service: { include: { category: true } }, user: true },
     });
 
     await sendMail({

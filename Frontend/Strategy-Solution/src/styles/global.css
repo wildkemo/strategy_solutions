@@ -39,9 +39,13 @@
   --color-input-border: rgba(15, 23, 42, 0.12);
   --shadow-color: 220 40% 40%;
 
-  --shadow-sm: 0 1px 2px hsl(var(--shadow-color) / 0.06);
-  --shadow-soft: 0 4px 20px hsl(var(--shadow-color) / 0.07);
-  --shadow-hover: 0 12px 40px hsl(var(--shadow-color) / 0.12);
+  --shadow-sm: 0 2px 8px hsl(var(--shadow-color) / 0.06);
+  --shadow-soft: 0 8px 30px hsl(var(--shadow-color) / 0.08);
+  --shadow-hover: 0 20px 40px hsl(var(--shadow-color) / 0.12);
+  --shadow-glow: 0 0 24px var(--color-primary-muted);
+
+  --glass-bg: color-mix(in srgb, var(--color-surface) 85%, transparent);
+  --glass-blur: blur(12px);
 
   /* Marketing / hero */
   --hero-overlay: rgba(15, 23, 42, 0.78);
@@ -179,4 +183,22 @@ img {
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

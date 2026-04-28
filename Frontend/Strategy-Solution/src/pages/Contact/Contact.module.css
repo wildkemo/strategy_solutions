@@ -105,7 +105,11 @@
 }
 
 .cta {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
   padding: 0.7rem 1.5rem;
   background: var(--btn-solid-bg);
   color: var(--btn-solid-fg) !important;

@@ -20,6 +20,7 @@ export default function MyOrdersPage() {
   const { data: orders = [], isLoading } = useUserOrdersQuery()
   const [search, setSearch] = useState('')
   const [deleteId, setDeleteId] = useState(null)
+  const [viewOrder, setViewOrder] = useState(null)
 
   const deleteMutation = useMutation({
     mutationFn: async (id) => {
@@ -80,6 +81,7 @@ export default function MyOrdersPage() {
                 <tr>
                   <th>ID</th>
                   <th>Service</th>
+                  <th>Description</th>
                   <th>Status</th>
                   <th>Date</th>
                   <th>Actions</th>
@@ -88,19 +90,41 @@ export default function MyOrdersPage() {
               <tbody>
                 {filtered.map((o) => (
                   <tr key={o.id}>
-                    <td>{o.id}</td>
-                    <td>{o.service_type}</td>
-                    <td>
+                    <td data-label="ID">{o.id}</td>
+                    <td data-label="Service">{o.service_type}</td>
+                    <td data-label="Description">
+                      {o.serviceDescription ? (
+                        <span title={o.serviceDescription}>
+                          {o.serviceDescription.length > 40
+                            ? o.serviceDescription.slice(0, 40) + '…'
+                            : o.serviceDescription}
+                        </span>
+                      ) : (
+                        '—'
+                      )}
+                    </td>
+                    <td data-label="Status">
                       <span className={`${styles.badge} ${statusClass(o.status)}`}>
                         {o.status || '—'}
                       </span>
                     </td>
-                    <td>
+                    <td data-label="Date">
                       {o.created_at
-                        ? new Date(o.created_at).toLocaleDateString()
+                        ? new Date(o.created_at).toLocaleDateString(undefined, {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })
                         : '—'}
                     </td>
                     <td>
+                      <button
+                        type="button"
+                        className={styles.viewBtn}
+                        onClick={() => setViewOrder(o)}
+                      >
+                        View
+                      </button>
                       <button
                         type="button"
                         className={styles.dangerBtn}
@@ -117,6 +141,40 @@ export default function MyOrdersPage() {
         )}
       </div>
       <Footer variant="minimal" />
+
+      <Modal
+        open={viewOrder != null}
+        title={`Order #${viewOrder?.id}`}
+        onClose={() => setViewOrder(null)}
+        actions={
+          <button type="button" className={styles.ghost} onClick={() => setViewOrder(null)}>
+            Close
+          </button>
+        }
+      >
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Service</span>
+          <div className={styles.detailValue}>{viewOrder?.service_type}</div>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Status</span>
+          <div className={`${styles.badge} ${statusClass(viewOrder?.status)}`}>
+            {viewOrder?.status}
+          </div>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Date</span>
+          <div className={styles.detailValue}>
+            {viewOrder?.created_at ? new Date(viewOrder.created_at).toLocaleString() : '—'}
+          </div>
+        </div>
+        <div className={styles.detailRow}>
+          <span className={styles.detailLabel}>Description</span>
+          <div className={styles.detailValue}>
+            {viewOrder?.serviceDescription || 'No description provided.'}
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         open={deleteId != null}

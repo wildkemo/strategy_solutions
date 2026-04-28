@@ -74,6 +74,7 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={otpSent}
+                autoComplete="email"
               />
             </div>
             <button type="submit" className={forms.submit} disabled={busy || otpSent}>
@@ -92,6 +93,7 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => setOtp(e.target.value)}
                   required
                   autoComplete="one-time-code"
+                  inputMode="numeric"
                 />
               </div>
               <div className={forms.field}>
@@ -103,6 +105,7 @@ export default function ForgotPasswordPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  autoComplete="new-password"
                 />
               </div>
               <div className={forms.field}>
@@ -114,6 +117,7 @@ export default function ForgotPasswordPage() {
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   required
+                  autoComplete="new-password"
                 />
               </div>
               <button type="submit" className={forms.submit} disabled={busy}>

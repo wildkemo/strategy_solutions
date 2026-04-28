@@ -147,6 +147,18 @@ export default function ProfilePage() {
         ) : null}
 
         <form onSubmit={onSubmit}>
+          <div className={styles.sectionHeader}>Account Details</div>
+          <div className={forms.field}>
+            <label>Email Status</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <span style={{ fontSize: '1rem', color: 'var(--color-text-muted)' }}>{user?.email}</span>
+              {user?.isActivated ? (
+                <span className={styles.badgeVerified}>Verified</span>
+              ) : (
+                <span className={styles.badgeUnverified}>Unverified</span>
+              )}
+            </div>
+          </div>
           <div className={forms.field}>
             <label htmlFor="p-name">Name</label>
             <input
@@ -181,6 +193,8 @@ export default function ProfilePage() {
               </div>
             </>
           ) : null}
+          
+          <div className={styles.sectionHeader}>Security</div>
           <div className={forms.field}>
             <label htmlFor="p-current">Current password</label>
             <input

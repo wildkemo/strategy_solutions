@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { apiFetch } from '../../lib/api'
@@ -8,7 +8,7 @@ import forms from '../../styles/forms.module.css'
 export default function RequestServicePage() {
   const { isAuthenticated, loading } = useAuth()
   const navigate = useNavigate()
-  const [serviceType, setServiceType] = useState('')
+  const [serviceId, setServiceId] = useState('')
   const [description, setDescription] = useState('')
   const [options, setOptions] = useState([])
   const [error, setError] = useState('')
@@ -24,12 +24,27 @@ export default function RequestServicePage() {
       if (cancelled) return
       const list = Array.isArray(data) ? data : data?.services || []
       setOptions(list)
-      if (list[0]?.title) setServiceType(list[0].title)
+      if (list[0]?.id) setServiceId(String(list[0].id))
     })()
     return () => {
       cancelled = true
     }
   }, [])
+
+  const groupedOptions = useMemo(() => {
+    const groups = {}
+    const noCat = []
+    options.forEach(s => {
+      const catName = s.category?.name
+      if (catName) {
+        if (!groups[catName]) groups[catName] = []
+        groups[catName].push(s)
+      } else {
+        noCat.push(s)
+      }
+    })
+    return { groups, noCat }
+  }, [options])
 
   const submit = async (e) => {
     e.preventDefault()
@@ -38,7 +53,7 @@ export default function RequestServicePage() {
     setBusy(true)
     const { ok, data } = await apiFetch('/api/request_service', {
       method: 'POST',
-      json: { service_type: serviceType, service_description: description },
+      json: { service_type: serviceId, service_description: description },
     })
     setBusy(false)
     if (ok) {
@@ -60,17 +75,32 @@ export default function RequestServicePage() {
             <select
               id="svc-type"
               className={forms.select}
-              value={serviceType}
-              onChange={(e) => setServiceType(e.target.value)}
+              value={serviceId}
+              onChange={(e) => setServiceId(e.target.value)}
             >
               {options.length === 0 ? (
                 <option value="General inquiry">General inquiry</option>
               ) : (
-                options.map((s) => (
-                  <option key={s.id} value={s.title || `Service ${s.id}`}>
-                    {s.title || `Service ${s.id}`}
-                  </option>
-                ))
+                <>
+                  {Object.entries(groupedOptions.groups).map(([catName, svcs]) => (
+                    <optgroup key={catName} label={catName}>
+                      {svcs.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.title || `Service ${s.id}`}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                  {groupedOptions.noCat.length > 0 && (
+                    <optgroup label="Other">
+                      {groupedOptions.noCat.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.title || `Service ${s.id}`}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                </>
               )}
             </select>
           </div>

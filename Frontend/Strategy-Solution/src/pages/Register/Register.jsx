@@ -108,6 +108,7 @@ export default function RegisterPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              autoComplete="name"
             />
           </div>
           <div className={forms.field}>
@@ -119,6 +120,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
             />
           </div>
           <div className={forms.field}>
@@ -128,15 +130,18 @@ export default function RegisterPage() {
               className={forms.input}
               value={company}
               onChange={(e) => setCompany(e.target.value)}
+              autoComplete="organization"
             />
           </div>
           <div className={forms.field}>
             <label htmlFor="phone">Phone</label>
             <input
               id="phone"
+              type="tel"
               className={forms.input}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              autoComplete="tel"
             />
           </div>
           <div className={forms.field}>
@@ -148,6 +153,7 @@ export default function RegisterPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="new-password"
             />
           </div>
           <div className={forms.field}>
@@ -159,6 +165,7 @@ export default function RegisterPage() {
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               required
+              autoComplete="new-password"
             />
           </div>
           <button type="submit" className={forms.submit} disabled={busy}>

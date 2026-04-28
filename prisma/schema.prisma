@@ -41,7 +41,6 @@ model Order {
   id                 Int      @id @default(autoincrement())
   status             String   @default("Pending")
   createdAt          DateTime @default(now())
-  expiresAt          DateTime
   serviceDescription String
   serviceId          Int
   userId             Int

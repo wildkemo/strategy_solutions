@@ -45,20 +45,23 @@
 .textarea,
 .select {
   width: 100%;
-  padding: 0.65rem 0.75rem;
-  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-input-border);
-  background: var(--color-surface);
+  background: var(--color-bg-warm);
   color: var(--color-text);
   font-size: 1rem;
   font-family: inherit;
+  transition: all 0.2s ease;
 }
 
 .input:focus,
 .textarea:focus,
 .select:focus {
-  outline: 2px solid var(--color-primary-muted);
+  outline: none;
+  background: var(--color-surface);
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-primary-muted);
 }
 
 .textarea {
@@ -81,14 +84,26 @@
 .submit {
   width: 100%;
   margin-top: 0.5rem;
-  padding: 0.8rem 1rem;
+  padding: 0.85rem 1rem;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: 999px;
   background: var(--btn-solid-bg);
   color: var(--btn-solid-fg);
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover), 0 0 15px var(--color-primary-muted);
+  background: var(--color-primary-hover);
+}
+
+.submit:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .submit:disabled {

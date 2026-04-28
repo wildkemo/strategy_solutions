@@ -69,7 +69,7 @@ export default function ServiceDetailPage() {
     const { ok, data } = await apiFetch('/api/request_service', {
       method: 'POST',
       json: {
-        service_type: service.title || 'Service',
+        service_type: service.id,
         service_description: `Request for: ${service.title || 'service'}`,
       },
     })
@@ -109,6 +109,9 @@ export default function ServiceDetailPage() {
             style={img ? { backgroundImage: `url(${img})` } : undefined}
           />
           <div className={styles.heroText}>
+            {service.category?.name && (
+              <span className={styles.categoryBadge}>{service.category.name}</span>
+            )}
             <h1>{service.title}</h1>
             <p className={styles.desc}>{service.description}</p>
           </div>
