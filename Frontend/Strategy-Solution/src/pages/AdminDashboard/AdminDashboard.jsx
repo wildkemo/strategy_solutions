@@ -360,32 +360,27 @@ export default function AdminDashboardPage() {
   const navItems = [
     {
       id: 'services',
-      label: 'Service Management',
-      description: 'Catalog and delivery offers',
+      label: 'Services',
       count: services.length,
     },
     {
       id: 'categories',
       label: 'Categories',
-      description: 'Structure the service library',
       count: categories.length,
     },
     {
       id: 'orders',
       label: 'Orders',
-      description: 'Track requests and status',
       count: orders.length,
     },
     {
       id: 'customers',
       label: 'Customers',
-      description: 'Accounts and company records',
       count: customers.length,
     },
     {
       id: 'admins',
       label: 'Admins',
-      description: 'Access and control staff',
       count: admins.length,
     },
   ]
@@ -403,21 +398,12 @@ export default function AdminDashboardPage() {
 
       <aside className={styles.sidebar}>
         <div className={styles.sidebarTop}>
-          <div className={styles.sidebarBadge}>Strategy Solutions</div>
-          <div className={styles.sidebarHero}>
-            <div className={styles.sidebarHeroMark} aria-hidden="true">
-              <span />
-              <span />
-            </div>
-            <div>
-              <h2 className={styles.sidebarTitle}>Admin Panel</h2>
-              <p className={styles.sidebarSubtitle}>Operations overview and content control.</p>
-            </div>
-          </div>
+          <span className={styles.sidebarEyebrow}>Strategy Solutions</span>
+          <h2 className={styles.sidebarTitle}>Admin Panel</h2>
+          <p className={styles.sidebarSubtitle}>Manage services, orders, and team access.</p>
         </div>
 
         <div className={styles.tabs}>
-          <div className={styles.tabsLabel}>Workspace</div>
           {navItems.map((t) => (
             <button
               key={t.id}
@@ -428,38 +414,10 @@ export default function AdminDashboardPage() {
               <span className={styles.tabIconWrap}>
                 <SidebarIcon type={t.id} />
               </span>
-              <span className={styles.tabContent}>
-                <span className={styles.tabLabel}>{t.label}</span>
-                <span className={styles.tabMeta}>{t.description}</span>
-              </span>
+              <span className={styles.tabLabel}>{t.label}</span>
               <span className={styles.tabCount}>{t.count}</span>
             </button>
           ))}
-        </div>
-
-        <div className={styles.sidebarFooter}>
-          <div className={styles.sidebarFooterLabel}>Snapshot</div>
-          <div className={styles.sidebarStatCard}>
-            <div>
-              <span className={styles.sidebarStatValue}>{orders.length + services.length}</span>
-              <span className={styles.sidebarStatLabel}>Tracked records</span>
-            </div>
-            <div className={styles.sidebarStatAccent} aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-          <div className={styles.sidebarMetaGrid}>
-            <div className={styles.sidebarMetaItem}>
-              <span>Customers</span>
-              <strong>{customers.length}</strong>
-            </div>
-            <div className={styles.sidebarMetaItem}>
-              <span>Admins</span>
-              <strong>{admins.length}</strong>
-            </div>
-          </div>
         </div>
       </aside>
 

@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { apiFetch } from '../../lib/api'
 import { Modal } from '../../components/Modal'
 import forms from '../../styles/forms.module.css'
+import styles from './Register.module.css'
 
 export default function RegisterPage() {
   const { refreshUser } = useAuth()
@@ -21,6 +22,18 @@ export default function RegisterPage() {
   const [existsOpen, setExistsOpen] = useState(false)
 
   const validate = () => {
+    if (!name.trim()) {
+      setError('Full name is required.')
+      return false
+    }
+    if (!email.trim()) {
+      setError('Email is required.')
+      return false
+    }
+    if (!phone.trim()) {
+      setError('Phone number is required.')
+      return false
+    }
     if (password.length < 6) {
       setError('Password must be at least 6 characters.')
       return false
@@ -34,10 +47,15 @@ export default function RegisterPage() {
 
   const registerMutation = useMutation({
     mutationFn: async () => {
-      // 1. Signup the user
       const signupRes = await apiFetch('/api/signup', {
         method: 'POST',
-        json: { name, email, companyName: company, phone, password },
+        json: {
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          password,
+          companyName: company.trim() || undefined,
+        },
       })
 
       if (signupRes.status === 409) {
@@ -48,7 +66,6 @@ export default function RegisterPage() {
         throw new Error(signupRes.data?.error || signupRes.data?.details?.join(', ') || 'Registration failed')
       }
 
-      // 2. Request OTP (access token cookie is already set by signup)
       const otpRes = await apiFetch('/api/otp/create', {
         method: 'POST'
       })
@@ -75,7 +92,6 @@ export default function RegisterPage() {
 
   const finalizeMutation = useMutation({
     mutationFn: async () => {
-      // 3. Validate OTP
       const v = await apiFetch('/api/otp/validate', {
         method: 'POST',
         json: { otp },
@@ -87,7 +103,6 @@ export default function RegisterPage() {
       return v
     },
     onSuccess: async () => {
-      // 4. Success!
       setOtpOpen(false)
       await refreshUser()
       navigate('/services', { replace: true })
@@ -112,86 +127,109 @@ export default function RegisterPage() {
   const busy = registerMutation.isPending || finalizeMutation.isPending
 
   return (
-    <div className={forms.pageCenter}>
-      <div className={forms.card}>
-        <h1>Create account</h1>
-        <p className={forms.sub}>Join to request services and track orders.</p>
-        {error ? <p className={forms.error}>{error}</p> : null}
-        <form onSubmit={onSubmit}>
-          <div className={forms.field}>
-            <label htmlFor="name">Full name</label>
-            <input
-              id="name"
-              className={forms.input}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              autoComplete="name"
-            />
+    <div className={styles.page}>
+      <div className={styles.orb1} aria-hidden="true" />
+      <div className={styles.orb2} aria-hidden="true" />
+      <div className={styles.shell}>
+        <div className={styles.surface}>
+          <div className={styles.formHeader}>
+            <span className={styles.eyebrow}>Client Onboarding</span>
+            <h2>Create account</h2>
+            <p className={styles.sub}>Join our platform to track service requests and manage your projects.</p>
           </div>
-          <div className={forms.field}>
-            <label htmlFor="reg-email">Email</label>
-            <input
-              id="reg-email"
-              type="email"
-              className={forms.input}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
+
+          {error ? <p className={forms.error}>{error}</p> : null}
+
+          <form onSubmit={onSubmit}>
+            <div className={styles.sectionLabel}>Identity & Contact</div>
+            <div className={styles.grid}>
+              <div className={forms.field}>
+                <label htmlFor="name">Full Name</label>
+                <input
+                  id="name"
+                  className={forms.input}
+                  value={name}
+                  placeholder="John Doe"
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={forms.field}>
+                <label htmlFor="reg-email">Email Address</label>
+                <input
+                  id="reg-email"
+                  type="email"
+                  className={forms.input}
+                  value={email}
+                  placeholder="john@example.com"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={forms.field}>
+                <label htmlFor="company">Company Name</label>
+                <input
+                  id="company"
+                  className={forms.input}
+                  value={company}
+                  placeholder="Acme Corp (Optional)"
+                  onChange={(e) => setCompany(e.target.value)}
+                />
+              </div>
+              <div className={forms.field}>
+                <label htmlFor="phone">Phone Number</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  className={forms.input}
+                  value={phone}
+                  placeholder="+1 (555) 000-0000"
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className={styles.sectionLabel}>Account Security</div>
+            <div className={styles.grid}>
+              <div className={forms.field}>
+                <label htmlFor="reg-pass">Password</label>
+                <input
+                  id="reg-pass"
+                  type="password"
+                  className={forms.input}
+                  value={password}
+                  placeholder="Min. 6 characters"
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className={forms.field}>
+                <label htmlFor="reg-pass2">Confirm Password</label>
+                <input
+                  id="reg-pass2"
+                  type="password"
+                  className={forms.input}
+                  value={confirm}
+                  placeholder="Repeat password"
+                  onChange={(e) => setConfirm(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className={styles.formNote}>
+              We'll send a one-time verification code to your email to activate your secure workspace.
+            </div>
+
+            <button type="submit" className={forms.submit} disabled={busy}>
+              {busy ? 'Preparing workspace…' : 'Initialize Account'}
+            </button>
+          </form>
+
+          <div className={styles.linksRow}>
+            Already have an account? <Link to="/login">Sign in here</Link>
           </div>
-          <div className={forms.field}>
-            <label htmlFor="company">Company</label>
-            <input
-              id="company"
-              className={forms.input}
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              autoComplete="organization"
-            />
-          </div>
-          <div className={forms.field}>
-            <label htmlFor="phone">Phone</label>
-            <input
-              id="phone"
-              type="tel"
-              className={forms.input}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              autoComplete="tel"
-            />
-          </div>
-          <div className={forms.field}>
-            <label htmlFor="reg-pass">Password</label>
-            <input
-              id="reg-pass"
-              type="password"
-              className={forms.input}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="new-password"
-            />
-          </div>
-          <div className={forms.field}>
-            <label htmlFor="reg-pass2">Confirm password</label>
-            <input
-              id="reg-pass2"
-              type="password"
-              className={forms.input}
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              required
-              autoComplete="new-password"
-            />
-          </div>
-          <button type="submit" className={forms.submit} disabled={busy}>
-            {busy ? 'Sending…' : 'Continue'}
-          </button>
-        </form>
-        <div className={forms.links}>
-          Already have an account? <Link to="/login">Sign in</Link>
         </div>
       </div>
 
@@ -200,38 +238,39 @@ export default function RegisterPage() {
         title="Verify email"
         onClose={() => !busy && setOtpOpen(false)}
         actions={
-          <>
-            <button type="button" className={forms.submit} style={{ width: 'auto' }} onClick={() => setOtpOpen(false)} disabled={busy}>
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', width: '100%' }}>
+            <button type="button" className={styles.secondaryBtn} onClick={() => setOtpOpen(false)} disabled={busy} style={{ background: 'transparent', border: '1px solid var(--color-border)', borderRadius: '99px', padding: '0.75rem 1.5rem', fontWeight: 600, cursor: 'pointer' }}>
               Cancel
             </button>
-            <button type="button" className={forms.submit} style={{ width: 'auto' }} onClick={finalize} disabled={busy || otp.length < 4}>
-              {busy ? '…' : 'Verify & register'}
+            <button type="button" className={forms.submit} style={{ width: 'auto', marginTop: 0 }} onClick={finalize} disabled={busy || otp.length < 4}>
+              {busy ? 'Verifying…' : 'Confirm & Register'}
             </button>
-          </>
+          </div>
         }
       >
-        <p>Enter the OTP sent to your email.</p>
+        <p style={{ marginBottom: '1.5rem' }}>A verification code has been sent to <strong>{email}</strong>. Please enter it below to complete your registration.</p>
         {error ? <p className={forms.error}>{error}</p> : null}
         <input
           className={forms.input}
-          style={{ marginTop: '0.75rem' }}
+          style={{ letterSpacing: '0.5em', textAlign: 'center', fontSize: '1.5rem', fontWeight: 700 }}
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
-          placeholder="6-digit code"
+          placeholder="000000"
+          maxLength={6}
         />
       </Modal>
 
       <Modal
         open={existsOpen}
-        title="Account exists"
+        title="Account already exists"
         onClose={() => setExistsOpen(false)}
         actions={
           <Link to="/login" className={forms.submit} style={{ display: 'inline-block', textAlign: 'center', textDecoration: 'none' }} onClick={() => setExistsOpen(false)}>
-            Go to login
+            Proceed to Login
           </Link>
         }
       >
-        <p>{error || 'This account is already registered.'} Try signing in instead.</p>
+        <p style={{ marginBottom: '1rem' }}>It looks like an account is already associated with this email address.</p>
       </Modal>
     </div>
   )

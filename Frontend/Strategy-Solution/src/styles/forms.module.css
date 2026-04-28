@@ -45,14 +45,15 @@
 .textarea,
 .select {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1.125rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-input-border);
   background: var(--color-bg-warm);
   color: var(--color-text);
   font-size: 1rem;
   font-family: inherit;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .input:focus,
@@ -61,7 +62,10 @@
   outline: none;
   background: var(--color-surface);
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px var(--color-primary-muted);
+  box-shadow: 
+    0 0 0 4px var(--color-primary-muted),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
 }
 
 .textarea {
@@ -71,35 +75,44 @@
 
 .error {
   color: var(--color-error);
+  background: var(--color-error-soft);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
   font-size: 0.88rem;
-  margin: 0 0 0.75rem;
+  margin: 0 0 1rem;
+  border-left: 3px solid var(--color-error);
 }
 
 .success {
   color: var(--color-success);
+  background: var(--color-success-soft);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
   font-size: 0.88rem;
-  margin: 0 0 0.75rem;
+  margin: 0 0 1rem;
+  border-left: 3px solid var(--color-success);
 }
 
 .submit {
   width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.85rem 1rem;
+  margin-top: 0.75rem;
+  padding: 1rem 1.25rem;
   border: none;
   border-radius: 999px;
   background: var(--btn-solid-bg);
   color: var(--btn-solid-fg);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px var(--color-primary-muted);
 }
 
 .submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-hover), 0 0 15px var(--color-primary-muted);
+  box-shadow: 0 8px 20px var(--color-primary-muted);
   background: var(--color-primary-hover);
+  filter: brightness(1.1);
 }
 
 .submit:active:not(:disabled) {

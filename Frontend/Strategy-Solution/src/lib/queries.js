@@ -31,9 +31,10 @@ export function useCategoriesQuery() {
  * --- Customer Queries ---
  */
 
-export function useUserOrdersQuery() {
+export function useUserOrdersQuery(options = {}) {
   return useQuery({
     queryKey: ['user-orders'],
+    enabled: options.enabled ?? true,
     queryFn: async () => {
       const { ok, data } = await apiFetch('/api/get_user_orders')
       if (!ok) throw new Error(data?.message || 'Failed to fetch your orders')

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '../../context/AuthContext'
 import { useUserOrdersQuery } from '../../lib/queries'
 import { apiFetch } from '../../lib/api'
 import { Footer } from '../../components/Footer'
@@ -16,8 +17,11 @@ function statusClass(status) {
 }
 
 export default function MyOrdersPage() {
+  const { user, loading: authLoading } = useAuth()
   const queryClient = useQueryClient()
-  const { data: orders = [], isLoading } = useUserOrdersQuery()
+  const { data: orders = [], isLoading, isFetching } = useUserOrdersQuery({
+    enabled: !authLoading && !!user,
+  })
   const [search, setSearch] = useState('')
   const [deleteId, setDeleteId] = useState(null)
   const [viewOrderId, setViewOrderId] = useState(null)
@@ -65,6 +69,7 @@ export default function MyOrdersPage() {
   }
 
   const busy = deleteMutation.isPending
+  const showLoading = authLoading || isLoading || isFetching
 
   return (
     <div className={styles.page}>
@@ -84,7 +89,7 @@ export default function MyOrdersPage() {
           />
         </div>
 
-        {isLoading ? (
+        {showLoading ? (
           <p className={styles.muted}>Loading…</p>
         ) : filtered.length === 0 ? (
           <p className={styles.empty}>You have no orders yet.</p>
@@ -157,7 +162,7 @@ export default function MyOrdersPage() {
           </div>
         )}
       </div>
-      <Footer variant="minimal" />
+      <Footer />
 
       <Modal
         open={viewOrderId != null}

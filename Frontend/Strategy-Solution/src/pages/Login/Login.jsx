@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { useAuth } from '../../context/AuthContext'
-import loginBrandImage from '../../assets/WhatsApp_Image_2025-06-08_at_20.37.40_9716fb98-removebg-preview.png'
 import forms from '../../styles/forms.module.css'
+import styles from './Login.module.css'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -35,21 +35,29 @@ export default function LoginPage() {
   const busy = loginMutation.isPending
 
   return (
-    <div className={forms.split} style={{ background: 'var(--color-surface)' }}>
-      <div className={forms.splitForm} style={{ background: 'var(--color-surface)' }}>
-        <div className={forms.card} style={{ maxWidth: 620, padding: '2.65rem 2.4rem' }}>
-          <h1>Sign in</h1>
-          <p className={forms.sub}>Welcome back. Enter your credentials.</p>
+    <div className={styles.page}>
+      <div className={styles.orb1} aria-hidden="true" />
+      <div className={styles.orb2} aria-hidden="true" />
+      <div className={styles.shell}>
+        <section className={styles.formPane}>
+          <div className={styles.formTop}>
+            <span className={styles.eyebrow}>Secure Login</span>
+          </div>
+          <h1 className={styles.title}>Welcome back</h1>
+          <p className={styles.sub}>Enter your credentials to access your workspace and manage your orders.</p>
+          
           {error ? <p className={forms.error}>{error}</p> : null}
+          
           <form onSubmit={onSubmit}>
             <div className={forms.field}>
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">Email address</label>
               <input
                 id="email"
                 className={forms.input}
                 type="email"
                 autoComplete="email"
                 value={email}
+                placeholder="name@company.com"
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
@@ -62,23 +70,25 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 value={password}
+                placeholder="••••••••"
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <button type="submit" className={forms.submit} disabled={busy}>
-              {busy ? 'Signing in…' : 'Sign in'}
+              {busy ? 'Verifying identity…' : 'Sign in to Account'}
             </button>
           </form>
-          <div className={forms.links}>
-            <Link to="/register">Create an account</Link>
-            {' · '}
-            <Link to="/forgot-password">Forgot password?</Link>
+
+          <div className={styles.linksRow}>
+            <Link to="/register">Create account</Link>
+            <Link to="/forgot-password">Reset password</Link>
           </div>
-        </div>
-      </div>
-      <div className={forms.splitArt} style={{ background: 'var(--color-surface)' }} aria-hidden>
-        <img src={loginBrandImage} alt="" className={forms.loginBrandMark} />
+
+          <div className={styles.formNote}>
+            Need assistance? Contact our support team for help accessing your client dashboard.
+          </div>
+        </section>
       </div>
     </div>
   )

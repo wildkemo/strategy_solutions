@@ -83,12 +83,17 @@ export function Navbar() {
     <>
       <header className={styles.header}>
         <Link to="/" className={styles.logo}>
-          <img
-            src={brandLogo}
-            alt="Strategy Solutions"
-            className={styles.logoMark}
-          />
-          {/* <span className={styles.logoText}>Strategy Solutions</span> */}
+          <span className={styles.logoBadge}>
+            <img
+              src={brandLogo}
+              alt="Strategy Solutions"
+              className={styles.logoMark}
+            />
+          </span>
+          <span className={styles.logoTextWrap}>
+            <span className={styles.logoText}>Strategy Solutions</span>
+            <span className={styles.logoSubtext}>Digital services</span>
+          </span>
         </Link>
 
         <nav className={styles.desktopNav} aria-label="Main">
@@ -109,6 +114,10 @@ export function Navbar() {
               aria-label="Account menu"
               onClick={() => setPanelOpen(true)}
             >
+              <span className={styles.avatarMeta}>
+                <strong>{isAdmin ? 'Admin' : user.name || 'Account'}</strong>
+                <small>{isAdmin ? 'Control panel' : 'Open profile'}</small>
+              </span>
               <span className={styles.avatar}>
                 {(user.name || user.email || '?').charAt(0).toUpperCase()}
               </span>
@@ -144,7 +153,10 @@ export function Navbar() {
           />
           <div className={styles.mobileDrawer}>
             <div className={styles.mobileHead}>
-              <span>Menu</span>
+              <div className={styles.mobileHeadBrand}>
+                <span className={styles.mobileHeadTitle}>Menu</span>
+                <span className={styles.mobileHeadText}>Strategy Solutions</span>
+              </div>
               <button
                 type="button"
                 className={styles.closeX}
