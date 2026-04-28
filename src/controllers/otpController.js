@@ -47,11 +47,42 @@ export const createOtp = async (req, res) => {
     createdOtpId = row.id;
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"Strategy Solution" <${process.env.EMAIL_USER}>`,
       to: user.email,
-      subject: 'Your Verification Code',
-      text: `Your 6-digit verification code is: ${otpCode}. It expires in 10 minutes.`,
+      subject: "Your Verification Code – Strategy Solution",
+    
+      // Fallback (plain text)
+      text: `Your verification code is ${otpCode}. It expires in 10 minutes. If you didn’t request this, ignore this email.`,
+    
+      // Main email (HTML)
+      html: `
+        <div style="font-family: Arial, sans-serif; background-color:#f4f6f8; padding:20px;">
+          <div style="max-width:500px; margin:auto; background:white; padding:30px; border-radius:10px; text-align:center;">
+            
+            <h2 style="margin-bottom:10px;">🔐 Verification Code</h2>
+            <p style="color:#555;">Use the code below to continue with <strong>Strategy Solution</strong></p>
+            
+            <div style="font-size:32px; font-weight:bold; letter-spacing:6px; margin:20px 0; color:#2d89ef;">
+              ${otpCode}
+            </div>
+    
+            <p style="color:#777; font-size:14px;">This code expires in <strong>10 minutes</strong>.</p>
+    
+            <hr style="margin:20px 0; border:none; border-top:1px solid #eee;" />
+    
+            <p style="font-size:12px; color:#999;">
+              If you didn’t request this code, you can safely ignore this email.
+            </p>
+    
+            <p style="font-size:12px; color:#999; margin-top:20px;">
+              Built by <strong>Vortex</strong>
+            </p>
+    
+          </div>
+        </div>
+      `,
     };
+    
 
     const emailConfigured = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
     if (emailConfigured) {
