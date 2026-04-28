@@ -139,7 +139,9 @@ export function Navbar() {
             aria-expanded={mobileOpen}
             aria-label="Open menu"
             onClick={() => setMobileOpen(true)}
-          />
+          >
+            <span />
+          </button>
         </div>
       </header>
 
