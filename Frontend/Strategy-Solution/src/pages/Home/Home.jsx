@@ -80,7 +80,7 @@ export default function HomePage() {
           <div className={styles.heroContent}>
             <span className={styles.heroEyebrow}>Strategy Solution</span>
             <h1 className={styles.heroTitle}>
-              Empowering your business with <span className={styles.textGradient}>innovative</span> strategies.
+              Empowering your <span className={styles.textGradient}>business</span> with <span className={styles.textGradient}>innovative</span> strategies.
             </h1>
             <p className={styles.heroSub}>
               Cutting-edge IT consulting, cloud computing, and cybersecurity services designed to help you thrive in the digital age.

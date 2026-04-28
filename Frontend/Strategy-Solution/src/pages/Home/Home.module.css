@@ -86,6 +86,10 @@
   color: var(--color-primary);
 }
 
+.blackText {
+  color: #000;
+}
+
 .heroSub {
   font-size: 1.2rem;
   line-height: 1.7;
@@ -168,8 +172,8 @@
   position: absolute;
   width: 80%;
   height: 80%;
-  background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
-  filter: blur(60px);
+  background: radial-gradient(circle, var(--color-primary) 0%, transparent 90%);
+  /* filter: blur(60px); */
   opacity: 0.4;
   z-index: 0;
 }
@@ -179,7 +183,6 @@
   z-index: 1;
   border-radius: var(--radius-xl);
   object-fit: contain;
-  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
 }
 
 /* Trust Section */
@@ -526,17 +529,24 @@
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--color-bg) 88%, transparent),
-      color-mix(in srgb, var(--color-bg) 76%, transparent)
-    );
+    background: transparent;
   }
 
   .heroContent {
     position: relative;
     z-index: 2;
     max-width: 640px;
+  }
+
+  .heroEyebrow {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+
+  .heroTitle,
+  .heroSub {
+    color: #fff;
   }
   
   .heroActions {
@@ -560,7 +570,7 @@
     max-width: none;
     object-fit: cover;
     border-radius: inherit;
-    opacity: 0.75;
+    opacity: 1;
   }
   
   .sectionHeader {
